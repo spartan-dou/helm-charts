@@ -1,0 +1,45 @@
+{
+    "extends": [
+        "config:base"
+    ],
+    "packageRules": [
+        {
+            "matchDatasources": [
+                "docker"
+            ],
+            "matchPackagePatterns": [
+                ".*"
+            ],
+            "groupName": "Docker Image Updates",
+            "prCreation": "not-pending"
+        },
+        {
+            "matchManagers": [
+                "helm-values"
+            ],
+            "matchDatasources": [
+                "docker"
+            ],
+            "enabled": true,
+            "updateTypes": [
+                "minor"
+            ],
+            "prCreation": "not-pending",
+            "groupName": "Minor Updates"
+        },
+        {
+            "matchManagers": [
+                "helm-values"
+            ],
+            "matchDatasources": [
+                "docker"
+            ],
+            "enabled": true,
+            "updateTypes": [
+                "major"
+            ],
+            "prCreation": "immediate",
+            "groupName": "Major Updates"
+        }
+    ]
+}
