@@ -1,0 +1,54 @@
+{
+    "extends": [
+        "config:recommended",
+        ":disableDependencyDashboard"
+    ],
+    "packageRules": [
+        {
+            "matchManagers": [
+                "helm-values"
+            ],
+            "matchDatasources": [
+                "docker"
+            ],
+            "enabled": true,
+            "automerge": true,
+            "automergeType": "pr",
+            "matchUpdateTypes": [
+                "patch"
+            ],
+            "prCreation": "immediate",
+            "bumpVersion": "minor",
+            "groupName": "Patch Updates",
+            "ignoreTests": true
+        },
+        {
+            "matchManagers": [
+                "helm-values"
+            ],
+            "matchDatasources": [
+                "docker"
+            ],
+            "enabled": true,
+            "matchUpdateTypes": [
+                "major",
+                "minor"
+            ],
+            "prCreation": "immediate",
+            "groupName": "Major/Minor Updates",
+            "ignoreTests": true
+        },
+        {
+            "matchManagers": [
+                "helmv3"
+            ],
+            "enabled": true,
+            "commitMessageSuffix": "[Update Chart version]",
+            "bumpVersion": "minor",
+            "prCreation": "immediate",
+            "automerge": true,
+            "automergeType": "pr",
+            "ignoreTests": true
+        }
+    ]
+}
