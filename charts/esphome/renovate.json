@@ -11,7 +11,29 @@
                 ".*"
             ],
             "groupName": "Docker Image Updates",
-            "prCreation": "not-pending"
+            "updateTypes": [
+                "minor"
+            ],
+            "prCreation": "not-pending",
+            "schedule": [
+                "at any time"
+            ]
+        },
+        {
+            "matchDatasources": [
+                "docker"
+            ],
+            "matchPackagePatterns": [
+                ".*"
+            ],
+            "groupName": "Docker Image Updates",
+            "updateTypes": [
+                "major"
+            ],
+            "prCreation": "immediate",
+            "schedule": [
+                "at any time"
+            ]
         },
         {
             "matchManagers": [
