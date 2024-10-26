@@ -1,0 +1,7 @@
+Installation de esphome en cours...
+
+{{- if .Values.persistence.enabled }}
+Le PVC {{ template "esphome.fullname" . }}-pvc-config a été créé avec une taille de {{ .Values.persistence.size }}.
+{{- end }}
+
+Fin de l'installation.
