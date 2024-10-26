@@ -1,0 +1,77 @@
+{
+    "extends": [
+        "config:recommended",
+        ":dependencyDashboard"
+    ],
+    "packageRules": [
+        {
+            "matchDatasources": [
+                "docker"
+            ],
+            "groupName": "Docker Image Updates",
+            "matchUpdateTypes": [
+                "minor"
+            ],
+            "prCreation": "immediate",
+            "automerge": true,
+            "schedule": [
+                "at any time"
+            ],
+            "matchPackageNames": [
+                "/.*/"
+            ]
+        },
+        {
+            "matchDatasources": [
+                "docker"
+            ],
+            "groupName": "Docker Image Updates",
+            "matchUpdateTypes": [
+                "major"
+            ],
+            "prCreation": "immediate",
+            "schedule": [
+                "at any time"
+            ],
+            "matchPackageNames": [
+                "/.*/"
+            ]
+        },
+        {
+            "matchManagers": [
+                "helm-values"
+            ],
+            "matchDatasources": [
+                "docker"
+            ],
+            "enabled": true,
+            "matchUpdateTypes": [
+                "minor"
+            ],
+            "prCreation": "immediate",
+            "bumpVersion": "minor"
+        },
+        {
+            "matchManagers": [
+                "helm-values"
+            ],
+            "matchDatasources": [
+                "docker"
+            ],
+            "enabled": true,
+            "matchUpdateTypes": [
+                "major"
+            ],
+            "prCreation": "immediate",
+            "groupName": "Major Updates"
+        },
+        {
+            "matchManagers": [
+                "helmv3"
+            ],
+            "enabled": true,
+            "commitMessageSuffix": "[Update Chart version]",
+            "bumpVersion": "minor"
+        }
+    ]
+}
