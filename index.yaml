@@ -1,0 +1,18 @@
+apiVersion: v1
+entries:
+  esphome:
+  - apiVersion: v2
+    appVersion: 2024.7.3
+    created: "2024-10-26T13:54:34.438371414Z"
+    description: esphome
+    digest: 4832d5f4372506c956f3cc13af0637377989af6b9fa282fa3d86ff447a9767e6
+    keywords:
+    - home-assistant
+    - domotique
+    - esphome
+    name: esphome
+    type: application
+    urls:
+    - https://github.com/spartan-dou/helm-charts/releases/download/esphome-1.0.0-alpha/esphome-1.0.0-alpha.tgz
+    version: 1.0.0-alpha
+generated: "2024-10-26T13:54:34.438381783Z"
