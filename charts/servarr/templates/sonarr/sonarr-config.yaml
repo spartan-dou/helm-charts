@@ -1,0 +1,29 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: config-sonarr
+data:
+  config.xml: |
+    <Config>
+        <BindAddress>*</BindAddress>
+        <Port>{{ .Values.sonarr.service.port }}</Port>
+        <SslPort>9898</SslPort>
+        <EnableSsl>False</EnableSsl>
+        <LaunchBrowser>True</LaunchBrowser>
+        <ApiKey>3ac8e2337a784083a70474cdb001f312</ApiKey>
+        <AuthenticationMethod>None</AuthenticationMethod>
+        <AuthenticationRequired>Enabled</AuthenticationRequired>
+        <Branch>master</Branch>
+        <LogLevel>debug</LogLevel>
+        <SslCertPath />
+        <SslCertPassword />
+        <UrlBase />
+        <InstanceName>Sonarr</InstanceName>
+        <UpdateMechanism>Docker</UpdateMechanism>
+        <PostgresUser>sonarr</PostgresUser>
+        <PostgresPassword>{{ .Values.postgresql.auth.password.sonarr }}</PostgresPassword>
+        <PostgresPort>5432</PostgresPort>
+        <PostgresHost>{{ .Release.Name }}-cnpg-rw</PostgresHost>
+        <PostgresMainDb>sonarr_main</PostgresMainDb>
+        <PostgresLogDb>sonarr_log</PostgresLogDb>
+    </Config>

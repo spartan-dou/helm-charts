@@ -1,0 +1,19 @@
+{{- if .Values.addons.codeserver.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "servarr.fullname" . }}-codeserver
+  labels:
+    {{- include "servarr.labels" . | nindent 4 }}
+    app.kubernetes.io/component: codeserver
+spec:
+  type: {{ .Values.addons.codeserver.service.type }}
+  ports:
+    - port: {{ .Values.addons.codeserver.service.port }}
+      targetPort: codeserver
+      protocol: TCP
+      name: codeserver
+  selector:
+    {{- include "servarr.selectorLabels" . | nindent 4 }}
+    app.kubernetes.io/component: codeserver
+{{- end }}
