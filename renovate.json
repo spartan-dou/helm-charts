@@ -19,7 +19,8 @@
                 "patch"
             ],
             "prCreation": "immediate",
-            "bumpVersion": "minor"
+            "bumpVersion": "minor",
+            "ignoreTests": true
         },
         {
             "matchManagers": [
@@ -33,7 +34,8 @@
                 "major"
             ],
             "prCreation": "immediate",
-            "groupName": "Major Updates"
+            "groupName": "Major Updates",
+            "ignoreTests": true
         },
         {
             "matchManagers": [
@@ -44,7 +46,8 @@
             "bumpVersion": "minor",
             "prCreation": "immediate",
             "automerge": true,
-            "automergeType": "pr"
+            "automergeType": "pr",
+            "ignoreTests": true
         }
     ]
 }
