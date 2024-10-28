@@ -5,43 +5,6 @@
     ],
     "packageRules": [
         {
-            "matchDatasources": [
-                "docker"
-            ],
-            "groupName": "Docker Image Updates",
-            "matchUpdateTypes": [
-                "minor",
-                "patch"
-            ],
-            "enabled": true,
-            "prCreation": "immediate",
-            "automerge": true,
-            "automergeType": "branch",
-            "schedule": [
-                "at any time"
-            ],
-            "matchPackageNames": [
-                "/.*/"
-            ]
-        },
-        {
-            "matchDatasources": [
-                "docker"
-            ],
-            "groupName": "Docker Image Updates",
-            "matchUpdateTypes": [
-                "major"
-            ],
-            "enabled": true,
-            "prCreation": "immediate",
-            "schedule": [
-                "at any time"
-            ],
-            "matchPackageNames": [
-                "/.*/"
-            ]
-        },
-        {
             "matchManagers": [
                 "helm-values"
             ],
@@ -50,7 +13,7 @@
             ],
             "enabled": true,
             "automerge": true,
-            "automergeType": "branch",
+            "automergeType": "pr",
             "matchUpdateTypes": [
                 "minor",
                 "patch"
@@ -81,7 +44,7 @@
             "bumpVersion": "minor",
             "prCreation": "immediate",
             "automerge": true,
-            "automergeType": "branch"
+            "automergeType": "pr"
         }
     ]
 }
