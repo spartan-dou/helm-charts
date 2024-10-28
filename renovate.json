@@ -1,38 +1,38 @@
 {
     "extends": [
-        "config:base"
+        "config:recommended"
     ],
     "packageRules": [
         {
             "matchDatasources": [
                 "docker"
             ],
-            "matchPackagePatterns": [
-                ".*"
-            ],
             "groupName": "Docker Image Updates",
-            "updateTypes": [
+            "matchUpdateTypes": [
                 "minor"
             ],
             "prCreation": "not-pending",
             "schedule": [
                 "at any time"
+            ],
+            "matchPackageNames": [
+                "/.*/"
             ]
         },
         {
             "matchDatasources": [
                 "docker"
             ],
-            "matchPackagePatterns": [
-                ".*"
-            ],
             "groupName": "Docker Image Updates",
-            "updateTypes": [
+            "matchUpdateTypes": [
                 "major"
             ],
             "prCreation": "immediate",
             "schedule": [
                 "at any time"
+            ],
+            "matchPackageNames": [
+                "/.*/"
             ]
         },
         {
@@ -43,7 +43,7 @@
                 "docker"
             ],
             "enabled": true,
-            "updateTypes": [
+            "matchUpdateTypes": [
                 "minor"
             ],
             "prCreation": "not-pending",
@@ -57,7 +57,7 @@
                 "docker"
             ],
             "enabled": true,
-            "updateTypes": [
+            "matchUpdateTypes": [
                 "major"
             ],
             "prCreation": "immediate",
