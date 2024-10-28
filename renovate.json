@@ -40,7 +40,7 @@
         },
         {
             "matchManagers": [
-                "helmv3"
+                "helmv3", "helm-values"
             ],
             "enabled": true,
             "commitMessageSuffix": "[Update Chart version]",
