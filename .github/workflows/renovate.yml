@@ -4,7 +4,12 @@ on:
   schedule:
     - cron: "1 0 * * *"
   workflow_dispatch:
-
+    inputs:
+      logLevel:
+        description: "Override default log level"
+        required: false
+        default: "info"
+        type: string
 jobs:
   renovate:
     runs-on: ubuntu-latest
@@ -23,6 +28,7 @@ jobs:
           RENOVATE_USERNAME: "helm-charts[bot]"
           # Use GitHub API to create commits (this allows for signed commits from GitHub App)
           RENOVATE_PLATFORM_COMMIT: "true"
+          LOG_LEVEL: ${{ inputs.logLevel || 'info' }}
         with:
           configurationFile: renovate.json
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.RENOVATE_TOKEN }}
