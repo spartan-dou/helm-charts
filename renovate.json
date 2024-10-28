@@ -1,6 +1,7 @@
 {
     "extends": [
-        "config:recommended"
+        "config:recommended",
+        ":dependencyDashboard"
     ],
     "packageRules": [
         {
@@ -11,7 +12,8 @@
             "matchUpdateTypes": [
                 "minor"
             ],
-            "prCreation": "not-pending",
+            "prCreation": "immediate",
+            "automerge": true,
             "schedule": [
                 "at any time"
             ],
@@ -46,7 +48,8 @@
             "matchUpdateTypes": [
                 "minor"
             ],
-            "prCreation": "not-pending",
+            "prCreation": "immediate",
+            "automerge": true,
             "groupName": "Minor Updates"
         },
         {
@@ -62,6 +65,15 @@
             ],
             "prCreation": "immediate",
             "groupName": "Major Updates"
+        },
+        {
+            "matchManagers": [
+                "helm"
+            ],
+            "enabled": true,
+            "commitMessageSuffix": "[Update Chart version]",
+            "bumpVersion": true,
+            "bumpVersionType": "minor"
         }
     ]
 }
