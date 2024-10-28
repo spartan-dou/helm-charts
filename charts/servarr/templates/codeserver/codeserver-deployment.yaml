@@ -1,0 +1,105 @@
+{{- if .Values.addons.codeserver.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "servarr.fullname" . }}-codeserver
+  labels:
+    {{- include "servarr.labels" . | nindent 4 }}
+    app.kubernetes.io/component: codeserver
+spec:
+  replicas: 1
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 25%
+  selector:
+    matchLabels:
+      {{- include "servarr.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: codeserver
+  template:
+    metadata:
+      labels:
+        {{- include "servarr.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/component: codeserver
+    spec:
+      securityContext:
+        fsGroup: 1000
+      serviceAccountName: {{ include "servarr.serviceAccountName" . }}
+      containers:
+        - name: codeserver
+          image: "{{ .Values.addons.codeserver.image.repository }}:{{ .Values.addons.codeserver.image.tag }}"
+          ports:
+            - containerPort: {{ .Values.addons.codeserver.port }}
+              name: codeserver
+              protocol: TCP
+          env:
+            {{- range .Values.addons.codeserver.env }}
+            - name: {{ .name }}
+              value: {{ .value | quote }}
+            {{- end }}
+          {{- with .Values.addons.codeserver.livenessProbe }}
+          livenessProbe:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .Values.addons.codeserver.readinessProbe }}
+          readinessProbe:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          volumeMounts:
+            - mountPath: /config
+              name: codeserver-config
+            {{- if and .Values.radarr.enabled .Values.radarr.persistence.enabled }}
+            - name: radarr-config
+              mountPath: /config/workspace/radarr
+            {{- end }}
+            {{- if and .Values.sonarr.enabled .Values.sonarr.persistence.enabled }}
+            - name: sonarr-config
+              mountPath: /config/workspace/sonarr
+            {{- end }}
+            {{- if and .Values.prowlarr.enabled .Values.prowlarr.persistence.enabled }}
+            - name: prowlarr-config
+              mountPath: /config/workspace/prowlarr
+            {{- end }}
+            {{- if and .Values.lidarr.enabled .Values.lidarr.persistence.enabled }}
+            - name: lidarr-config
+              mountPath: /config/workspace/lidarr
+            {{- end }}
+            {{- if and .Values.recyclarr.enabled .Values.recyclarr.persistence.enabled }}
+            - name: recyclarr-config
+              mountPath: /config/workspace/recyclarr
+            {{- end }}
+      volumes:
+        - name: codeserver-config
+          {{- if .Values.addons.codeserver.persistence.enabled }}
+          persistentVolumeClaim:
+            claimName: codeserver-pvc-config
+          {{- else }}
+          emptyDir: {}
+          {{- end }}
+        {{- if and .Values.radarr.enabled .Values.radarr.persistence.enabled}}
+        - name: radarr-config
+          persistentVolumeClaim:
+            claimName: radarr-pvc-config
+        {{- end }}
+        {{- if and .Values.sonarr.enabled .Values.sonarr.persistence.enabled }}
+        - name: sonarr-config
+          persistentVolumeClaim:
+            claimName: sonarr-pvc-config
+        {{- end }}
+        {{- if and .Values.prowlarr.enabled .Values.prowlarr.persistence.enabled }}
+        - name: prowlarr-config
+          persistentVolumeClaim:
+            claimName: prowlarr-pvc-config
+        {{- end }}
+        {{- if and .Values.lidarr.enabled .Values.lidarr.persistence.enabled}}
+        - name: lidarr-config
+          persistentVolumeClaim:
+            claimName: lidarr-pvc-config
+        {{- end }}
+        {{- if and .Values.recyclarr.enabled .Values.recyclarr.persistence.enabled}}
+        - name: recyclarr-config
+          persistentVolumeClaim:
+            claimName: recyclarr-pvc-config
+        {{- end }}
+{{- end }}

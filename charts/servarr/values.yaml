@@ -1,0 +1,307 @@
+persistence:
+  storageClass: ""
+
+ingress:
+  enabled: false
+
+postgresql:
+  enabled: false
+  storageClass: ""
+  auth:
+    username: admin
+    password:
+      admin: changeme
+      radarr: changeme
+      sonarr: changeme
+      prowlarr: changeme
+      lidarr: changeme
+
+serviceAccount:
+  create: false
+##############################
+############ RADARR ###########
+##############################
+radarr:
+  enabled: false
+  replicaCount: 1
+  image:
+    repository: lscr.io/linuxserver/radarr
+    tag: "5.9.1.9070-ls235"
+  env:
+    - name: PUID
+      value: "1000"
+    - name: PGID
+      value: "1000"
+    - name: UMASK
+      values: "002"
+    - name: TZ
+      value: "Europe/Paris"
+  persistence:
+    enabled: false
+    path: /config
+    size: 1Gi
+  data:
+    path: /data
+    hostPath: /data
+  port: 7878
+  service:
+    type: ClusterIP
+    port: 7878
+  livenessProbe:
+    httpGet:
+      path: /
+      port: 7878
+    initialDelaySeconds: 60
+    periodSeconds: 30
+  readinessProbe:
+    httpGet:
+      path: /
+      port: 7878
+    initialDelaySeconds: 30
+    periodSeconds: 15
+
+##############################
+############ SONAR ###########
+##############################
+sonarr:
+  enabled: false
+  replicaCount: 1
+  image:
+    repository: lscr.io/linuxserver/sonarr
+    tag: "4.0.9.2244-ls252"
+  env:
+    - name: PUID
+      value: "1000"
+    - name: PGID
+      value: "1000"
+    - name: UMASK
+      values: "002"
+    - name: TZ
+      value: "Europe/Paris"
+  persistence:
+    enabled: false
+    path: /config
+    size: 1Gi
+  data:
+    path: /data
+    hostPath: /data
+  port: 8989
+  service:
+    type: ClusterIP
+    port: 8989
+  livenessProbe:
+    httpGet:
+      path: /
+      port: 8989
+    initialDelaySeconds: 60
+    periodSeconds: 30
+  readinessProbe:
+    httpGet:
+      path: /
+      port: 8989
+    initialDelaySeconds: 30
+    periodSeconds: 15
+
+##############################
+########## prowlarr ##########
+##############################
+prowlarr:
+  enabled: false
+  replicaCount: 1
+  image:
+    repository: lscr.io/linuxserver/prowlarr
+    tag: "1.23.1.4708-ls84"
+  env:
+    - name: PUID
+      value: "1000"
+    - name: PGID
+      value: "1000"
+    - name: UMASK
+      values: "002"
+    - name: TZ
+      value: "Europe/Paris"
+  persistence:
+    enabled: false
+    path: /config
+    size: 1Gi
+  port: 9696
+  service:
+    type: ClusterIP
+    port: 9696
+  livenessProbe:
+    httpGet:
+      path: /
+      port: 9696
+    initialDelaySeconds: 60
+    periodSeconds: 30
+  readinessProbe:
+    httpGet:
+      path: /
+      port: 9696
+    initialDelaySeconds: 30
+    periodSeconds: 15
+
+
+##############################
+########## lidarr ##########
+##############################
+lidarr:
+  enabled: false
+  replicaCount: 1
+  image:
+    repository: lscr.io/linuxserver/lidarr
+    tag: "2.6.4.4402-ls13"
+  env:
+    - name: PUID
+      value: "1000"
+    - name: PGID
+      value: "1000"
+    - name: UMASK
+      values: "002"
+    - name: TZ
+      value: "Europe/Paris"
+  persistence:
+    enabled: false
+    path: /config
+    size: 1Gi
+  port: 8686
+  service:
+    type: ClusterIP
+    port: 8686
+  livenessProbe:
+    httpGet:
+      path: /
+      port: 8686
+    initialDelaySeconds: 60
+    periodSeconds: 30
+  readinessProbe:
+    httpGet:
+      path: /
+      port: 8686
+    initialDelaySeconds: 30
+    periodSeconds: 15
+
+##############################
+########### RECYLCARR ########
+##############################
+recyclarr:
+  enabled: false
+  image:
+    repository: ghcr.io/recyclarr/recyclarr
+    tag: "7.2"
+  cron: "@daily"
+  env:
+    - name: PUID
+      value: "1000"
+    - name: PGID
+      value: "1000"
+    - name: UMASK
+      values: "002"
+    - name: TZ
+      value: "Europe/Paris"
+  persistence:
+    enabled: false
+    path: /config
+    size: 1Gi
+
+##############################
+######## FLARESOLVERR ########
+##############################
+flaresolverr:
+  enabled: false
+  replicaCount: 1
+  image:
+    repository: ghcr.io/flaresolverr/flaresolverr
+    tag: "v3.3.21"
+  env:
+    - name: TZ
+      value: "Europe/Paris"
+    - name: PROMETHEUS_ENABLED
+      value: true
+    - name: PROMETHEUS_PORT
+      value: 8192
+  port: 8191
+  service:
+    type: ClusterIP
+    port: 8191
+  livenessProbe:
+    httpGet:
+      path: /
+      port: 8191
+    initialDelaySeconds: 60
+    periodSeconds: 30
+  readinessProbe:
+    httpGet:
+      path: /
+      port: 8191
+    initialDelaySeconds: 30
+    periodSeconds: 15
+
+##############################
+########## RDTCLIENT #########
+##############################
+rdtclient:
+  enabled: false
+  replicaCount: 1
+  image:
+    repository: rogerfar/rdtclient
+    tag: "2.0"
+  env:
+    - name: PUID
+      value: "1000"
+    - name: PGID
+      value: "1000"
+    - name: UMASK
+      values: "002"
+    - name: TZ
+      value: "Europe/Paris"
+  persistence:
+    enabled: false
+    size: 1Gi
+  data:
+    path: /downloads
+    hostPath: /data/torrents
+  port: 6500
+  service:
+    type: ClusterIP
+    port: 6500
+  livenessProbe:
+    httpGet:
+      path: /
+      port: 6500
+    initialDelaySeconds: 60
+    periodSeconds: 30
+  readinessProbe:
+    httpGet:
+      path: /
+      port: 6500
+    initialDelaySeconds: 30
+    periodSeconds: 15
+
+#################
+# Coder addon   #
+#################
+addons:
+  codeserver:
+    enabled: false
+    persistence:
+      enabled: false
+      size: 1Gi
+    image:
+      repository: lscr.io/linuxserver/code-server
+      tag: "4.92.2"
+    env:
+    - name: PUID
+      value: "1000"
+    - name: PGID
+      value: "1000"
+    - name: UMASK
+      values: "002"
+    - name: TZ
+      value: "Europe/Paris"
+    port: 8443
+    service:
+      type: ClusterIP
+      port: 8443
+    ingress:
+      enabled: false

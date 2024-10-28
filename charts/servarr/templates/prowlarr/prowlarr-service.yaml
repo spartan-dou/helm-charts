@@ -1,0 +1,19 @@
+{{- if .Values.prowlarr.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "servarr.fullname" . }}-prowlarr
+  labels:
+    {{- include "servarr.labels" . | nindent 4 }}
+    app.kubernetes.io/component: prowlarr
+spec:
+  type: {{ .Values.prowlarr.service.type }}
+  ports:
+    - port: {{ .Values.prowlarr.service.port }}
+      targetPort: prowlarr
+      protocol: TCP
+      name: prowlarr
+  selector:
+    {{- include "servarr.selectorLabels" . | nindent 4 }}
+    app.kubernetes.io/component: prowlarr
+{{- end }}

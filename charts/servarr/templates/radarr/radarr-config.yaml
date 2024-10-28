@@ -1,0 +1,29 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: config-radarr
+data:
+  config.xml: |
+    <Config>
+        <BindAddress>*</BindAddress>
+        <Port>{{ .Values.radarr.service.port }}</Port>
+        <SslPort>8787</SslPort>
+        <EnableSsl>False</EnableSsl>
+        <LaunchBrowser>True</LaunchBrowser>
+        <ApiKey>ec1fe9e52ced4efea771cecd1316328c</ApiKey>
+        <AuthenticationMethod>None</AuthenticationMethod>
+        <AuthenticationRequired>Enabled</AuthenticationRequired>
+        <Branch>master</Branch>
+        <LogLevel>debug</LogLevel>
+        <SslCertPath />
+        <SslCertPassword />
+        <UrlBase />
+        <InstanceName>Radarr</InstanceName>
+        <UpdateMechanism>Docker</UpdateMechanism>
+        <PostgresUser>radarr</PostgresUser>
+        <PostgresPassword>{{ .Values.postgresql.auth.password.radarr }}</PostgresPassword>
+        <PostgresPort>5432</PostgresPort>
+        <PostgresHost>{{ .Release.Name }}-cnpg-rw</PostgresHost>
+        <PostgresMainDb>radarr_main</PostgresMainDb>
+        <PostgresLogDb>radarr_log</PostgresLogDb>
+    </Config>

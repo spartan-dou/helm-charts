@@ -1,0 +1,60 @@
+{{- if .Values.flaresolverr.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "servarr.fullname" . }}-flaresolverr
+  labels:
+    {{- include "servarr.labels" . | nindent 4 }}
+    app.kubernetes.io/component: flaresolverr
+spec:
+  replicas: 1
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 25%
+  selector:
+    matchLabels:
+      {{- include "servarr.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: flaresolverr
+  template:
+    metadata:
+      labels:
+        {{- include "servarr.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/component: flaresolverr
+    spec:
+      securityContext:
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+      serviceAccountName: {{ include "servarr.serviceAccountName" . }}
+      containers:
+        - name: flaresolverr
+          image: "{{ .Values.flaresolverr.image.repository }}:{{ .Values.flaresolverr.image.tag }}"
+          imagePullPolicy: IfNotPresent
+          env:
+            {{- range .Values.flaresolverr.env }}
+            - name: {{ .name }}
+              value: {{ .value | quote }}
+            {{- end }}
+          ports:
+            - name: flaresolverr
+              containerPort: {{ .Values.flaresolverr.port }}
+              protocol: TCP
+          livenessProbe:
+            {{- toYaml .Values.flaresolverr.livenessProbe | nindent 12 }}
+          readinessProbe:
+            {{- toYaml .Values.flaresolverr.readinessProbe | nindent 12 }}
+      {{- with .Values.flaresolverr.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.flaresolverr.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.flaresolverr.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+{{- end }}
