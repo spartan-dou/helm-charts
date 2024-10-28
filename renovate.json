@@ -1,7 +1,7 @@
 {
     "extends": [
         "config:recommended",
-        ":dependencyDashboard"
+        ":disableDependencyDashboard"
     ],
     "packageRules": [
         {
@@ -10,10 +10,13 @@
             ],
             "groupName": "Docker Image Updates",
             "matchUpdateTypes": [
-                "minor"
+                "minor",
+                "patch"
             ],
+            "enabled": true,
             "prCreation": "immediate",
             "automerge": true,
+            "automergeType": "branch",
             "schedule": [
                 "at any time"
             ],
@@ -29,6 +32,7 @@
             "matchUpdateTypes": [
                 "major"
             ],
+            "enabled": true,
             "prCreation": "immediate",
             "schedule": [
                 "at any time"
@@ -45,8 +49,11 @@
                 "docker"
             ],
             "enabled": true,
+            "automerge": true,
+            "automergeType": "branch",
             "matchUpdateTypes": [
-                "minor"
+                "minor",
+                "patch"
             ],
             "prCreation": "immediate",
             "bumpVersion": "minor"
@@ -67,11 +74,14 @@
         },
         {
             "matchManagers": [
-                "helmv3"
+                "helm"
             ],
             "enabled": true,
             "commitMessageSuffix": "[Update Chart version]",
-            "bumpVersion": "minor"
+            "bumpVersion": "minor",
+            "prCreation": "immediate",
+            "automerge": true,
+            "automergeType": "branch"
         }
     ]
 }
