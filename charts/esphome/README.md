@@ -5,18 +5,18 @@ kubectl create ns esphome
 ```
 
 ```bash
-helm install esphome esphome -f esphome/custom-values.yaml --namespace esphome
+helm install esphome esphome -f esphome/esphome.yaml --namespace esphome
 ```
 
 ```bash
-helm upgrade esphome esphome -f esphome/custom-values.yaml --namespace esphome
+helm upgrade esphome esphome -f esphome/esphome.yaml --namespace esphome
 ```
 | Paramètre                       | Valeur                           | Description                                                                 |
 |---------------------------------|----------------------------------|-----------------------------------------------------------------------------|
 | `replicaCount`                  | 1                                | Le nombre de répliques à déployer                                           |
 | `image.repository`              | ghcr.io/esphome/esphome          | Référentiel de l'image Docker                                               |
 | `image.pullPolicy`              | IfNotPresent                     | Politique de pull de l'image                                                |
-| `image.tag`                     | "2024.7.3"                       | Tag de l'image Docker                                                       |
+| `image.tag`                     | "2024.10.2"                      | Tag de l'image Docker                                                       |
 | `podAnnotations`                | {}                               | Annotations à ajouter au pod                                                |
 | `podLabels`                     | {}                               | Labels à ajouter au pod                                                     |
 | `username`                      | admin                            | Nom d'utilisateur de l'application                                          |

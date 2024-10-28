@@ -8,6 +8,9 @@ image:
 username: admin
 password: changeme
 
+serviceAccount:
+  create: false
+
 timezone: "Europe/Paris"
 
 service:
