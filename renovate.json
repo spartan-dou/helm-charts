@@ -49,8 +49,7 @@
                 "minor"
             ],
             "prCreation": "immediate",
-            "automerge": true,
-            "groupName": "Minor Updates"
+            "bumpVersion": "minor"
         },
         {
             "matchManagers": [
@@ -68,12 +67,11 @@
         },
         {
             "matchManagers": [
-                "helm"
+                "helmv3"
             ],
             "enabled": true,
             "commitMessageSuffix": "[Update Chart version]",
-            "bumpVersion": true,
-            "bumpVersionType": "minor"
+            "bumpVersion": "minor"
         }
     ]
 }
