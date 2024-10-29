@@ -188,7 +188,7 @@ recyclarr:
   enabled: false
   image:
     repository: ghcr.io/recyclarr/recyclarr
-    tag: "7.2"
+    tag: "7.3"
   cron: "@daily"
   env:
     - name: PUID
@@ -289,7 +289,7 @@ addons:
       size: 1Gi
     image:
       repository: lscr.io/linuxserver/code-server
-      tag: "4.92.2"
+      tag: "4.93.1"
     env:
     - name: PUID
       value: "1000"
