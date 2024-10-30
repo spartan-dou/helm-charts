@@ -2,7 +2,7 @@ apiVersion: v2
 name: esphome
 description: esphome
 type: application
-version: 1.0.0
+version: 1.0.1
 appVersion: "2024.10.2"
 keywords:
   - home-assistant
