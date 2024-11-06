@@ -1,0 +1,56 @@
+replicaCount: 1
+
+image:
+  repository: ghcr.io/jellyfin/jellyfin
+  tag: "10.9.11"
+  pullPolicy: IfNotPresent
+
+
+# Setting this to true enables DLNA which requires the pod to be attached to the
+# host network in order to be useful - this can break things like ingress to the service
+# https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#hosts-namespaces
+# https://jellyfin.org/docs/general/networking/dlna.html
+# dans le deployment : hostNetwork: true
+enableDLNA: false
+
+gpu:
+  nvidia: 0
+
+service:
+  type: ClusterIP
+  port: 8096
+
+env:
+  - name: PUID
+    value: 1000
+  - name: PGID
+    value: 1000
+  - name: UMASK
+    values: 002
+
+persistence:
+  config:
+    enabled: false
+    accessMode: ReadWriteOnce
+    size: 1Gi
+    existingClaim: false
+    storageClass: ""
+  media:
+    enabled: false
+    path: /data/media
+
+ingress:
+  enabled: false
+
+livenessProbe:
+  httpGet:
+    path: /health
+    port: 8096
+  initialDelaySeconds: 60
+  periodSeconds: 30
+readinessProbe:
+  httpGet:
+    path: /health
+    port: 8096
+  initialDelaySeconds: 30
+  periodSeconds: 15

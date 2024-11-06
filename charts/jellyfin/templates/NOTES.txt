@@ -1,0 +1,19 @@
+{{- if .Values.enableDLNA -}}
+DLNA: Enabled
+{{- else -}}
+DLNA: Disabled
+{{- end }}
+
+Persistence:
+  Config:
+    Enabled: {{ .Values.persistence.config.enabled }}
+    Access Mode: {{ .Values.persistence.config.accessMode }}
+    Size: {{ .Values.persistence.config.size }}
+    Existing Claim: {{ .Values.persistence.config.existingClaim }}
+    Storage Class: {{ .Values.persistence.config.storageClass }}
+  Media:
+    Enabled: {{ .Values.persistence.media.enabled }}
+    Path: {{ .Values.persistence.media.path }}
+
+Ingress:
+  Enabled: {{ .Values.ingress.enabled }}
