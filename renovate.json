@@ -49,6 +49,15 @@
             "automerge": true,
             "automergeType": "pr",
             "ignoreTests": true
+        },
+        {
+            "matchPaths": [
+                "Chart.yaml"
+            ],
+            "enabled": true,
+            "bumpVersion": "minor",
+            "versioning": "semver",
+            "fileMatch": ["^(?:app|version)"]
         }
     ]
 }
