@@ -18,6 +18,7 @@ postgresql:
 
 serviceAccount:
   create: false
+
 ##############################
 ############ RADARR ###########
 ##############################
@@ -33,7 +34,7 @@ radarr:
     - name: PGID
       value: "1000"
     - name: UMASK
-      values: "002"
+      value: "002"
     - name: TZ
       value: "Europe/Paris"
   persistence:
@@ -75,7 +76,7 @@ sonarr:
     - name: PGID
       value: "1000"
     - name: UMASK
-      values: "002"
+      value: "002"
     - name: TZ
       value: "Europe/Paris"
   persistence:
@@ -103,7 +104,7 @@ sonarr:
     periodSeconds: 15
 
 ##############################
-########## prowlarr ##########
+########## PROWLARR ##########
 ##############################
 prowlarr:
   enabled: false
@@ -117,7 +118,7 @@ prowlarr:
     - name: PGID
       value: "1000"
     - name: UMASK
-      values: "002"
+      value: "002"
     - name: TZ
       value: "Europe/Paris"
   persistence:
@@ -141,9 +142,8 @@ prowlarr:
     initialDelaySeconds: 30
     periodSeconds: 15
 
-
 ##############################
-########## lidarr ##########
+########## LIDARR ##########
 ##############################
 lidarr:
   enabled: false
@@ -157,7 +157,7 @@ lidarr:
     - name: PGID
       value: "1000"
     - name: UMASK
-      values: "002"
+      value: "002"
     - name: TZ
       value: "Europe/Paris"
   persistence:
@@ -182,7 +182,7 @@ lidarr:
     periodSeconds: 15
 
 ##############################
-########### RECYLCARR ########
+########### RECYCARR ########
 ##############################
 recyclarr:
   enabled: false
@@ -196,7 +196,7 @@ recyclarr:
     - name: PGID
       value: "1000"
     - name: UMASK
-      values: "002"
+      value: "002"
     - name: TZ
       value: "Europe/Paris"
   persistence:
@@ -217,9 +217,9 @@ flaresolverr:
     - name: TZ
       value: "Europe/Paris"
     - name: PROMETHEUS_ENABLED
-      value: true
+      value: "true"
     - name: PROMETHEUS_PORT
-      value: 8192
+      value: "8192"
   port: 8191
   service:
     type: ClusterIP
@@ -252,7 +252,7 @@ rdtclient:
     - name: PGID
       value: "1000"
     - name: UMASK
-      values: "002"
+      value: "002"
     - name: TZ
       value: "Europe/Paris"
   persistence:
@@ -291,14 +291,14 @@ addons:
       repository: lscr.io/linuxserver/code-server
       tag: "4.95.1"
     env:
-    - name: PUID
-      value: "1000"
-    - name: PGID
-      value: "1000"
-    - name: UMASK
-      values: "002"
-    - name: TZ
-      value: "Europe/Paris"
+      - name: PUID
+        value: "1000"
+      - name: PGID
+        value: "1000"
+      - name: UMASK
+        value: "002"
+      - name: TZ
+        value: "Europe/Paris"
     port: 8443
     service:
       type: ClusterIP
