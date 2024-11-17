@@ -1,8 +1,5 @@
 {
-    "extends": [
-      "config:recommended",
-      ":disableDependencyDashboard"
-    ],
+    "extends": ["config:recommended", ":disableDependencyDashboard"],
     "packageRules": [
       {
         "matchManagers": ["helm-values"],
@@ -20,28 +17,26 @@
         "matchManagers": ["helm-values"],
         "matchDatasources": ["docker"],
         "enabled": true,
+        "automerge": false,
         "matchUpdateTypes": ["minor", "major"],
         "prCreation": "immediate",
         "groupName": "Minor and Major Updates",
         "ignoreTests": true
       },
       {
-        "matchManagers": ["helmv3", "helm-values"],
+        "matchManagers": ["helmv3"],
         "enabled": true,
         "commitMessageSuffix": "[Update Chart version]",
         "bumpVersion": "minor",
         "prCreation": "immediate",
-        "automerge": true,
-        "automergeType": "pr",
+        "automerge": false,
         "ignoreTests": true
       },
       {
-        "matchPaths": ["Chart.yaml"],
+        "matchFileNames": ["Chart.yaml"],
         "enabled": true,
-        "bumpVersion": "minor",
         "versioning": "semver",
-        "fileMatch": ["^(?:appVersion|version)"]
+        "commitMessageSuffix": "chore(deps): update Chart.yaml versions"
       }
     ]
   }
-  
