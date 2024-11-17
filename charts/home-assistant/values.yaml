@@ -1,0 +1,89 @@
+replicaCount: 1
+
+image:
+  repository: ghcr.io/home-assistant/home-assistant
+  pullPolicy: IfNotPresent
+  tag: "2024.8.3"
+
+timezone: "Europe/Paris"
+
+usbMount:
+  enabled: false
+  path: /dev/ttyACM0
+
+securityContext:
+  runAsUser: 1000
+  runAsGroup: 1000
+
+service:
+  type: ClusterIP
+  port: 8123
+
+ingress:
+  enabled: false
+
+serviceAccount:
+  create: false
+  automount: false
+
+persistence:
+  enabled: false
+  accessMode: ReadWriteOnce
+  size: 10Gi
+  existingClaim: false
+  storageClass: ""
+
+postStart:
+  command: ""
+
+livenessProbe:
+  httpGet:
+    path: /
+    port: 8123
+  initialDelaySeconds: 60
+  periodSeconds: 30
+readinessProbe:
+  httpGet:
+    path: /
+    port: 8123
+  initialDelaySeconds: 30
+  periodSeconds: 15
+
+postgresql:
+  enabled: false
+  storageClass: openebs-zfsdb
+  auth:
+    username: admin
+    password: changeme
+    database: home-assistant
+
+addons:
+  #################
+  # Coder addon   #
+  #################
+  codeserver:
+    replicaCount: 1
+    enabled: false
+    persistence:
+      enabled: false
+      accessMode: ReadWriteOnce
+      size: 1Gi
+      existingClaim: false
+      storageClass: ""
+    image: lscr.io/linuxserver/code-server
+    tag: "4.92.2"
+    env:
+    - name: PUID
+      value: "1000"
+    - name: PGID
+      value: "1000"
+    - name: UMASK
+      values: "002"
+    port: 8443
+    service:
+      type: ClusterIP
+      port: 8443
+    ingress:
+      enabled: false
+
+

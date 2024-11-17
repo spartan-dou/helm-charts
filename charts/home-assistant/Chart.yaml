@@ -1,0 +1,12 @@
+apiVersion: v2
+name: home-assistant
+description: Home Assistant
+type: application
+version: 1.0.0
+appVersion: "2024.8.3"
+home: https://www.home-assistant.io/
+icon: https://commons.wikimedia.org/wiki/File:New_Home_Assistant_logo.svg
+keywords:
+  - home-assistant
+  - domotique
+  - vscode

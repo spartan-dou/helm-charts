@@ -1,0 +1,20 @@
+{{- if .Values.addons.codeserver.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ template "home-assistant.fullname" . }}-codeserver
+  labels:
+    {{- include "home-assistant.labels" . | nindent 4 }}
+    app.kubernetes.io/component: codeserver
+spec:
+  type: {{ .Values.addons.codeserver.service.type }}
+  ports:
+    - name: codeserver
+      port: {{ .Values.addons.codeserver.service.port }}
+      protocol: TCP
+      targetPort: codeserver
+  selector:
+    {{- include "home-assistant.selectorLabels" . | nindent 4 }}
+    app.kubernetes.io/component: codeserver
+
+{{- end }}
