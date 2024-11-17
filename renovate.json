@@ -20,6 +20,7 @@
         "matchManagers": ["helm-values"],
         "matchDatasources": ["docker"],
         "enabled": true,
+        "automerge": false,
         "matchUpdateTypes": ["minor", "major"],
         "prCreation": "immediate",
         "groupName": "Minor and Major Updates",
@@ -31,8 +32,7 @@
         "commitMessageSuffix": "[Update Chart version]",
         "bumpVersion": "minor",
         "prCreation": "immediate",
-        "automerge": true,
-        "automergeType": "pr",
+        "automerge": false,
         "ignoreTests": true
       },
       {

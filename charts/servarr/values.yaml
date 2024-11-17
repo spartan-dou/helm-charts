@@ -149,8 +149,8 @@ lidarr:
   enabled: false
   replicaCount: 1
   image:
-    repository: lscr.io/linuxserver/lidarr
-    tag: "8.1.2135"
+    repository: linuxserver/lidarr
+    tag: "2.7.1"
   env:
     - name: PUID
       value: "1000"
