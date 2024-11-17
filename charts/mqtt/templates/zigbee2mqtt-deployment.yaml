@@ -1,0 +1,72 @@
+{{- if .Values.addons.zigbee2mqtt.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "mosquitto.fullname" . }}-zigbee2mqtt
+  labels:
+    {{- include "mosquitto.labels" . | nindent 4 }}
+    app.kubernetes.io/component: zigbee2mqtt
+spec:
+  replicas: {{ .Values.addons.zigbee2mqtt.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "mosquitto.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: zigbee2mqtt
+  template:
+    metadata:
+      labels:
+        {{- include "mosquitto.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/component: zigbee2mqtt
+    spec:
+      serviceAccountName: {{ include "mosquitto.serviceAccountName" . }}
+      securityContext:
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+      initContainers:
+        - name: init-config
+          image: busybox
+          securityContext:
+            runAsUser: 0
+          command: ['sh', '-c', 'cp /tmp/configuration.yaml /app/data/configuration.yaml']
+          volumeMounts:
+            - name: data
+              mountPath: /app/data
+            - mountPath: /tmp/configuration.yaml
+              subPath: configuration.yaml
+              name: configmap
+      containers:
+        - name: zigbee2mqtt
+          image: "{{ .Values.addons.zigbee2mqtt.image.repository }}:{{ .Values.addons.zigbee2mqtt.image.tag }}"
+          imagePullPolicy: {{ .Values.addons.zigbee2mqtt.image.pullPolicy }}
+          ports:
+            - name: "main"
+              containerPort: {{ .Values.addons.zigbee2mqtt.service.port }}
+              protocol: TCP
+          livenessProbe:
+            {{- toYaml .Values.addons.zigbee2mqtt.livenessProbe | nindent 12 }}
+          readinessProbe:
+            {{- toYaml .Values.addons.zigbee2mqtt.readinessProbe | nindent 12 }}
+          resources:
+            {{- toYaml .Values.addons.zigbee2mqtt.resources | nindent 12 }}
+          volumeMounts:
+            - mountPath: /app/data
+              name: data
+            - name: usb-device
+              mountPath: {{ .Values.addons.zigbee2mqtt.zigbee }}
+      volumes:
+        - name: configmap
+          configMap:
+            name: {{ template "mosquitto.fullname" . }}-zigbee2mqtt
+        - name: data
+          {{- if .Values.persistence.enabled }}
+          persistentVolumeClaim:
+            claimName: {{ if .Values.persistence.existingClaim }}{{ .Values.persistence.existingClaim }}{{- else }}zigbee2mqtt-pvc-data{{- end }}
+          {{- else }}
+          emptyDir: {}
+          {{- end }}
+        - name: usb-device
+          hostPath:
+            path: {{ .Values.addons.zigbee2mqtt.zigbee }}
+            type: CharDevice
+{{- end }}

@@ -1,0 +1,23 @@
+{{- if .Values.addons.zigbee2mqtt.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ template "mosquitto.fullname" . }}-zigbee2mqtt
+  labels:
+    {{- include "mosquitto.labels" . | nindent 4 }}
+    app.kubernetes.io/component: zigbee2mqtt
+spec:
+  type: {{ .Values.addons.zigbee2mqtt.service.type }}
+  ports:
+    - name: main
+      port: {{ .Values.addons.zigbee2mqtt.service.port }}
+      protocol: TCP
+      targetPort: main
+    - name: ws
+      port: 9001
+      protocol: TCP
+      targetPort: ws
+  selector:
+    {{- include "mosquitto.selectorLabels" . | nindent 4 }}
+    app.kubernetes.io/component: zigbee2mqtt
+{{- end }}

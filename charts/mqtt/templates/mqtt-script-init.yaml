@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "mosquitto.fullname" . }}-script-init
+data:
+  init.sh: |
+    #!/bin/sh
+
+    echo "Début de l'initialisation de mqtt"
+
+    echo "mkdir /mosquitto/config"
+    mkdir /mosquitto/config
+    echo "mkdir /mosquitto/configinc"
+    mkdir /mosquitto/configinc
+
+    # chown -R 1883:1883 /mosquitto
+
+    echo "Fin de l'initialisation de mqtt"
