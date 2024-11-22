@@ -1,6 +1,6 @@
 {
     "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-    "extends": ["config:recommended", ":disableDependencyDashboard",":semanticCommits"],
+    "extends": ["config:recommended", ":disableDependencyDashboard",":semanticCommits",":semanticCommitTypeAll(deps)",":semanticCommitScope(renovate)"],
     "packageRules": [
       {
         "matchManagers": ["helm-values"],
@@ -33,10 +33,5 @@
         "groupName": "Helm Chart Updates",
         "ignoreTests": true
       }
-    ],
-     "postUpgradeTasks": {
-      "commands": [
-        "echo 'toto'"
-      ]
-    }
+    ]
   }
