@@ -1,5 +1,6 @@
 {
-    "extends": ["config:recommended", ":disableDependencyDashboard"],
+    "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+    "extends": ["config:recommended", ":disableDependencyDashboard",":semanticCommits"],
     "packageRules": [
       {
         "matchManagers": ["helm-values"],
@@ -25,18 +26,12 @@
       },
       {
         "matchManagers": ["helmv3"],
+        "matchDatasources": ["helm"],
         "enabled": true,
-        "commitMessageSuffix": "[Update Chart version]",
-        "bumpVersion": "minor",
-        "prCreation": "immediate",
         "automerge": false,
+        "prCreation": "immediate",
+        "groupName": "Helm Chart Updates",
         "ignoreTests": true
-      },
-      {
-        "matchFileNames": ["Chart.yaml"],
-        "enabled": true,
-        "versioning": "semver",
-        "commitMessageSuffix": "chore(deps): update Chart.yaml versions"
       }
     ]
   }
