@@ -1,6 +1,6 @@
 {
     "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-    "extends": ["config:recommended", ":disableDependencyDashboard",":semanticCommits",":semanticCommitTypeAll(deps)",":semanticCommitScope(renovate)"],
+    "extends": ["config:recommended",":semanticCommits",":semanticCommitTypeAll(deps)",":semanticCommitScope(renovate)"],
     "packageRules": [
       {
         "matchManagers": ["helm-values"],
