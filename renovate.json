@@ -33,5 +33,10 @@
         "groupName": "Helm Chart Updates",
         "ignoreTests": true
       }
-    ]
+    ],
+     "postUpgradeTasks": {
+      "commands": [
+        "echo 'toto'"
+      ]
+    }
   }
