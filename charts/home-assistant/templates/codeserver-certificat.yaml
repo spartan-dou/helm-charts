@@ -1,0 +1,13 @@
+{{- if .Values.addons.codeserver.ingress.enabled }}
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: {{ template "home-assistant.fullname" . }}-codeserver
+spec:
+  secretName: codeserver-certificat-tls
+  dnsNames:
+  - {{ .Values.addons.codeserver.ingress.host }}
+  issuerRef:
+    name: {{ .Values.addons.codeserver.ingress.issuer }}
+    kind: ClusterIssuer
+{{- end }}

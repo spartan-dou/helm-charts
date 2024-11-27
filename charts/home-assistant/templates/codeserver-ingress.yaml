@@ -1,0 +1,24 @@
+{{- if .Values.addons.codeserver.ingress.enabled }}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ template "home-assistant.fullname" . }}-codeserver
+  annotations:
+    cert-manager.io/cluster-issuer: {{ .Values.addons.codeserver.ingress.issuer }}
+spec:
+  tls:
+  - hosts:
+    - {{ .Values.addons.codeserver.ingress.host }}
+    secretName: codeserver-certificat-tls
+  rules:
+  - host: {{ .Values.addons.codeserver.ingress.host }}
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: {{ template "home-assistant.fullname" . }}-codeserver
+            port:
+              number: {{ .Values.addons.codeserver.service.port }}
+{{- end }}

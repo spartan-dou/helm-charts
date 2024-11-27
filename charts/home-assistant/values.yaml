@@ -21,6 +21,8 @@ service:
 
 ingress:
   enabled: false
+  host: ""
+  issuer: ""
 
 serviceAccount:
   create: false
@@ -72,6 +74,10 @@ addons:
       storageClass: ""
     image: lscr.io/linuxserver/code-server
     tag: "4.92.2"
+    ingress:
+      enabled: false
+      host: ""
+      issuer: ""
     env:
     - name: PUID
       value: "1000"
@@ -83,7 +89,5 @@ addons:
     service:
       type: ClusterIP
       port: 8443
-    ingress:
-      enabled: false
 
 
