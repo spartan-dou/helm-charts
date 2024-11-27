@@ -111,7 +111,7 @@ prowlarr:
   replicaCount: 1
   image:
     repository: lscr.io/linuxserver/prowlarr
-    tag: "1.26.1"
+    tag: "1.27.0"
   env:
     - name: PUID
       value: "1000"
