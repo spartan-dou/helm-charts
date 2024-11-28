@@ -2,9 +2,9 @@
 apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
-  name: {{ template "home-assistant.fullname" . }}-codeserver
+  name: {{ template "home-assistant.fullname" . }}
 spec:
-  secretName: codeserver-certificat-tls
+  secretName: home-assistant-certificat-tls
   dnsNames:
   - {{ .Values.ingress.host }}
   issuerRef:

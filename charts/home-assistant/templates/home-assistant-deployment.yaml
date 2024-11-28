@@ -24,8 +24,6 @@ spec:
     spec:
       serviceAccountName: {{ include "home-assistant.serviceAccountName" . }}
       securityContext:
-        runAsUser: 1000
-        runAsGroup: 1000
         fsGroup: 1000
       containers:
         ####################
@@ -34,6 +32,10 @@ spec:
         - name: {{ .Chart.Name }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
+          {{- if .Values.usbMount.enabled }}
+          securityContext:
+            privileged: true
+          {{- end }}
           ports:
             - name: http
               containerPort: 8123
@@ -54,7 +56,7 @@ spec:
               name: home-assistant-config
             {{- if .Values.usbMount.enabled }}
             - mountPath: /dev/ttyACM0
-              name: usb
+              name: zigbee-usb
             {{- end }}
           resources:
             {{ toYaml .Values.resources | indent 12 }}
@@ -95,7 +97,8 @@ spec:
           configMap:
             name: home-assistant-config-script
         {{- if .Values.usbMount.enabled }}
-        - mountPath: /dev/ttyACM0
-          name: usb
+        - name: zigbee-usb
+          hostPath:
+            path: {{ .Values.usbMount.path }}
         {{- end }}
         

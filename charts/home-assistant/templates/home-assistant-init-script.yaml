@@ -15,12 +15,22 @@ data:
     LOG="/config/home-assistant.log"
 
     echo "Début de la configuration de Home Assistant .."
-    cp /config-init/configuration.yaml $CONFIG
-    echo "[]" > $AUTOMATIONS
-    touch $SCENES
-    touch $SCRIPTS
-    touch $SECRETS
+
+    if [ ! -f "$CONFIG" ]; then
+      cp /config-init/configuration.yaml $CONFIG
+    fi
+    if [ ! -f "$AUTOMATIONS" ]; then
+      echo "[]" > $AUTOMATIONS
+    fi
+    if [ ! -f "$SCENES" ]; then
+      touch $SCENES
+    fi
+    if [ ! -f "$SCRIPTS" ]; then
+      touch $SCRIPTS
+    fi
+    if [ ! -f "$SECRETS" ]; then
+      touch $SECRETS
+    fi
+
     echo "Mise à jour du fichier de configuration de Home Assistant"
-
-
     echo "Fin de la configuration de Home Assistant .."

@@ -2,14 +2,14 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: {{ template "home-assistant.fullname" . }}-codeserver
+  name: {{ template "home-assistant.fullname" . }}
   annotations:
     cert-manager.io/cluster-issuer: {{ .Values.ingress.issuer }}
 spec:
   tls:
   - hosts:
     - {{ .Values.ingress.host }}
-    secretName: codeserver-certificat-tls
+    secretName: home-assistant-certificat-tls
   rules:
   - host: {{ .Values.ingress.host }}
     http:
@@ -18,7 +18,7 @@ spec:
         pathType: Prefix
         backend:
           service:
-            name: {{ template "home-assistant.fullname" . }}-codeserver
+            name: {{ template "home-assistant.fullname" . }}
             port:
               number: {{ .Values.service.port }}
 {{- end }}

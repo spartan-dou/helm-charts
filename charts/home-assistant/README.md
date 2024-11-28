@@ -5,9 +5,9 @@ kubectl create ns home-assistant
 ```
 
 ```bash
-helm install home-assistant home-assistant -f home-assistant/custom-values.yaml --namespace home-assistant
+helm install home-assistant home-assistant -f home-assistant.yaml --namespace home-assistant
 ```
 
 ```bash
-helm upgrade home-assistant home-assistant -f home-assistant/custom-values.yaml --namespace home-assistant 
+helm upgrade home-assistant home-assistant -f home-assistant.yaml --namespace home-assistant 
 ```

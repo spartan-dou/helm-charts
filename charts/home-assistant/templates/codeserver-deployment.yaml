@@ -55,6 +55,10 @@ spec:
             - name: home-assistant-config
               mountPath: /config/workspace
             {{- end }}
+          {{- with .Values.addons.codeserver.resources }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
       volumes:
         - name: codeserver-config
           {{- if .Values.addons.codeserver.persistence.enabled }}
