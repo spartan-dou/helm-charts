@@ -82,12 +82,8 @@ addons:
         memory: "512Mi"
         cpu: "1"
     env:
-    - name: PUID
-      value: "1000"
-    - name: PGID
-      value: "1000"
     - name: UMASK
-      values: "002"
+      values: "000"
     port: 8443
     service:
       type: ClusterIP

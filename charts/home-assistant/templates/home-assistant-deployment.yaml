@@ -43,6 +43,8 @@ spec:
           env:
             - name: TZ
               value: {{ .Values.timezone }}
+            - name: UMASK
+              values: "000"
           {{- with .Values.livenessProbe }}
           livenessProbe:
             {{- toYaml . | nindent 12 }}
@@ -71,6 +73,9 @@ spec:
         - name: init-config
           image: busybox
           command: ['sh', '/config-script/init.sh']
+          env:
+            - name: UMASK
+              values: "000"
           volumeMounts:
             - mountPath: /config
               name: home-assistant-config
