@@ -46,10 +46,10 @@ spec:
             {{- end }}
             - name: TZ
               value: "{{ .Values.timezone }}"
-            {{- if not .Values.usbMount.enabled }} 
             - name: PUID
-              value: "1000"
-            - name: PGID
+            {{- if .Values.usbMount.enabled }} 
+              value: "0"
+            {{- else }}
               value: "1000"
             {{- end }}
           {{- with .Values.addons.codeserver.livenessProbe }}
