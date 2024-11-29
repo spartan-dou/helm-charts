@@ -18,7 +18,7 @@ spec:
            pathType: Prefix
            backend:
              service:
-               name: http
+               name: {{ template "home-assistant.fullname" . }}
                port:
-                 name: {{ .Values.service.port }}
+                 name: http
 {{- end }}
