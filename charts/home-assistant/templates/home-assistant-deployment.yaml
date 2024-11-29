@@ -74,8 +74,6 @@ spec:
           image: busybox
           command: ['sh', '/config-script/init.sh']
           env:
-            - name: TZ
-              value: {{ .Values.timezone }}
             - name: UMASK
               values: "000"
           volumeMounts:
