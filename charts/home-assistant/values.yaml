@@ -18,7 +18,7 @@ service:
 ingress:
   enabled: false
   host: ""
-  issuer: ""
+  tls: ""
 
 serviceAccount:
   create: false
@@ -73,7 +73,7 @@ addons:
     ingress:
       enabled: false
       host: ""
-      issuer: ""
+      tls: ""
     resources:
       requests:
         memory: "256Mi"

@@ -12,4 +12,6 @@ spec:
     services:
     - name: {{ template "home-assistant.fullname" . }}-codeserver
       port: {{ .Values.addons.codeserver.service.port }}
+  tls:
+    secretName: {{ .Values.addons.codeserver.ingress.tls }}
 {{- end }}

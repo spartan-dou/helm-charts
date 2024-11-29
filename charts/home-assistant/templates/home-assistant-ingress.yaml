@@ -1,15 +1,24 @@
 {{- if .Values.ingress.enabled }}
-apiVersion: traefik.io/v1alpha1
-kind: IngressRoute
+apiVersion: networking.k8s.io/v1
+kind: Ingress
 metadata:
-  name: {{ template "home-assistant.fullname" . }}
+ name: {{ template "home-assistant.fullname" . }}
+ annotations:
+   cert-manager.io/issuer: "{{ .Values.ingress.tls }}"
 spec:
-  entryPoints:
-    - websecure
-  routes:
-  - match: Host(`{{ .Values.ingress.host }}`)
-    kind: Rule
-    services:
-    - name: {{ template "home-assistant.fullname" . }}
-      port: {{ .Values.service.port }}
+ tls:
+   - hosts:
+       - {{ .Values.ingress.host }}
+     secretName: tls-home-assistant
+ rules:
+   - host: {{ .Values.ingress.host }}
+     http:
+       paths:
+         - path: /
+           pathType: Prefix
+           backend:
+             service:
+               name: http
+               port:
+                 name: {{ .Values.service.port }}
 {{- end }}
