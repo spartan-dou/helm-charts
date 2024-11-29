@@ -33,6 +33,22 @@ entries:
   home-assistant:
   - apiVersion: v2
     appVersion: 2024.11.3
+    created: "2024-11-29T09:53:26.534827543Z"
+    description: Home Assistant
+    digest: ee686e51177accc0aca8b511c51cd145d1388e94f4b812ef9bcb824644cd2a34
+    home: https://www.home-assistant.io/
+    icon: https://commons.wikimedia.org/wiki/File:New_Home_Assistant_logo.svg
+    keywords:
+    - home-assistant
+    - domotique
+    - vscode
+    name: home-assistant
+    type: application
+    urls:
+    - https://github.com/spartan-dou/helm-charts/releases/download/home-assistant-1.0.4/home-assistant-1.0.4.tgz
+    version: 1.0.4
+  - apiVersion: v2
+    appVersion: 2024.11.3
     created: "2024-11-29T09:46:43.34746806Z"
     description: Home Assistant
     digest: 4777c04eb178a0310b4d5a25e84669180766b0506dd593413c25a8cba31ea8ac
@@ -147,4 +163,4 @@ entries:
     urls:
     - https://github.com/spartan-dou/helm-charts/releases/download/servarr-1.0.0/servarr-1.0.0.tgz
     version: 1.0.0
-generated: "2024-11-29T09:46:43.347486434Z"
+generated: "2024-11-29T09:53:26.534880101Z"
