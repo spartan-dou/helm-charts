@@ -29,6 +29,10 @@ spec:
       containers:
         - name: codeserver
           image: "{{ .Values.addons.codeserver.image }}:{{ .Values.addons.codeserver.tag }}"
+          {{- if .Values.usbMount.enabled }}
+          securityContext:
+            privileged: true
+          {{- end }}
           ports:
             - containerPort: {{ .Values.addons.codeserver.port }}
               name: codeserver
