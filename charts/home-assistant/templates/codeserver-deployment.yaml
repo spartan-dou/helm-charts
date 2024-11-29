@@ -26,14 +26,12 @@ spec:
       serviceAccountName: {{ include "home-assistant.serviceAccountName" . }}
       securityContext:
         fsGroup: 1000
+        {{- if .Values.usbMount.enabled }}
+        runAsUser: 0
+        {{- end }}
       containers:
         - name: codeserver
           image: "{{ .Values.addons.codeserver.image }}:{{ .Values.addons.codeserver.tag }}"
-          {{- if .Values.usbMount.enabled }}
-          securityContext:
-            runAsUser: 0
-            privileged: true
-          {{- end }}
           ports:
             - containerPort: {{ .Values.addons.codeserver.port }}
               name: codeserver

@@ -83,7 +83,7 @@ addons:
         cpu: "1"
     env:
     - name: UMASK
-      values: "002"
+      values: "000"
     port: 8443
     service:
       type: ClusterIP

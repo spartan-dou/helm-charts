@@ -2,14 +2,14 @@
 apiVersion: traefik.io/v1alpha1
 kind: IngressRoute
 metadata:
-  name: example-com-tls
+  name: {{ template "home-assistant.fullname" . }}-codeserver
 spec:
   entryPoints:
     - websecure
   routes:
-  - match: Host(`test.example.com`)
+  - match: Host(`{{ .Values.addons.codeserver.ingress.host }}`)
     kind: Rule
     services:
-    - name: XXXX
-      port: 80
+    - name: {{ template "home-assistant.fullname" . }}-codeserver
+      port: {{ .Values.addons.codeserver.service.port }}
 {{- end }}
