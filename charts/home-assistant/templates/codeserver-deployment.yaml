@@ -29,10 +29,6 @@ spec:
       containers:
         - name: codeserver
           image: "{{ .Values.addons.codeserver.image }}:{{ .Values.addons.codeserver.tag }}"
-          {{- if .Values.usbMount.enabled }}
-          securityContext:
-            privileged: true
-          {{- end }}
           ports:
             - containerPort: {{ .Values.addons.codeserver.port }}
               name: codeserver
@@ -44,6 +40,12 @@ spec:
             {{- end }}
             - name: TZ
               value: {{ .Values.timezone }}
+            {{- if not .Values.usbMount.enabled }} 
+            - name: PUID
+              value: "1000"
+            - name: PGID
+              value: "1000"
+            {{- end }}
           {{- with .Values.addons.codeserver.livenessProbe }}
           livenessProbe:
             {{- toYaml . | nindent 12 }}
