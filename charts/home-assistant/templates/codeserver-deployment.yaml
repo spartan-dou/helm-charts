@@ -31,7 +31,7 @@ spec:
           image: "{{ .Values.addons.codeserver.image }}:{{ .Values.addons.codeserver.tag }}"
           {{- if .Values.usbMount.enabled }}
           securityContext:
-            privileged: true
+            runAsUser: 0
           {{- end }}
           ports:
             - containerPort: {{ .Values.addons.codeserver.port }}
