@@ -1,0 +1,24 @@
+{{- if .Values.prowlarr.ingress.enabled }}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+ name: {{ include "servarr.fullname" . }}-prowlarr
+ annotations:
+   cert-manager.io/cluster-issuer: "{{ .Values.prowlarr.ingress.tls }}"
+spec:
+ tls:
+   - hosts:
+       - {{ .Values.prowlarr.ingress.host }}
+     secretName: tls-prowlarr
+ rules:
+   - host: {{ .Values.prowlarr.ingress.host }}
+     http:
+       paths:
+         - path: /
+           pathType: Prefix
+           backend:
+             service:
+               name: {{ include "servarr.fullname" . }}-prowlarr
+               port:
+                 name: prowlarr
+{{- end }}

@@ -109,6 +109,10 @@ sonarr:
 prowlarr:
   enabled: false
   replicaCount: 1
+  ingress:
+    enabled: false
+    host: ""
+    tls: ""
   image:
     repository: lscr.io/linuxserver/prowlarr
     tag: "1.27.0"
