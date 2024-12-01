@@ -242,6 +242,24 @@ entries:
     version: 1.0.0
   servarr:
   - apiVersion: v2
+    appVersion: 1.0.4
+    created: "2024-12-01T13:37:45.994578667Z"
+    description: A Helm chart for arr aps
+    digest: 6365bc962b75e41ac496cb8eaf5a0bce467799c04b6374c03f60ad6a272315f1
+    keywords:
+    - servarr
+    - radarr
+    - sonarr
+    - lidarr
+    - recyclarr
+    - flaresolverr
+    - rdtclient
+    name: servarr
+    type: application
+    urls:
+    - https://github.com/spartan-dou/helm-charts/releases/download/servarr-1.0.4/servarr-1.0.4.tgz
+    version: 1.0.4
+  - apiVersion: v2
     appVersion: 1.0.3
     created: "2024-12-01T13:29:56.632232333Z"
     description: A Helm chart for arr aps
@@ -313,4 +331,4 @@ entries:
     urls:
     - https://github.com/spartan-dou/helm-charts/releases/download/servarr-1.0.0/servarr-1.0.0.tgz
     version: 1.0.0
-generated: "2024-12-01T13:29:56.632312803Z"
+generated: "2024-12-01T13:37:45.994624862Z"
