@@ -37,6 +37,10 @@ radarr:
       value: "002"
     - name: TZ
       value: "Europe/Paris"
+  ingress:
+    enabled: false
+    host: ""
+    tls: ""
   persistence:
     enabled: false
     path: /config
@@ -79,6 +83,10 @@ sonarr:
       value: "002"
     - name: TZ
       value: "Europe/Paris"
+  ingress:
+    enabled: false
+    host: ""
+    tls: ""
   persistence:
     enabled: false
     path: /config
@@ -164,6 +172,10 @@ lidarr:
       value: "002"
     - name: TZ
       value: "Europe/Paris"
+  ingress:
+    enabled: false
+    host: ""
+    tls: ""
   persistence:
     enabled: false
     path: /config
@@ -262,6 +274,10 @@ rdtclient:
       value: "002"
     - name: TZ
       value: "Europe/Paris"
+  ingress:
+    enabled: false
+    host: ""
+    tls: ""
   persistence:
     enabled: false
     size: 1Gi
@@ -312,3 +328,5 @@ addons:
       port: 8443
     ingress:
       enabled: false
+      host: ""
+      tls: ""
