@@ -1,0 +1,24 @@
+{{- if .Values.radarr.ingress.enabled }}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+ name: {{ include "servarr.fullname" . }}-radarr
+ annotations:
+   cert-manager.io/cluster-issuer: "{{ .Values.radarr.ingress.tls }}"
+spec:
+ tls:
+   - hosts:
+       - {{ .Values.radarr.ingress.host }}
+     secretName: tls-radarr
+ rules:
+   - host: {{ .Values.radarr.ingress.host }}
+     http:
+       paths:
+         - path: /
+           pathType: Prefix
+           backend:
+             service:
+               name: {{ include "servarr.fullname" . }}-radarr
+               port:
+                 name: radarr
+{{- end }}

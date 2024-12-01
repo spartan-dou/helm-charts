@@ -1,0 +1,24 @@
+{{- if .Values.sonarr.ingress.enabled }}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+ name: {{ include "servarr.fullname" . }}-sonarr
+ annotations:
+   cert-manager.io/cluster-issuer: "{{ .Values.sonarr.ingress.tls }}"
+spec:
+ tls:
+   - hosts:
+       - {{ .Values.sonarr.ingress.host }}
+     secretName: tls-sonarr
+ rules:
+   - host: {{ .Values.sonarr.ingress.host }}
+     http:
+       paths:
+         - path: /
+           pathType: Prefix
+           backend:
+             service:
+               name: {{ include "servarr.fullname" . }}-sonarr
+               port:
+                 name: sonarr
+{{- end }}

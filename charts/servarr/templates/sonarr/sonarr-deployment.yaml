@@ -33,7 +33,7 @@ spec:
           command: ['sh', '-c', 'until pg_isready -d sonarr_main -U sonarr -h {{ .Release.Name }}-cnpg-rw; do echo waiting for database; sleep 2; done;']
         - name: init-config
           image: busybox
-          command: ['sh', '-c', 'cp /tmp/config.xml /config/config.xml && chown -R 1000:1000 /config']
+          command: ['sh', '-c', '[ ! -f /config/config.xml ] && cp /tmp/config.xml /config/config.xml && chown -R 1000:1000 /config']
           volumeMounts:
             - name: config-volume
               mountPath: /tmp
