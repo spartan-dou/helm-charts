@@ -6,6 +6,10 @@ metadata:
   labels:
     {{- include "home-assistant.labels" . | nindent 4 }}
     app.kubernetes.io/component: codeserver
+  {{- with .Values.addons.codeserver.service.loadBalancerIP }}
+  annotations:
+    metallb.universe.tf/loadBalancerIPs: {{ . }}
+  {{- end }}
 spec:
   type: {{ .Values.addons.codeserver.service.type }}
   ports:
