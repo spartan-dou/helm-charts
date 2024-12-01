@@ -4,11 +4,12 @@ metadata:
   name: {{ template "jellyfin.fullname" . }}
   labels:
     {{- include "jellyfin.labels" . | nindent 4 }}
+  {{- with .Values.service.loadBalancerIP }}
+  annotations:
+    metallb.universe.tf/loadBalancerIPs: {{ . }}
+  {{- end }}
 spec:
   type: {{ .Values.service.type }}
-  {{- with .Values.service.loadBalancerIP }}
-  loadBalancerIP: {{ . }}
-  {{- end }}
   ports:
   - name: http
     protocol: TCP
