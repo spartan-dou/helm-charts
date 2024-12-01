@@ -162,6 +162,22 @@ entries:
   jellyfin:
   - apiVersion: v2
     appVersion: 10.10.3
+    created: "2024-12-01T12:10:48.341564509Z"
+    description: Jellyfin Media Server
+    digest: 9f3812862c9885b6d94e063abfe89c7513ee2241d29cbf0c9245da99ee016ebe
+    home: https://jellyfin.org/
+    icon: https://jellyfin.org/images/logo.svg
+    keywords:
+    - jellyfin
+    - media
+    - self-hosted
+    name: jellyfin
+    type: application
+    urls:
+    - https://github.com/spartan-dou/helm-charts/releases/download/jellyfin-1.0.2/jellyfin-1.0.2.tgz
+    version: 1.0.2
+  - apiVersion: v2
+    appVersion: 10.10.3
     created: "2024-12-01T11:52:38.862330421Z"
     description: Jellyfin Media Server
     digest: 40cacae9af467bc7283ffec43408d21cb4d3f1f3c324c9f422ceae0fc8b6cd18
@@ -263,4 +279,4 @@ entries:
     urls:
     - https://github.com/spartan-dou/helm-charts/releases/download/servarr-1.0.0/servarr-1.0.0.tgz
     version: 1.0.0
-generated: "2024-12-01T11:52:38.862358843Z"
+generated: "2024-12-01T12:10:48.341606247Z"
