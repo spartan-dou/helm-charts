@@ -6,6 +6,9 @@ metadata:
     {{- include "jellyfin.labels" . | nindent 4 }}
 spec:
   type: {{ .Values.service.type }}
+  {{- with .Values.service.loadBalancerIP }}
+  loadBalancerIP: {{ . }}
+  {{- end }}
   ports:
   - name: http
     protocol: TCP
