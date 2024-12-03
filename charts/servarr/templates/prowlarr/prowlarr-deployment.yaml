@@ -33,10 +33,14 @@ spec:
           command: ['sh', '-c', 'until pg_isready -d prowlarr_main -U prowlarr -h {{ .Release.Name }}-cnpg-rw; do echo waiting for database; sleep 2; done;']
         - name: init-config
           image: busybox
-          command: ['sh', '-c', '[ ! -f /config/config.xml ] && cp /tmp/config.xml /config/config.xml && chown -R 1000:1000 /config']
+          command: ['sh', '/tmp/init.sh']
           volumeMounts:
             - name: config-volume
-              mountPath: /tmp
+              mountPath: /tmp/config.xml
+              subPath: config.xml
+            - name: script-volume
+              mountPath: /tmp/init.sh
+              subPath: init.sh
             - name: prowlarr-config
               mountPath: /config
       {{- end }}
@@ -72,6 +76,9 @@ spec:
         - name: config-volume
           configMap:
             name: config-prowlarr
+        - name: script-volume
+          configMap:
+            name: servarr-script
         {{- end }}
       {{- with .Values.prowlarr.nodeSelector }}
       nodeSelector:

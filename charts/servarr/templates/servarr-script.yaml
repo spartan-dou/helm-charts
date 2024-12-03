@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: servarr-script
+data:
+  init.sh: |
+    #!/bin/sh
+
+    if [ ! -f /config/config.xml ]; then
+        cp /tmp/config.xml /config/config.xml
+        chown -R 1000:1000 /config
+    else
+        echo "Le fichier config.xml existe déjà."
+    fi
