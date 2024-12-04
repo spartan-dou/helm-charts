@@ -18,6 +18,20 @@ entries:
   frigate:
   - apiVersion: v2
     appVersion: 0.14.1
+    created: "2024-12-04T19:01:47.336650874Z"
+    description: Frigate chart
+    digest: dcc0581f48a9f69f85f3c24a3ce6fbd8c3325f495faac24a4adff02215a312bf
+    keywords:
+    - home-assistant
+    - NVR
+    - frigate
+    name: frigate
+    type: application
+    urls:
+    - https://github.com/spartan-dou/helm-charts/releases/download/frigate-1.0.1/frigate-1.0.1.tgz
+    version: 1.0.1
+  - apiVersion: v2
+    appVersion: 0.14.1
     created: "2024-11-29T09:17:33.773896945Z"
     description: Frigate chart
     digest: 14d81fc7aa6f0c760f84f61eda0abb8225c036ff5c57c04c33e435d241c2e58c
@@ -367,4 +381,4 @@ entries:
     urls:
     - https://github.com/spartan-dou/helm-charts/releases/download/servarr-1.0.0/servarr-1.0.0.tgz
     version: 1.0.0
-generated: "2024-12-03T19:28:27.765683489Z"
+generated: "2024-12-04T19:01:47.336696169Z"
