@@ -26,7 +26,7 @@ spec:
       {{- end }}
       containers:
         - name: {{ .Chart.Name }}
-          image: "{{ .Values.image.repository }}:{{- if gt (int .Values.gpu.nvidia) 0 }}{{ .Values.image.gpuTag  }}{{- else }}{{ .Values.image.tag  }}{{- end }}"
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag  }}{{- if gt (int .Values.gpu.nvidia) 0 }}-tensorrt{{- end }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           securityContext:
             fsGroup: 1000
@@ -74,8 +74,6 @@ spec:
             {{- end }}
             - mountPath: /config
               name: config
-            - mountPath: /data
-              name: data
             - mountPath: /media
               name: media
             - mountPath: /dev/shm
@@ -115,15 +113,11 @@ spec:
           {{- else }}
           emptyDir: {}
           {{- end }}
-        - name: data
-          {{- if .Values.persistence.data.enabled }}
-          persistentVolumeClaim:
-            claimName: {{ if .Values.persistence.data.existingClaim }}{{ .Values.persistence.data.existingClaim }}{{- else }}{{ template "frigate.fullname" . }}-data{{- end }}
-          {{- else }}
-          emptyDir: {}
-          {{- end }}
         - name: media
-          {{- if .Values.persistence.media.enabled }}
+          {{- if and .Values.persistence.media.enabled (ne .Values.persistence.media.hostPath "") }}
+          hostPath:
+            path: {{ .Values.persistence.media.hostPath }}
+          {{- else if .Values.persistence.media.enabled }}
           persistentVolumeClaim:
             claimName: {{ if .Values.persistence.media.existingClaim }}{{ .Values.persistence.media.existingClaim }}{{- else }}{{ template "frigate.fullname" . }}-media{{- end }}
           {{- else }}

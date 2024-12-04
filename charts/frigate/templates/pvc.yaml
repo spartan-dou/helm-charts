@@ -13,23 +13,19 @@ spec:
       storage: {{ .Values.persistence.config.size | quote }}
   storageClassName: "{{ .Values.persistence.config.storageClass }}"
 {{- end }}
-{{- if and .Values.persistence.data.enabled (not .Values.persistence.data.existingClaim) }}
+{{- if and .Values.persistence.media.enabled (not .Values.persistence.media.existingClaim) (eq .Values.persistence.media.hostPath "") }}
 ---
 kind: PersistentVolumeClaim
 apiVersion: v1
 metadata:
-  name: {{ template "frigate.fullname" . }}-data
-  {{- if .Values.persistence.data.skipuninstall }}
-  annotations:
-    "helm.sh/resource-policy": keep
-  {{- end }}
+  name: {{ template "frigate.fullname" . }}-media
   labels:
     {{- include "frigate.labels" . | nindent 4 }}
 spec:
   accessModes:
-    - {{ .Values.persistence.data.accessMode | quote }}
+    - {{ .Values.persistence.media.accessMode | quote }}
   resources:
     requests:
-      storage: {{ .Values.persistence.data.size | quote }}
-  storageClassName: "{{ .Values.persistence.data.storageClass }}"
+      storage: {{ .Values.persistence.media.size | quote }}
+  storageClassName: "{{ .Values.persistence.media.storageClass }}"
 {{- end }}

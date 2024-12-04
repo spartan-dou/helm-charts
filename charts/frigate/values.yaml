@@ -6,7 +6,6 @@ image:
   repository: ghcr.io/blakeblackshear/frigate
   pullPolicy: IfNotPresent
   tag: "0.14.1"
-  gpuTag: "0.14.1-tensorrt"
 
 service:
   type: ClusterIP
@@ -17,6 +16,7 @@ ingress:
 
 serviceAccount:
   create: false
+
 coral:
   enabled: false
   hostPath: /dev/bus/usb
@@ -39,12 +39,7 @@ persistence:
     existingClaim: false
   media:
     enabled: false
-    accessMode: ReadWriteOnce
-    size: 10Gi
-    storageClass: ""
-    existingClaim: false
-  data:
-    enabled: false
+    hostPath: ""
     accessMode: ReadWriteOnce
     size: 10Gi
     storageClass: ""
