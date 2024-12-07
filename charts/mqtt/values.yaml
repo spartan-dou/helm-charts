@@ -48,7 +48,7 @@ addons:
     zigbee: /dev/ttyACM0
     image:
       repository: koenkk/zigbee2mqtt
-      tag: "1.41.0"
+      tag: "1.42.0"
     persistence:
       enabled: false
       accessMode: ReadWriteOnce
