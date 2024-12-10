@@ -43,6 +43,12 @@ spec:
           env:
             - name: TZ
               value: {{ .Values.timezone }}
+          {{- with .Values.postStart.command }}
+          lifecycle:
+            postStart:
+              exec:
+                command: ["/bin/sh", "-c", "{{ . }}"]
+          {{- end }}
           {{- with .Values.livenessProbe }}
           livenessProbe:
             {{- toYaml . | nindent 12 }}
