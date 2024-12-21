@@ -3,7 +3,7 @@ replicaCount: 1
 image:
   repository: ghcr.io/home-assistant/home-assistant
   pullPolicy: IfNotPresent
-  tag: "2024.12.4"
+  tag: "2024.12.5"
 
 timezone: "Europe/Paris"
 
