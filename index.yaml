@@ -303,6 +303,22 @@ entries:
   nextcloud:
   - apiVersion: v2
     appVersion: 30.0.4
+    created: "2024-12-23T18:01:14.486706396Z"
+    dependencies:
+    - name: redis
+      repository: https://charts.bitnami.com/bitnami
+      version: 17.3.4
+    description: Nextcloud
+    digest: 1b755eecf0e6a3646ee85e3168bb48771d59f88acb5e44f14709397b03d02f51
+    keywords:
+    - nextcloud
+    name: nextcloud
+    type: application
+    urls:
+    - https://github.com/spartan-dou/helm-charts/releases/download/nextcloud-0.0.3/nextcloud-0.0.3.tgz
+    version: 0.0.3
+  - apiVersion: v2
+    appVersion: 30.0.4
     created: "2024-12-23T17:11:15.494895141Z"
     dependencies:
     - name: redis
@@ -480,4 +496,4 @@ entries:
     urls:
     - https://github.com/spartan-dou/helm-charts/releases/download/servarr-1.0.0/servarr-1.0.0.tgz
     version: 1.0.0
-generated: "2024-12-23T17:11:15.603892951Z"
+generated: "2024-12-23T18:01:14.486764875Z"
