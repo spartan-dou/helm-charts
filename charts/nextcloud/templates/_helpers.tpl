@@ -70,7 +70,6 @@ Create volume mounts for the nextcloud container as well as the cron sidecar con
   subPath: html
 - name: nextcloud-data
   mountPath: {{ .Values.nextcloud.persistence.data.dir }}
-  subPath: {{ base .Values.nextcloud.persistence.data.dir }}
 - name: nextcloud
   mountPath: /var/www/html/config
   subPath: config
