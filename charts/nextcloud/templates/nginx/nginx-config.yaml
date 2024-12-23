@@ -1,0 +1,11 @@
+{{- if .Values.nginx.enabled }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: nginx
+data:
+  default.conf: |-
+    {{- tpl (.Files.Get "files/default.conf.tpl") . | nindent 4 }}
+  nginx.conf: |-
+    {{- tpl (.Files.Get "files/nginx.conf.tpl") . | nindent 4 }}
+{{- end }}

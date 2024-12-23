@@ -1,0 +1,41 @@
+{{- if .Values.imaginary.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "nextcloud.fullname" . }}-imaginary
+  labels:
+    {{- include "nextcloud.labels" . | nindent 4 }}
+    app.kubernetes.io/component: imaginary
+spec:
+  replicas: {{ .Values.imaginary.replicaCount }}
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 25%
+  selector:
+    matchLabels:
+      {{- include "nextcloud.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: imaginary
+  template:
+    metadata:
+      labels:
+        {{- include "nextcloud.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/component: imaginary
+    spec:
+      containers:
+        - env:
+            - name: IMAGINARY_SECRET
+              value: "{{ .Values.imaginary.secret }}"
+            - name: TZ
+              value: "{{ .Values.TIMEZONE }}"
+          image: "{{ .Values.imaginary.repository }}:{{ .Values.imaginary.tag }}"
+          name: imaginary
+          ports:
+            - containerPort: 9000
+              protocol: TCP
+              name: "imaginary"
+          securityContext:
+            runAsUser: 1000
+            runAsNonRoot: true
+{{- end }}

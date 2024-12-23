@@ -1,0 +1,16 @@
+{{- if and .Values.onlyoffice.enabled .Values.onlyoffice.persistence.enabled (not .Values.onlyoffice.persistence.existingClaim) }}
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: onlyoffice-pvc
+  labels:
+    {{- include "nextcloud.labels" . | nindent 4 }}
+    app.kubernetes.io/component: onlyoffice
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: {{ .Values.onlyoffice.persistence.size | quote }}
+  storageClassName: "{{ .Values.onlyoffice.persistence.storageClass }}"
+{{- end -}}

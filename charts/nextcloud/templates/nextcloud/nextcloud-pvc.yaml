@@ -1,0 +1,50 @@
+{{- if and .Values.nextcloud.persistence.config.enabled (not .Values.nextcloud.persistence.config.existingClaim) }}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: nextcloud-config-pvc
+  labels:
+    {{- include "nextcloud.labels" . | nindent 4 }}
+    app.kubernetes.io/component: nextcloud
+spec:
+  accessModes:
+    - {{ .Values.nextcloud.persistence.config.accessMode | quote }}
+  resources:
+    requests:
+      storage: {{ .Values.nextcloud.persistence.config.size | quote }}
+  storageClassName: "{{ .Values.nextcloud.persistence.config.storageClass }}"
+{{- end }}
+{{- if and .Values.nextcloud.persistence.data.enabled (not .Values.nextcloud.persistence.data.existingClaim) }}
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: nextcloud-data-pvc
+  labels:
+    {{- include "nextcloud.labels" . | nindent 4 }}
+    app.kubernetes.io/component: nextcloud
+spec:
+  accessModes:
+    - {{ .Values.nextcloud.persistence.data.accessMode | quote }}
+  resources:
+    requests:
+      storage: {{ .Values.nextcloud.persistence.data.size | quote }}
+  storageClassName: "{{ .Values.nextcloud.persistence.data.storageClass }}"
+{{- end }}
+{{- if and .Values.nextcloud.persistence.hooks.enabled (not .Values.nextcloud.persistence.hooks.existingClaim) }}
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: nextcloud-hooks-pvc
+  labels:
+    {{- include "nextcloud.labels" . | nindent 4 }}
+    app.kubernetes.io/component: nextcloud
+spec:
+  accessModes:
+    - {{ .Values.nextcloud.persistence.hooks.accessMode | quote }}
+  resources:
+    requests:
+      storage: {{ .Values.nextcloud.persistence.hooks.size | quote }}
+  storageClassName: "{{ .Values.nextcloud.persistence.hooks.storageClass }}"
+{{- end }}

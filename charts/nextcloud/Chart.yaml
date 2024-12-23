@@ -1,0 +1,12 @@
+apiVersion: v2
+name: nextcloud
+description: Nextcloud
+type: application
+version: 0.0.1
+appVersion: "2024.8.3"
+keywords:
+  - nextcloud
+dependencies:
+- name: redis
+  version: 17.3.4
+  repository: https://charts.bitnami.com/bitnami

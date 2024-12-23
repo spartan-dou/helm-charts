@@ -1,0 +1,109 @@
+{{- if .Values.nextcloud.ingress.enabled }}
+---
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: headers
+spec:
+  headers:
+    customRequestHeaders:
+      X-Forwarded-Proto: "https"
+      contentSecurityPolicy: "upgrade-insecure-requests"
+---
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: stripprefix
+spec:
+  stripPrefix:
+    prefixes:
+      - /whiteboard
+      - /fulltextsearch
+      - /imaginary
+      - /onlyoffice
+      - /collabora
+---
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: redirectscheme
+spec:
+  redirectScheme:
+    scheme: https
+    permanent: true
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ template "nextcloud.fullname" . }}
+  annotations:
+    cert-manager.io/cluster-issuer: "{{ .Values.nextcloud.ingress.tls }}"
+    traefik.ingress.kubernetes.io/router.entrypoints: websecure
+    traefik.ingress.kubernetes.io/router.middlewares: | 
+      {{ template "nextcloud.fullname" . }}-stripprefix@kubernetescrd,
+      {{ template "nextcloud.fullname" . }}-redirectscheme@kubernetescrd,
+      {{ template "nextcloud.fullname" . }}-headers@kubernetescrd
+    traefik.ingress.kubernetes.io/rewrite-target: /
+spec:
+  tls:
+    - hosts:
+        - {{ .Values.nextcloud.host }}
+        - "*.{{ .Values.nextcloud.host }}"
+      secretName: tls-nextcloud
+  rules:
+    - host: {{ .Values.nextcloud.host }}
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: {{ template "nextcloud.fullname" . }}-nginx
+                port:
+                  name: "nginx"
+          {{- if .Values.whiteboard.enabled }}
+          - path: /whiteboard
+            pathType: Prefix
+            backend:
+              service:
+                name: {{ template "nextcloud.fullname" . }}-whiteboard
+                port:
+                  name: "whiteboard"
+          {{- end }}
+          # {{- if .Values.fulltextsearch.enabled }}
+          # - path: /fulltextsearch
+          #   pathType: Prefix
+          #   backend:
+          #     service:
+          #       name: {{ template "nextcloud.fullname" . }}-fulltextsearch
+          #       port:
+          #         name: "fulltextsearch"
+          # {{- end }}
+          {{- if .Values.imaginary.enabled }}
+          - path: /imaginary
+            pathType: Prefix
+            backend:
+              service:
+                name: {{ template "nextcloud.fullname" . }}-imaginary
+                port:
+                  name: "imaginary"
+          {{- end }}
+          {{- if .Values.collabora.enabled }}
+          - path: /collabora
+            pathType: Prefix
+            backend:
+              service:
+                name: {{ template "nextcloud.fullname" . }}-collabora
+                port:
+                  name: "collabora"
+          {{- end }}
+          {{- if .Values.onlyoffice.enabled }}
+          - path: /onlyoffice
+            pathType: Prefix
+            backend:
+              service:
+                name: {{ template "nextcloud.fullname" . }}-onlyoffice
+                port:
+                  name: "onlyoffice"
+          {{- end }}
+{{- end }}

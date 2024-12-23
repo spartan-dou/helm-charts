@@ -1,0 +1,54 @@
+{{- if .Values.facerecognition.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "nextcloud.fullname" . }}-facerecognition
+  labels:
+    {{- include "nextcloud.labels" . | nindent 4 }}
+    app.kubernetes.io/component: facerecognition
+spec:
+  replicas: {{ .Values.facerecognition.replicaCount }}
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 25%
+  selector:
+    matchLabels:
+      {{- include "nextcloud.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: facerecognition
+  template:
+    metadata:
+      labels:
+        {{- include "nextcloud.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/component: facerecognition
+    spec:
+      {{- if gt (int .Values.facerecognition.gpu.nvidia) 0 }}
+      runtimeClassName: nvidia
+      {{- end }}
+      securityContext:
+        fsGroup: 1000
+      containers:
+      - name: facerecognition
+        image: "{{ .Values.facerecognition.repository }}:{{ .Values.facerecognition.tag }}"
+        ports:
+          - containerPort: 5000
+            protocol: TCP
+            name: "facerecognition"
+        env:
+          - name: TZ
+            value: "{{ .Values.timezone }}"
+          - name: FACE_MODEL
+            value: "{{ .Values.facerecognition.facemodel }}"
+          - name: API_KEY
+            value: "{{ .Values.facerecognition.apikey }}"
+          {{- if gt (int .Values.facerecognition.gpu.nvidia) 0 }}
+          - name: NVIDIA_DRIVER_CAPABILITIES
+            value: "all"
+          - name: NVIDIA_VISIBLE_DEVICES
+            value: "all"
+          {{- end }}
+        resources:
+          limits:
+            nvidia.com/gpu: {{ (int .Values.facerecognition.gpu.nvidia) }}
+{{- end }}

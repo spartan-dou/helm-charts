@@ -1,0 +1,75 @@
+{{- if .Values.fulltextsearch.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "nextcloud.fullname" . }}-fulltextsearch
+  labels:
+    {{- include "nextcloud.labels" . | nindent 4 }}
+    app.kubernetes.io/component: fulltextsearch
+spec:
+  replicas: {{ .Values.fulltextsearch.replicaCount }}
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 25%
+  selector:
+    matchLabels:
+      {{- include "nextcloud.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: fulltextsearch
+  template:
+    metadata:
+      labels:
+        {{- include "nextcloud.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/component: fulltextsearch
+    spec:
+      initContainers:
+      - name: init-volumes
+        image: "busybox"
+        command:
+          - chmod
+          - "777"
+          - /usr/share/elasticsearch/data
+        volumeMounts:
+        - name: fulltextsearch
+          mountPath: /usr/share/elasticsearch/data
+      containers:
+      - name: fulltextsearch
+        env:
+        - name: ES_JAVA_OPTS
+          value: "-Xms1g -Xmx1g"
+        - name: ELASTIC_PASSWORD
+          value: "{{ .Values.fulltextsearch.password }}"
+        - name: TZ
+          value: "{{ .Values.TIMEZONE }}"
+        - name: bootstrap.memory_lock
+          value: "true"
+        - name: cluster.name
+          value: "nextcloud"
+        - name: discovery.type
+          value: "single-node"
+        - name: http.port
+          value: "9200"
+        - name: logger.org.elasticsearch.discovery
+          value: "WARN"
+        - name: xpack.license.self_generated.type
+          value: "basic"
+        - name: xpack.security.enabled
+          value: "false"
+        image: "{{ .Values.fulltextsearch.repository }}:{{ .Values.fulltextsearch.tag }}"
+        ports:
+        - containerPort: 9200
+          protocol: TCP
+          name: "fulltextsearch"
+        volumeMounts:
+        - mountPath: /usr/share/elasticsearch/data
+          name: fulltextsearch
+      volumes:
+        - name: fulltextsearch
+          {{- if .Values.fulltextsearch.persistence.enabled }}
+          persistentVolumeClaim:
+            claimName: {{ if .Values.fulltextsearch.persistence.existingClaim }}{{ .Values.fulltextsearch.persistence.existingClaim }}{{- else }}fulltextsearch-pvc{{- end }}
+          {{- else }}
+          emptyDir: {}
+          {{- end }}
+{{- end }}

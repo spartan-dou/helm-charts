@@ -1,0 +1,56 @@
+{{- if .Values.clamav.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "nextcloud.fullname" . }}-clamav
+  labels:
+    {{- include "nextcloud.labels" . | nindent 4 }}
+    app.kubernetes.io/component: clamav
+spec:
+  replicas: {{ .Values.clamav.replicaCount }}
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 25%
+  selector:
+    matchLabels:
+      {{- include "nextcloud.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: clamav
+  template:
+    metadata:
+      labels:
+        {{- include "nextcloud.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/component: clamav
+    spec:
+      securityContext:
+        runAsUser: 100
+        runAsGroup: 100
+        fsGroup: 100
+      containers:
+        - env:
+            - name: CLAMD_STARTUP_TIMEOUT
+              value: "90"
+            - name: MAX_SIZE
+              value: "{{ .Values.clamav.uploadLimit }}"
+            - name: TZ
+              value: {{ .Values.timezone }}
+          image: "{{ .Values.clamav.repository }}:{{ .Values.clamav.tag }}"
+          name: clamav
+          ports:
+            - containerPort: 3310
+              protocol: TCP
+              name: "clamav"
+          volumeMounts:
+            - mountPath: /var/lib/clamav
+              subPath: data
+              name: clamav
+      volumes:
+        - name: clamav
+          {{- if .Values.clamav.persistence.enabled }}
+          persistentVolumeClaim:
+            claimName: {{ if .Values.clamav.persistence.existingClaim }}{{ .Values.clamav.persistence.existingClaim }}{{- else }}clamav-pvc{{- end }}
+          {{- else }}
+          emptyDir: {}
+          {{- end }}
+{{- end }}

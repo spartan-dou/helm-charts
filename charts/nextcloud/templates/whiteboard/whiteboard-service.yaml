@@ -1,0 +1,18 @@
+{{- if .Values.whiteboard.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "nextcloud.fullname" . }}-whiteboard
+  labels:
+    {{- include "nextcloud.labels" . | nindent 4 }}
+    app.kubernetes.io/component: whiteboard
+spec:
+  type: {{ .Values.whiteboard.service.type }}
+  ports:
+    - name: "whiteboard"
+      port: 3002
+      targetPort: "whiteboard"
+  selector:
+    {{- include "nextcloud.selectorLabels" . | nindent 4 }}
+    app.kubernetes.io/component: whiteboard
+{{- end }}

@@ -1,0 +1,180 @@
+timezone: "Europe/Paris"
+
+nextcloud:
+  replicaCount: 1
+  image:
+    repository: "nextcloud"
+    flavor: fpm-alpine
+    tag: "30.0.4"
+  host: ""
+  service:
+    type: ClusterIP
+  port: 9000 
+  ingress:
+    enabled: false
+    tls: ""
+  admin:
+    user: admin
+    password: changeme
+  smtp:
+    enabled: false
+    host: "" # hostname of the SMTP server.
+    secure: "" # Set to ssl to use SSL, or tls to use STARTTLS.
+    port: "" # Optional port for the SMTP connection. Use 587 for an alternative port for STARTTLS.
+    authType: "" # (default: LOGIN) The method used for authentication. Use PLAIN if no authentication is required.
+    name: "" # The username for the authentication.
+    password: "" # The password for the authentication.
+    fromAddress: "" # Set the local-part for the 'from' field in the emails sent by Nextcloud.
+    mailDomain: ""
+  phoneRegion: FR
+  apps:
+    update: false
+    install: []
+  persistence:
+    config:
+      enabled: false
+      accessMode: ReadWriteOnce
+      size: 1Gi
+      storageClass: ""
+    data:
+      enabled: false
+      accessMode: ReadWriteOnce
+      size: 1Gi
+      storageClass: ""
+      hostPath: ""
+      dir: /var/www/html/data
+    hooks:
+      enabled: false
+      accessMode: ReadWriteOnce
+      size: 1Gi
+      storageClass: ""
+  trustedDomains: []
+  trustedProxies: []
+  overwriteprotocol: https
+  php:
+    memoryLimit: 1G
+    uploadLimit: 10G
+  hooks:
+    pre-installation:
+    post-installation:
+    pre-upgrade:
+    post-upgrade:
+    before-starting:
+
+postgresql:
+  enabled: false
+  storageClass: ""
+  password: changeme
+
+redis:
+  architecture: standalone
+  global:
+    defaultStorageClass: ""
+    redis:
+      password: changeme
+  master:
+    persistence:
+      storageClass: ""
+
+nginx:
+  enabled: true
+  replicaCount: 1
+  repository: "nginx"
+  tag: "alpine"
+  service:
+    type: ClusterIP
+
+clamav:
+  enabled: false
+  replicaCount: 1
+  repository: "nextcloud/aio-clamav"
+  tag: "20241125_091756"
+  uploadLimit: 1G
+  persistence:
+    enabled: true
+    storageClass: ""
+    size: 20Gi
+  service:
+    type: ClusterIP
+
+collabora:
+  enabled: false
+  replicaCount: 1
+  repository: "collabora/code"
+  tag: "24.04.10.2.1"
+  dictionaries: de_DE en_GB en_US es_ES fr_FR it nl pt_BR pt_PT
+  service:
+    type: ClusterIP
+
+onlyoffice:
+  enabled: false
+  replicaCount: 1
+  repository: "onlyoffice/documentserver"
+  tag: "8.2.2"
+  secret: "changeme"
+  persistence:
+    enabled: false
+    storageClass: ""
+    size: 1Gi
+  service:
+    type: ClusterIP
+
+imaginary:
+  enabled: false
+  replicaCount: 1
+  repository: "nextcloud/aio-imaginary"
+  tag: "20241125_091756"
+  secret: "changeme"
+  service:
+    type: ClusterIP
+
+notifyPush:
+  replicaCount: 1
+  repository: "nextcloud/aio-notify-push"
+  tag: "20241125_091756"
+  service:
+    type: ClusterIP
+
+fulltextsearch:
+  enabled: false
+  replicaCount: 1
+  password: "changeme"
+  persistence:
+    enabled: true
+    storageClass: ""
+    size: 10Gi
+  repository: "elasticsearch"
+  tag: "8.15.3"
+  service:
+    type: ClusterIP
+
+whiteboard:
+  enabled: false
+  replicaCount: 1
+  repository: "ghcr.io/nextcloud-releases/whiteboard"
+  tag: "v1.0.4"
+  service:
+    type: ClusterIP
+  secret: "changeme"
+
+memories:
+  enabled: false
+  replicaCount: 1
+  repository: "radialapps/go-vod"
+  tag: "0.2.5"
+  service:
+    type: ClusterIP
+  gpu:
+    nvidia: 0
+
+facerecognition:
+  enabled: false
+  replicaCount: 1
+  repository: "matiasdelellis/facerecognition-external-model"
+  tag: "v1"
+  service:
+    type: ClusterIP
+  facemodel: 3
+  secret: changeme
+  gpu:
+    nvidia: 0

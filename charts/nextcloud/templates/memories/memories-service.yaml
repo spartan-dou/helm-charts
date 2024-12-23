@@ -1,0 +1,18 @@
+{{- if .Values.memories.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "nextcloud.fullname" . }}-memories
+  labels:
+    {{- include "nextcloud.labels" . | nindent 4 }}
+    app.kubernetes.io/component: memories
+spec:
+  type: {{ .Values.memories.service.type }}
+  ports:
+    - name: "memories"
+      port: 47788
+      targetPort: "memories"
+  selector:
+    {{- include "nextcloud.selectorLabels" . | nindent 4 }}
+    app.kubernetes.io/component: memories
+{{- end }}

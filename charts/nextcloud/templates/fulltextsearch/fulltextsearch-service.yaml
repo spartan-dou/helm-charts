@@ -1,0 +1,20 @@
+
+{{- if .Values.fulltextsearch.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "nextcloud.fullname" . }}-fulltextsearch
+  labels:
+    {{- include "nextcloud.labels" . | nindent 4 }}
+    app.kubernetes.io/component: fulltextsearch
+    
+spec:
+  type: {{ .Values.fulltextsearch.service.type }}
+  ports:
+    - name: "fulltextsearch"
+      port: 9200
+      targetPort: "fulltextsearch"
+  selector:
+    {{- include "nextcloud.selectorLabels" . | nindent 4 }}
+    app.kubernetes.io/component: fulltextsearch
+{{- end }}

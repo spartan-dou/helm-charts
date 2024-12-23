@@ -1,0 +1,70 @@
+{{- if .Values.onlyoffice.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "nextcloud.fullname" . }}-onlyoffice
+  labels:
+    {{- include "nextcloud.labels" . | nindent 4 }}
+    app.kubernetes.io/component: onlyoffice
+spec:
+  replicas: 1
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 25%
+  selector:
+    matchLabels:
+      {{- include "nextcloud.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: onlyoffice
+  template:
+    metadata:
+      labels:
+        {{- include "nextcloud.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/component: onlyoffice
+    spec:
+      containers:
+        - env:
+            - name: JWT_SECRET
+              value: "{{ .Values.onlyoffice.secret }}"
+            - name: TZ
+              value: "{{ .Values.timezone }}"
+          image: "{{ .Values.onlyoffice.repository }}:{{ .Values.onlyoffice.tag }}"
+          name: onlyoffice
+          ports:
+            - containerPort: 80
+              protocol: TCP
+              name: "onlyoffice"
+          startupProbe:
+            httpGet:
+              path: /
+              port: 80
+            initialDelaySeconds: 10
+            periodSeconds: 5
+            failureThreshold: 30
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 80
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            failureThreshold: 3
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 80
+            initialDelaySeconds: 15
+            periodSeconds: 20
+            failureThreshold: 5
+          volumeMounts:
+            - mountPath: /var/www/onlyoffice/Data
+              name: onlyoffice
+      volumes:
+        - name: onlyoffice
+          {{- if .Values.onlyoffice.persistence.enabled }}
+          persistentVolumeClaim:
+            claimName: {{ if .Values.onlyoffice.persistence.existingClaim }}{{ .Values.onlyoffice.persistence.existingClaim }}{{- else }}onlyoffice-pvc{{- end }}
+          {{- else }}
+          emptyDir: {}
+          {{- end }}
+{{- end }}

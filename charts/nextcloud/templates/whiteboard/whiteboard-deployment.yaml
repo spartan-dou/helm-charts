@@ -1,0 +1,65 @@
+{{- if .Values.whiteboard.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "nextcloud.fullname" . }}-whiteboard
+  labels:
+    {{- include "nextcloud.labels" . | nindent 4 }}
+    app.kubernetes.io/component: whiteboard
+spec:
+  replicas: {{ .Values.whiteboard.replicaCount }}
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 25%
+  selector:
+    matchLabels:
+      {{- include "nextcloud.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: whiteboard
+  template:
+    metadata:
+      labels:
+        {{- include "nextcloud.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/component: whiteboard
+    spec:
+      containers:
+        - env:
+            - name: JWT_SECRET_KEY
+              value: "{{ .Values.whiteboard.secret }}"
+            - name: NEXTCLOUD_URL
+              value: https://{{ .Values.nextcloud.host }}
+            - name: TZ
+              value: "{{ .Values.TIMEZONE }}"
+            - name: STORAGE_STRATEGY
+              value: "redis"
+            - name: REDIS_URL
+              value: "redis://:{{ .Values.redis.global.redis.password }}@{{ .Release.Name }}-redis-master:6379/0"
+          image: "{{ .Values.whiteboard.repository }}:{{ .Values.whiteboard.tag }}"
+          name: nextcloud-whiteboard
+          ports:
+            - containerPort: 3002
+              protocol: TCP
+              name: "whiteboard"
+          startupProbe:
+            httpGet:
+              path: /
+              port: 3002
+            initialDelaySeconds: 10
+            periodSeconds: 5
+            failureThreshold: 30
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 3002
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            failureThreshold: 3
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 3002
+            initialDelaySeconds: 15
+            periodSeconds: 20
+            failureThreshold: 5
+{{- end }}

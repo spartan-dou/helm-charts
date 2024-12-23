@@ -1,0 +1,72 @@
+{{- if .Values.memories.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "nextcloud.fullname" . }}-memories
+  labels:
+    {{- include "nextcloud.labels" . | nindent 4 }}
+    app.kubernetes.io/component: memories
+spec:
+  replicas: {{ .Values.memories.replicaCount }}
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 25%
+  selector:
+    matchLabels:
+      {{- include "nextcloud.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: memories
+  template:
+    metadata:
+      labels:
+        {{- include "nextcloud.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/component: memories
+    spec:
+      {{- if gt (int .Values.memories.gpu.nvidia) 0 }}
+      runtimeClassName: nvidia
+      {{- end }}
+      containers:
+      - env:
+          - name: TZ
+            value: "{{ .Values.timezone }}"
+          - name: NEXTCLOUD_HOST
+            value: "https://{{ .Values.nextcloud.host }}"
+          {{- if gt (int .Values.memories.gpu.nvidia) 0 }}
+          - name: NVIDIA_DRIVER_CAPABILITIES
+            value: "all"
+          - name: NVIDIA_VISIBLE_DEVICES
+            value: "all"
+          {{- end }}
+        image: "{{ .Values.memories.repository }}:{{ .Values.memories.tag }}"
+        name: memories
+        ports:
+          - containerPort: 47788
+            protocol: TCP
+            name: "memories"
+        volumeMounts:
+          - mountPath: /var/www/html
+            name: nextcloud
+            readOnly: true
+          - mountPath: {{ .Values.nextcloud.persistence.data.dir }}
+            name: nextcloud-data
+            readOnly: true
+        resources:
+          limits:
+            nvidia.com/gpu: {{ (int .Values.memories.gpu.nvidia) }}
+      volumes:
+      - name: nextcloud-data
+        {{- if .Values.nextcloud.persistence.data.enabled }}
+        persistentVolumeClaim:
+        claimName: {{ if .Values.nextcloud.persistence.data.existingClaim }}{{ .Values.nextcloud.persistence.data.existingClaim }}{{- else }}nextcloud-data-pvc{{- end }}
+        {{- else }}
+        emptyDir: {}
+        {{- end }}
+      - name: nextcloud
+        {{- if .Values.nextcloud.persistence.config.enabled }}
+        persistentVolumeClaim:
+          claimName: {{ if .Values.nextcloud.persistence.config.existingClaim }}{{ .Values.nextcloud.persistence.config.existingClaim }}{{- else }}nextcloud-pvc{{- end }}
+        {{- else }}
+        emptyDir: {}
+        {{- end }}
+{{- end }}

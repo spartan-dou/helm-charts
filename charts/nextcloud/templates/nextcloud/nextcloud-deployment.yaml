@@ -1,0 +1,129 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "nextcloud.fullname" . }}
+  labels:
+    {{- include "nextcloud.labels" . | nindent 4 }}
+    app.kubernetes.io/component: nextcloud
+spec:
+  replicas: {{ .Values.replicaCount }}
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 25%
+  selector:
+    matchLabels:
+      {{- include "nextcloud.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: nextcloud
+  template:
+    metadata:
+      labels:
+        {{- include "nextcloud.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/component: nextcloud
+        hooks-hash: {{ (printf "%.63s" (tpl (.Files.Get "files/before-starting.sh.tpl") . | sha256sum)) }}
+    spec:
+      securityContext:
+        fsGroup: 82
+      containers:
+      - name: {{ .Chart.Name }}
+        image: "{{ .Values.nextcloud.image.repository }}:{{ .Values.nextcloud.image.tag }}{{- with .Values.nextcloud.image.flavor }}-{{ . }}{{- end }}"
+        securityContext:
+          runAsUser: 82
+          runAsGroup: 82
+        ports:
+          - containerPort: {{ .Values.nextcloud.port }}
+            protocol: TCP
+            name: "http"
+        env:
+        {{- include "nextcloud.env" . | trim | nindent 10 }}
+        # livenessProbe:
+        #   httpGet:
+        #     path: /status.php
+        #     port: {{ .Values.nextcloud.port }}
+        #   initialDelaySeconds: 30
+        #   periodSeconds: 10
+        #   timeoutSeconds: 5
+        #   successThreshold: 1
+        #   failureThreshold: 1
+        # readinessProbe:
+        #   httpGet:
+        #     path: /status.php
+        #     port: {{ .Values.nextcloud.port }}
+        #     httpHeaders:
+        #     - name: Host
+        #       value: {{ $.Values.nextcloud.host | quote }}
+        #   initialDelaySeconds: 30
+        #   periodSeconds: 10
+        #   timeoutSeconds: 5
+        #   successThreshold: 1
+        #   failureThreshold: 1
+        # startupProbe:
+        #   httpGet:
+        #     path: /status.php
+        #     port: {{ .Values.nextcloud.port }}
+        #     httpHeaders:
+        #     - name: Host
+        #       value: {{ $.Values.nextcloud.host | quote }}
+        #   initialDelaySeconds: 30
+        #   periodSeconds: 15
+        #   timeoutSeconds: 5
+        #   successThreshold: 1
+        #   failureThreshold: 1
+        volumeMounts:
+          {{- include "nextcloud.volumeMounts" . | trim | nindent 10 }}
+          - mountPath: /docker-entrypoint-hooks.d/
+            name: nextcloud-hooks-folder
+      initContainers:
+        - name: check-db-ready
+          image: bitnami/postgresql:16
+          command: ['sh', '-c', 'until pg_isready -d nextcloud -U nextcloud -h {{ .Release.Name }}-cnpg-r; do "echo waiting for database"; sleep 2; done;']
+        - name: init-hooks
+          image: busybox
+          command: ['sh', '-c', 'ls -l /tmp/hooks/before-starting && cp -r -f /tmp/hooks/* /docker-entrypoint-hooks.d/ && chown -R 33:33 /docker-entrypoint-hooks.d/ && chmod -R 755 /docker-entrypoint-hooks.d/']
+          volumeMounts:
+          - mountPath: /tmp/hooks/before-starting/before-starting.sh
+            name: nextcloud-hooks
+            subPath: before-starting.sh
+          - mountPath: /docker-entrypoint-hooks.d
+            name: nextcloud-hooks-folder
+        - name: init-volumes
+          image: "busybox"
+          command:
+            - sh
+            - -c
+            - |
+              chmod -R 755 {{ .Values.nextcloud.persistence.data.dir }} &&
+              chown -R 82:82 {{ .Values.nextcloud.persistence.data.dir }} &&
+              chmod -R 755 /var/www/html &&
+              chown -R 82:82 /var/www/html
+          volumeMounts:
+            {{- include "nextcloud.volumeMounts" . | trim | nindent 10 }}
+      terminationGracePeriodSeconds: 600
+      volumes:
+        - name: nextcloud
+          {{- if .Values.nextcloud.persistence.config.enabled }}
+          persistentVolumeClaim:
+            claimName: {{ if .Values.nextcloud.persistence.existingClaim }}{{ .Values.nextcloud.persistence.existingClaim }}{{- else }}nextcloud-config-pvc{{- end }}
+          {{- else }}
+          emptyDir: {}
+          {{- end }}
+        - name: nextcloud-data
+          {{- if .Values.nextcloud.persistence.data.enabled }}
+          hostPath:
+            path: {{ .Values.nextcloud.persistence.data.hostPath }}
+            type: Directory
+          {{- else }}
+          emptyDir: {}
+          {{- end }}
+        - name: nextcloud-hooks-folder
+          {{- if .Values.nextcloud.persistence.hooks.enabled }}
+          persistentVolumeClaim:
+            claimName: {{ if .Values.nextcloud.persistence.hooks.existingClaim }}{{ .Values.nextcloud.persistence.hooks.existingClaim }}{{- else }}nextcloud-hooks-pvc{{- end }}
+          {{- else }}
+          emptyDir: {}
+          {{- end }}
+        - name: nextcloud-hooks
+          configMap:
+            name: nextcloud-hooks
+            defaultMode: 0755

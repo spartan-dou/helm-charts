@@ -1,0 +1,18 @@
+{{- if .Values.collabora.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "nextcloud.fullname" . }}-collabora
+  labels:
+    {{- include "nextcloud.labels" . | nindent 4 }}
+    app.kubernetes.io/component: collabora
+spec:
+  type: {{ .Values.collabora.service.type }}
+  ports:
+    - name: "collabora"
+      port: 9980
+      targetPort: "collabora"
+  selector:
+    {{- include "nextcloud.selectorLabels" . | nindent 4 }}
+    app.kubernetes.io/component: collabora
+{{- end }}

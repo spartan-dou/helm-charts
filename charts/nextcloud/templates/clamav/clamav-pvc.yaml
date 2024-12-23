@@ -1,0 +1,16 @@
+{{- if and .Values.clamav.enabled .Values.clamav.persistence.enabled (not .Values.clamav.persistence.existingClaim) }}
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: clamav-pvc
+  labels:
+    {{- include "nextcloud.labels" . | nindent 4 }}
+    app.kubernetes.io/component: clamav
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: {{ .Values.clamav.persistence.size | quote }}
+  storageClassName: "{{ .Values.clamav.persistence.storageClass }}"
+{{- end }}

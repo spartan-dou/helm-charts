@@ -1,0 +1,16 @@
+{{- if and .Values.fulltextsearch.enabled .Values.fulltextsearch.persistence.enabled (not .Values.fulltextsearch.persistence.existingClaim) }}
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: fulltextsearch-pvc
+  labels:
+    {{- include "nextcloud.labels" . | nindent 4 }}
+    app.kubernetes.io/component: fulltextsearch
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: {{ .Values.fulltextsearch.persistence.size | quote }}
+  storageClassName: "{{ .Values.fulltextsearch.persistence.storageClass }}"
+{{- end }}
