@@ -2,6 +2,20 @@ apiVersion: v1
 entries:
   esphome:
   - apiVersion: v2
+    appVersion: 2024.12.1
+    created: "2024-12-23T17:11:15.297848349Z"
+    description: esphome
+    digest: 74a76328f5882ccdcd3ad324378f2cc0a58048351d377beec17c8f3ca4cb20a9
+    keywords:
+    - home-assistant
+    - domotique
+    - esphome
+    name: esphome
+    type: application
+    urls:
+    - https://github.com/spartan-dou/helm-charts/releases/download/esphome-1.0.2/esphome-1.0.2.tgz
+    version: 1.0.2
+  - apiVersion: v2
     appVersion: 2024.10.2
     created: "2024-11-29T09:17:33.610956049Z"
     description: esphome
@@ -45,6 +59,22 @@ entries:
     - https://github.com/spartan-dou/helm-charts/releases/download/frigate-1.0.0/frigate-1.0.0.tgz
     version: 1.0.0
   home-assistant:
+  - apiVersion: v2
+    appVersion: 2024.12.5
+    created: "2024-12-23T17:11:15.400077069Z"
+    description: Home Assistant
+    digest: 2c59f81f2c3d9dcf89257fc711d8c9edf0d9b838fbf17472e08d2c815a7de6cf
+    home: https://www.home-assistant.io/
+    icon: https://commons.wikimedia.org/wiki/File:New_Home_Assistant_logo.svg
+    keywords:
+    - home-assistant
+    - domotique
+    - vscode
+    name: home-assistant
+    type: application
+    urls:
+    - https://github.com/spartan-dou/helm-charts/releases/download/home-assistant-1.0.11/home-assistant-1.0.11.tgz
+    version: 1.0.11
   - apiVersion: v2
     appVersion: 2024.12.1
     created: "2024-12-10T18:07:22.125426651Z"
@@ -270,7 +300,42 @@ entries:
     urls:
     - https://github.com/spartan-dou/helm-charts/releases/download/mosquitto-1.0.0/mosquitto-1.0.0.tgz
     version: 1.0.0
+  nextcloud:
+  - apiVersion: v2
+    appVersion: 30.0.4
+    created: "2024-12-23T17:11:15.494895141Z"
+    dependencies:
+    - name: redis
+      repository: https://charts.bitnami.com/bitnami
+      version: 17.3.4
+    description: Nextcloud
+    digest: 41b3a13cbd474b40ec92c3791a6549307ac94b3faffbfc74d214fffdc33863f3
+    keywords:
+    - nextcloud
+    name: nextcloud
+    type: application
+    urls:
+    - https://github.com/spartan-dou/helm-charts/releases/download/nextcloud-0.0.1/nextcloud-0.0.1.tgz
+    version: 0.0.1
   servarr:
+  - apiVersion: v2
+    appVersion: 1.0.8
+    created: "2024-12-23T17:11:15.603769991Z"
+    description: A Helm chart for arr aps
+    digest: 946795c8970effdde91a63f74568c4928bcf4aaff4a68ff9275b25831894b88d
+    keywords:
+    - servarr
+    - radarr
+    - sonarr
+    - lidarr
+    - recyclarr
+    - flaresolverr
+    - rdtclient
+    name: servarr
+    type: application
+    urls:
+    - https://github.com/spartan-dou/helm-charts/releases/download/servarr-1.0.8/servarr-1.0.8.tgz
+    version: 1.0.8
   - apiVersion: v2
     appVersion: 1.0.7
     created: "2024-12-10T17:52:28.963770678Z"
@@ -415,4 +480,4 @@ entries:
     urls:
     - https://github.com/spartan-dou/helm-charts/releases/download/servarr-1.0.0/servarr-1.0.0.tgz
     version: 1.0.0
-generated: "2024-12-10T18:07:22.125529252Z"
+generated: "2024-12-23T17:11:15.603892951Z"
