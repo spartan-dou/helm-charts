@@ -51,8 +51,9 @@ spec:
       volumes:
       - name: nextcloud-data
         {{- if .Values.nextcloud.persistence.data.enabled }}
-        persistentVolumeClaim:
-        claimName: {{ if .Values.nextcloud.persistence.data.existingClaim }}{{ .Values.nextcloud.persistence.data.existingClaim }}{{- else }}nextcloud-data-pvc{{- end }}
+        hostPath:
+          path: {{ .Values.nextcloud.persistence.data.hostPath }}
+          type: Directory
         {{- else }}
         emptyDir: {}
         {{- end }}
