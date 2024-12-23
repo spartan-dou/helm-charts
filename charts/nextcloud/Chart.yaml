@@ -3,7 +3,7 @@ name: nextcloud
 description: Nextcloud
 type: application
 version: 0.0.1
-appVersion: "2024.8.3"
+appVersion: "30.0.4"
 keywords:
   - nextcloud
 dependencies:
