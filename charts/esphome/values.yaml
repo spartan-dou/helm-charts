@@ -19,6 +19,8 @@ service:
 
 ingress:
   enabled: false
+  host: ""
+  tls: ""
 
 livenessProbe:
   httpGet:
