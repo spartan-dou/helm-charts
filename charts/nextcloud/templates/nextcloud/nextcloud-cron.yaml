@@ -68,6 +68,10 @@ spec:
               {{- else }}
               emptyDir: {}
               {{- end }}
+            - name: nextcloud-hooks
+              configMap:
+                name: nextcloud-hooks
+                defaultMode: 0755
           securityContext:
             fsGroup: 82
           containers:
@@ -79,9 +83,10 @@ spec:
             env:
             {{- include "nextcloud.env" . | trim | nindent 14 }}
             args:
-            - php
-            - -f
-            - /var/www/html/cron.php
+            - bash
+            - /docker-entrypoint-hooks.d/cron/cron.sh
             volumeMounts:
             {{- include "nextcloud.volumeMounts" . | trim | nindent 14 }}
+              - mountPath: /docker-entrypoint-hooks.d
+                name: nextcloud-hooks-folder
           restartPolicy: OnFailure

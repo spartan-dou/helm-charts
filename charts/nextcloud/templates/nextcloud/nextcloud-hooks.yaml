@@ -3,15 +3,15 @@ kind: ConfigMap
 metadata:
   name: nextcloud-hooks
 data:
-  pre-installation.sh: |-
+  pre-installation/pre-installation.sh: |-
     {{- tpl (.Files.Get "files/pre-installation.sh.tpl") . | nindent 4 }}
-  post-installation.sh: |-
+  post-installation/post-installation.sh: |-
     {{- tpl (.Files.Get "files/post-installation.sh.tpl") . | nindent 4 }}
-  pre-upgrade.sh: |-
+  pre-upgrade/pre-upgrade.sh: |-
     {{- tpl (.Files.Get "files/pre-upgrade.sh.tpl") . | nindent 4 }}
-  post-upgrade.sh: |-
+  post-upgrade/post-upgrade.sh: |-
     {{- tpl (.Files.Get "files/post-upgrade.sh.tpl") . | nindent 4 }}
-  before-starting.sh: |-
+  before-starting/before-starting.sh: |-
     {{- tpl (.Files.Get "files/before-starting.sh.tpl") . | nindent 4 }}
-  cron.sh: |-
+  cron/cron.sh: |-
     {{- tpl (.Files.Get "files/cron.sh.tpl") . | nindent 4 }}
