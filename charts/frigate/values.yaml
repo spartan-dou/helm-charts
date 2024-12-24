@@ -13,6 +13,8 @@ service:
 
 ingress:
   enabled: false
+  host: ""
+  tls: ""
 
 serviceAccount:
   create: false
