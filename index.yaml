@@ -3,6 +3,20 @@ entries:
   esphome:
   - apiVersion: v2
     appVersion: 2024.12.1
+    created: "2024-12-24T13:05:26.576913852Z"
+    description: esphome
+    digest: 59e44b74e18d07b279ee5e91bf95e060e13bc1c0fd999d1ffd174c145ae6e7c1
+    keywords:
+    - home-assistant
+    - domotique
+    - esphome
+    name: esphome
+    type: application
+    urls:
+    - https://github.com/spartan-dou/helm-charts/releases/download/esphome-1.0.3/esphome-1.0.3.tgz
+    version: 1.0.3
+  - apiVersion: v2
+    appVersion: 2024.12.1
     created: "2024-12-23T17:11:15.297848349Z"
     description: esphome
     digest: 74a76328f5882ccdcd3ad324378f2cc0a58048351d377beec17c8f3ca4cb20a9
@@ -512,4 +526,4 @@ entries:
     urls:
     - https://github.com/spartan-dou/helm-charts/releases/download/servarr-1.0.0/servarr-1.0.0.tgz
     version: 1.0.0
-generated: "2024-12-23T22:42:17.600737173Z"
+generated: "2024-12-24T13:05:26.796087444Z"
