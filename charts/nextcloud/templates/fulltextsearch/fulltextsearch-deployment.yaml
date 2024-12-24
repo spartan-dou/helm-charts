@@ -61,6 +61,27 @@ spec:
         - containerPort: 9200
           protocol: TCP
           name: "fulltextsearch"
+        startupProbe:
+          httpGet:
+            path: /
+            port: 9200
+          initialDelaySeconds: 10
+          periodSeconds: 5
+          failureThreshold: 30
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 9200
+          initialDelaySeconds: 5
+          periodSeconds: 10
+          failureThreshold: 3
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 9200
+          initialDelaySeconds: 15
+          periodSeconds: 20
+          failureThreshold: 5
         volumeMounts:
         - mountPath: /usr/share/elasticsearch/data
           name: fulltextsearch
