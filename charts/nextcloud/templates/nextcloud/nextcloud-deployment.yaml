@@ -37,39 +37,39 @@ spec:
             name: "http"
         env:
         {{- include "nextcloud.env" . | trim | nindent 10 }}
-        # livenessProbe:
-        #   httpGet:
-        #     path: /status.php
-        #     port: {{ .Values.nextcloud.port }}
-        #   initialDelaySeconds: 30
-        #   periodSeconds: 10
-        #   timeoutSeconds: 5
-        #   successThreshold: 1
-        #   failureThreshold: 1
-        # readinessProbe:
-        #   httpGet:
-        #     path: /status.php
-        #     port: {{ .Values.nextcloud.port }}
-        #     httpHeaders:
-        #     - name: Host
-        #       value: {{ $.Values.nextcloud.host | quote }}
-        #   initialDelaySeconds: 30
-        #   periodSeconds: 10
-        #   timeoutSeconds: 5
-        #   successThreshold: 1
-        #   failureThreshold: 1
-        # startupProbe:
-        #   httpGet:
-        #     path: /status.php
-        #     port: {{ .Values.nextcloud.port }}
-        #     httpHeaders:
-        #     - name: Host
-        #       value: {{ $.Values.nextcloud.host | quote }}
-        #   initialDelaySeconds: 30
-        #   periodSeconds: 15
-        #   timeoutSeconds: 5
-        #   successThreshold: 1
-        #   failureThreshold: 1
+        livenessProbe:
+          httpGet:
+            path: /status.php
+            port: {{ .Values.nextcloud.port }}
+          initialDelaySeconds: 45
+          periodSeconds: 10
+          timeoutSeconds: 5
+          successThreshold: 1
+          failureThreshold: 1
+        readinessProbe:
+          httpGet:
+            path: /status.php
+            port: {{ .Values.nextcloud.port }}
+            httpHeaders:
+            - name: Host
+              value: {{ $.Values.nextcloud.host | quote }}
+          initialDelaySeconds: 45
+          periodSeconds: 10
+          timeoutSeconds: 5
+          successThreshold: 1
+          failureThreshold: 1
+        startupProbe:
+          httpGet:
+            path: /status.php
+            port: {{ .Values.nextcloud.port }}
+            httpHeaders:
+            - name: Host
+              value: {{ $.Values.nextcloud.host | quote }}
+          initialDelaySeconds: 45
+          periodSeconds: 15
+          timeoutSeconds: 5
+          successThreshold: 1
+          failureThreshold: 1
         volumeMounts:
           {{- include "nextcloud.volumeMounts" . | trim | nindent 10 }}
           - mountPath: /docker-entrypoint-hooks.d/
