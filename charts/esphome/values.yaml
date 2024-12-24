@@ -3,7 +3,7 @@ replicaCount: 1
 image:
   repository: ghcr.io/esphome/esphome
   pullPolicy: IfNotPresent
-  tag: "2024.12.1"
+  tag: "2024.12.2"
 
 username: admin
 password: changeme
