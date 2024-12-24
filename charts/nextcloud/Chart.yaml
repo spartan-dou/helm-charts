@@ -8,5 +8,5 @@ keywords:
   - nextcloud
 dependencies:
 - name: redis
-  version: 17.3.4
+  version: 17.17.1
   repository: https://charts.bitnami.com/bitnami
