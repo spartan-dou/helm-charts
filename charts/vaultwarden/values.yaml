@@ -1,0 +1,28 @@
+replicaCount: 1
+
+timezone: "Europe/Paris"
+
+image:
+  repository: vaultwarden/server
+  tag: "1.32.6-alpine"
+
+ingress:
+  enabled: false
+  host: ""
+  tls: ""
+
+service:
+  type: ClusterIP
+
+postgresql:
+  enabled: false
+  storageClass: ""
+  user: vaultwarden
+  password: changeme
+
+persistence:
+  enabled: false
+  accessMode: ReadWriteOnce
+  size: 1Gi
+  existingClaim: false
+  storageClass: ""
