@@ -1,6 +1,6 @@
 apiVersion: v2
-name: assist
+name: vaultwarden
 description: A Helm chart for vaultwarden
 type: application
-version: 0.0.1
-appVersion: "24.3.1"
+version: 0.0.2
+appVersion: "1.32.6"
