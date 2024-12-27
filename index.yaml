@@ -537,4 +537,15 @@ entries:
     urls:
     - https://github.com/spartan-dou/helm-charts/releases/download/servarr-1.0.0/servarr-1.0.0.tgz
     version: 1.0.0
-generated: "2024-12-27T16:07:59.254795842Z"
+  vaultwarden:
+  - apiVersion: v2
+    appVersion: 1.32.6
+    created: "2024-12-27T16:36:48.410412652Z"
+    description: A Helm chart for vaultwarden
+    digest: bfe43c560aa6ee8b978a5f93d60600f6ec10bf6ca08b6f27649482e857dfe669
+    name: vaultwarden
+    type: application
+    urls:
+    - https://github.com/spartan-dou/helm-charts/releases/download/vaultwarden-0.0.2/vaultwarden-0.0.2.tgz
+    version: 0.0.2
+generated: "2024-12-27T16:36:48.410505367Z"
