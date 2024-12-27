@@ -540,6 +540,16 @@ entries:
   vaultwarden:
   - apiVersion: v2
     appVersion: 1.32.6
+    created: "2024-12-27T16:50:33.390359898Z"
+    description: A Helm chart for vaultwarden
+    digest: 2d4a2cbdd64b214ff04d22bcf47b61b5369aee86f647b901393d0d1a480f3e4f
+    name: vaultwarden
+    type: application
+    urls:
+    - https://github.com/spartan-dou/helm-charts/releases/download/vaultwarden-0.0.3/vaultwarden-0.0.3.tgz
+    version: 0.0.3
+  - apiVersion: v2
+    appVersion: 1.32.6
     created: "2024-12-27T16:36:48.410412652Z"
     description: A Helm chart for vaultwarden
     digest: bfe43c560aa6ee8b978a5f93d60600f6ec10bf6ca08b6f27649482e857dfe669
@@ -548,4 +558,4 @@ entries:
     urls:
     - https://github.com/spartan-dou/helm-charts/releases/download/vaultwarden-0.0.2/vaultwarden-0.0.2.tgz
     version: 0.0.2
-generated: "2024-12-27T16:36:48.410505367Z"
+generated: "2024-12-27T16:50:33.390498226Z"
