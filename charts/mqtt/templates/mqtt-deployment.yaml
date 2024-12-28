@@ -18,13 +18,13 @@ spec:
         app.kubernetes.io/component: mqtt
     spec:
       serviceAccountName: {{ include "mosquitto.serviceAccountName" . }}
-      securityContext:
-        runAsUser: 1883
-        runAsGroup: 1883
-        fsGroup: 1883
+      # securityContext:
+      #   runAsUser: 1883
+      #   runAsGroup: 1883
+      #   fsGroup: 1883
       initContainers:
       - name: "init-volumes"
-        image: "alpine"
+        image: "busybox"
         command: ['sh', '/scripts/init.sh']
         volumeMounts:
         - mountPath: /mosquitto
