@@ -24,7 +24,7 @@ spec:
       initContainers:  # Correction de l'indentation ici
         - name: check-db-ready
           image: bitnami/postgresql:16
-          command: ['sh', '-c', 'until pg_isready -d nextcloud -U nextcloud -h {{ .Release.Name }}-cnpg-r; do echo "waiting for database"; sleep 2; done;']
+          command: ['sh', '-c', 'until pg_isready -d vaultwarden -U {{ .Values.postgresql.user }} -h {{ .Release.Name }}-cnpg-r; do echo "waiting for database"; sleep 2; done;']
       containers:
         - name: {{ .Chart.Name }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
