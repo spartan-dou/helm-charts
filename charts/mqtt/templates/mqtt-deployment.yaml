@@ -42,6 +42,9 @@ spec:
         - name: "ws"
           containerPort: 9001
           protocol: TCP
+        env:
+          - name: TZ
+            value: {{ .Values.timezone }}
         livenessProbe:
           {{- toYaml .Values.livenessProbe | nindent 12 }}
         readinessProbe:
