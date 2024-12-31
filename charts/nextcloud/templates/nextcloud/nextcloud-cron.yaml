@@ -42,55 +42,55 @@ spec:
             emptyDir: {}
             {{- end }}
 ---
-apiVersion: batch/v1
-kind: CronJob
-metadata:
-  name: application-cron
-spec:
-  schedule: "0 2 * * *"
-  jobTemplate:
-    spec:
-      template:
-        spec:
-          securityContext:
-            fsGroup: 82
-          containers:
-          - name: nextcloud-cron
-            image: "{{ .Values.nextcloud.image.repository }}:{{ .Values.nextcloud.image.tag }}{{- with .Values.nextcloud.image.flavor }}-{{ . }}{{- end }}"
-            securityContext:
-              runAsUser: 82
-              runAsGroup: 82
-            env:
-            {{- include "nextcloud.env" . | trim | nindent 14 }}
-            args:
-            - bash
-            - /docker-entrypoint-hooks.d/cron/cron.sh
-            volumeMounts:
-            {{- include "nextcloud.volumeMounts" . | trim | nindent 14 }}
-            - name: nextcloud-hooks
-              mountPath: /docker-entrypoint-hooks.d/cron/cron.sh
-              subPath: cron.sh
-          restartPolicy: OnFailure
-          volumes:
-          - name: nextcloud
-            {{- if .Values.nextcloud.persistence.config.enabled }}
-            persistentVolumeClaim:
-              claimName: {{ if .Values.nextcloud.persistence.existingClaim }}{{ .Values.nextcloud.persistence.existingClaim }}{{- else }}nextcloud-config-pvc{{- end }}
-            {{- else }}
-            emptyDir: {}
-            {{- end }}
-          - name: nextcloud-data
-            {{- if .Values.nextcloud.persistence.data.enabled }}
-            hostPath:
-              path: {{ .Values.nextcloud.persistence.data.hostPath }}
-              type: Directory
-            {{- else }}
-            emptyDir: {}
-            {{- end }}
-          - name: nextcloud-hooks-folder
-            {{- if .Values.nextcloud.persistence.hooks.enabled }}
-            persistentVolumeClaim:
-              claimName: {{ if .Values.nextcloud.persistence.hooks.existingClaim }}{{ .Values.nextcloud.persistence.hooks.existingClaim }}{{- else }}nextcloud-hooks-pvc{{- end }}
-            {{- else }}
-            emptyDir: {}
-            {{- end }}
+# apiVersion: batch/v1
+# kind: CronJob
+# metadata:
+#   name: application-cron
+# spec:
+#   schedule: "0 2 * * *"
+#   jobTemplate:
+#     spec:
+#       template:
+#         spec:
+#           securityContext:
+#             fsGroup: 82
+#           containers:
+#           - name: nextcloud-cron
+#             image: "{{ .Values.nextcloud.image.repository }}:{{ .Values.nextcloud.image.tag }}{{- with .Values.nextcloud.image.flavor }}-{{ . }}{{- end }}"
+#             securityContext:
+#               runAsUser: 82
+#               runAsGroup: 82
+#             env:
+#             {{- include "nextcloud.env" . | trim | nindent 14 }}
+#             args:
+#             - bash
+#             - /docker-entrypoint-hooks.d/cron/cron.sh
+#             volumeMounts:
+#             {{- include "nextcloud.volumeMounts" . | trim | nindent 14 }}
+#             - name: nextcloud-hooks
+#               mountPath: /docker-entrypoint-hooks.d/cron/cron.sh
+#               subPath: cron.sh
+#           restartPolicy: OnFailure
+#           volumes:
+#           - name: nextcloud
+#             {{- if .Values.nextcloud.persistence.config.enabled }}
+#             persistentVolumeClaim:
+#               claimName: {{ if .Values.nextcloud.persistence.existingClaim }}{{ .Values.nextcloud.persistence.existingClaim }}{{- else }}nextcloud-config-pvc{{- end }}
+#             {{- else }}
+#             emptyDir: {}
+#             {{- end }}
+#           - name: nextcloud-data
+#             {{- if .Values.nextcloud.persistence.data.enabled }}
+#             hostPath:
+#               path: {{ .Values.nextcloud.persistence.data.hostPath }}
+#               type: Directory
+#             {{- else }}
+#             emptyDir: {}
+#             {{- end }}
+#           - name: nextcloud-hooks-folder
+#             {{- if .Values.nextcloud.persistence.hooks.enabled }}
+#             persistentVolumeClaim:
+#               claimName: {{ if .Values.nextcloud.persistence.hooks.existingClaim }}{{ .Values.nextcloud.persistence.hooks.existingClaim }}{{- else }}nextcloud-hooks-pvc{{- end }}
+#             {{- else }}
+#             emptyDir: {}
+#             {{- end }}
