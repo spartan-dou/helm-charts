@@ -259,7 +259,7 @@ count=1
 php occ config:system:set trusted_domains $count --value={{ . }}
 count=$((count + 1))
 {{- end }}
-
+php occ config:system:set  overwrite.cli.url -value=https://{{ .Values.nextcloud.host }}
 # # Facerognition
 {{- if .Values.facerecognition.enabled }}
 echo "Installation de facerecognition"
