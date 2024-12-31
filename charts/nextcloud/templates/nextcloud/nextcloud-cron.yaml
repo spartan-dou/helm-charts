@@ -68,7 +68,7 @@ spec:
             volumeMounts:
             {{- include "nextcloud.volumeMounts" . | trim | nindent 14 }}
             - name: nextcloud-hooks
-              path: /docker-entrypoint-hooks.d/cron/cron.sh
+              mountPath: /docker-entrypoint-hooks.d/cron/cron.sh
               subPath: cron.sh
           restartPolicy: OnFailure
           volumes:
