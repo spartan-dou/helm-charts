@@ -36,23 +36,23 @@ spec:
               protocol: TCP
               name: "imaginary"
           startupProbe:
-            httpGet:
-              path: /
-              port: 9000
+            exec:
+              command:
+                - /healthcheck.sh
             initialDelaySeconds: 10
             periodSeconds: 5
             failureThreshold: 30
           readinessProbe:
-            httpGet:
-              path: /
-              port: 9000
+            exec:
+              command:
+                - /healthcheck.sh
             initialDelaySeconds: 5
             periodSeconds: 10
             failureThreshold: 3
           livenessProbe:
-            httpGet:
-              path: /
-              port: 9000
+            exec:
+              command:
+                - /healthcheck.sh
             initialDelaySeconds: 15
             periodSeconds: 20
             failureThreshold: 5

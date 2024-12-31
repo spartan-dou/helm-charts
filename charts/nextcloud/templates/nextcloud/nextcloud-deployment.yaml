@@ -42,35 +42,32 @@ spec:
           httpGet:
             path: /status.php
             port: {{ .Values.nextcloud.port }}
-          initialDelaySeconds: 45
-          periodSeconds: 10
+            httpHeaders:
+            - name: Host
+              value: {{ .Values.nextcloud.host | quote }}
+          initialDelaySeconds: 60
+          periodSeconds: 20
           timeoutSeconds: 5
-          successThreshold: 1
-          failureThreshold: 1
         readinessProbe:
           httpGet:
             path: /status.php
             port: {{ .Values.nextcloud.port }}
             httpHeaders:
             - name: Host
-              value: {{ $.Values.nextcloud.host | quote }}
-          initialDelaySeconds: 45
-          periodSeconds: 10
+              value: {{ .Values.nextcloud.host | quote }}
+          initialDelaySeconds: 60
+          periodSeconds: 20
           timeoutSeconds: 5
-          successThreshold: 1
-          failureThreshold: 1
         startupProbe:
           httpGet:
             path: /status.php
             port: {{ .Values.nextcloud.port }}
             httpHeaders:
             - name: Host
-              value: {{ $.Values.nextcloud.host | quote }}
-          initialDelaySeconds: 45
-          periodSeconds: 15
+              value: {{ .Values.nextcloud.host | quote }}
+          initialDelaySeconds: 60
+          periodSeconds: 30
           timeoutSeconds: 5
-          successThreshold: 1
-          failureThreshold: 1
         volumeMounts:
           {{- include "nextcloud.volumeMounts" . | trim | nindent 10 }}
           - mountPath: /docker-entrypoint-hooks.d/
