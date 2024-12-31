@@ -21,7 +21,8 @@ spec:
       labels:
         {{- include "nextcloud.selectorLabels" . | nindent 8 }}
         app.kubernetes.io/component: nextcloud
-        hooks-hash: {{ (printf "%.63s" (tpl (.Files.Get "files/before-starting.sh.tpl") . | sha256sum)) }}
+        hooks/hash: {{ (printf "%.63s" (tpl (.Files.Get "files/before-starting.sh.tpl") . | sha256sum)) }}
+        nginx/hash: {{ (printf "%.63s" (tpl (.Files.Get "files/default.conf.tpl") . | sha256sum)) }}
     spec:
       securityContext:
         fsGroup: 82
@@ -86,6 +87,8 @@ spec:
             name: nextcloud-hooks
           - mountPath: /docker-entrypoint-hooks.d
             name: nextcloud-hooks-folder
+          - mountPath: /tmp
+            name: tmp
         - name: init-volumes
           image: "busybox"
           command:
@@ -115,6 +118,9 @@ spec:
           {{- else }}
           emptyDir: {}
           {{- end }}
+        - name: tmp
+          emptyDir:
+            medium: "Memory"
         - name: nextcloud-hooks-folder
           {{- if .Values.nextcloud.persistence.hooks.enabled }}
           persistentVolumeClaim:

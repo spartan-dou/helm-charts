@@ -29,7 +29,7 @@ server {
 
     # set max upload size and increase upload timeout:
     client_max_body_size 0;
-    client_body_timeout 300s;
+    client_body_timeout 3000s;
     fastcgi_buffers 64 4K;
 
     # Enable gzip but do not remove ETag headers
