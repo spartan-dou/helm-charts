@@ -83,8 +83,9 @@ spec:
           image: busybox
           command: ['sh', '-c', 'ls -l /tmp/hooks/before-starting && cp -r -f /tmp/hooks/* /docker-entrypoint-hooks.d/ && chown -R 33:33 /docker-entrypoint-hooks.d/ && chmod -R 755 /docker-entrypoint-hooks.d/']
           volumeMounts:
-          - mountPath: /tmp/hooks/
+          - mountPath: /tmp/hooks/before-starting/before-starting.sh
             name: nextcloud-hooks
+            subPath: before-starting.sh
           - mountPath: /docker-entrypoint-hooks.d
             name: nextcloud-hooks-folder
           - mountPath: /tmp

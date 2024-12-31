@@ -8,22 +8,6 @@ spec:
     spec:
       template:
         spec:
-          volumes:
-            - name: nextcloud
-              {{- if .Values.nextcloud.persistence.config.enabled }}
-              persistentVolumeClaim:
-                claimName: {{ if .Values.nextcloud.persistence.existingClaim }}{{ .Values.nextcloud.persistence.existingClaim }}{{- else }}nextcloud-config-pvc{{- end }}
-              {{- else }}
-              emptyDir: {}
-              {{- end }}
-            - name: nextcloud-data
-              {{- if .Values.nextcloud.persistence.data.enabled }}
-              hostPath:
-                path: {{ .Values.nextcloud.persistence.data.hostPath }}
-                type: Directory
-              {{- else }}
-              emptyDir: {}
-              {{- end }}
           securityContext:
             fsGroup: 82
           containers:
@@ -41,6 +25,22 @@ spec:
             volumeMounts:
             {{- include "nextcloud.volumeMounts" . | trim | nindent 14 }}
           restartPolicy: OnFailure
+          volumes:
+            - name: nextcloud
+              {{- if .Values.nextcloud.persistence.config.enabled }}
+              persistentVolumeClaim:
+                claimName: {{ if .Values.nextcloud.persistence.existingClaim }}{{ .Values.nextcloud.persistence.existingClaim }}{{- else }}nextcloud-config-pvc{{- end }}
+              {{- else }}
+              emptyDir: {}
+              {{- end }}
+            - name: nextcloud-data
+              {{- if .Values.nextcloud.persistence.data.enabled }}
+              hostPath:
+                path: {{ .Values.nextcloud.persistence.data.hostPath }}
+                type: Directory
+              {{- else }}
+              emptyDir: {}
+              {{- end }}
 ---
 apiVersion: batch/v1
 kind: CronJob
@@ -52,6 +52,25 @@ spec:
     spec:
       template:
         spec:
+          securityContext:
+            fsGroup: 82
+          containers:
+          - name: nextcloud-cron
+            image: "{{ .Values.nextcloud.image.repository }}:{{ .Values.nextcloud.image.tag }}{{- with .Values.nextcloud.image.flavor }}-{{ . }}{{- end }}"
+            securityContext:
+              runAsUser: 82
+              runAsGroup: 82
+            env:
+            {{- include "nextcloud.env" . | trim | nindent 14 }}
+            args:
+            - bash
+            - /docker-entrypoint-hooks.d/cron/cron.sh
+            volumeMounts:
+            {{- include "nextcloud.volumeMounts" . | trim | nindent 14 }}
+            - name: nextcloud-hooks
+              path: /docker-entrypoint-hooks.d/cron/cron.sh
+              subPath: cron.sh
+          restartPolicy: OnFailure
           volumes:
             - name: nextcloud
               {{- if .Values.nextcloud.persistence.config.enabled }}
@@ -72,21 +91,3 @@ spec:
               configMap:
                 name: nextcloud-hooks
                 defaultMode: 0755
-          securityContext:
-            fsGroup: 82
-          containers:
-          - name: nextcloud-cron
-            image: "{{ .Values.nextcloud.image.repository }}:{{ .Values.nextcloud.image.tag }}{{- with .Values.nextcloud.image.flavor }}-{{ . }}{{- end }}"
-            securityContext:
-              runAsUser: 82
-              runAsGroup: 82
-            env:
-            {{- include "nextcloud.env" . | trim | nindent 14 }}
-            args:
-            - bash
-            - /docker-entrypoint-hooks.d/cron/cron.sh
-            volumeMounts:
-            {{- include "nextcloud.volumeMounts" . | trim | nindent 14 }}
-              - mountPath: /docker-entrypoint-hooks.d
-                name: nextcloud-hooks-folder
-          restartPolicy: OnFailure
