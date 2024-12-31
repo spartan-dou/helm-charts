@@ -26,21 +26,21 @@ spec:
             {{- include "nextcloud.volumeMounts" . | trim | nindent 14 }}
           restartPolicy: OnFailure
           volumes:
-            - name: nextcloud
-              {{- if .Values.nextcloud.persistence.config.enabled }}
-              persistentVolumeClaim:
-                claimName: {{ if .Values.nextcloud.persistence.existingClaim }}{{ .Values.nextcloud.persistence.existingClaim }}{{- else }}nextcloud-config-pvc{{- end }}
-              {{- else }}
-              emptyDir: {}
-              {{- end }}
-            - name: nextcloud-data
-              {{- if .Values.nextcloud.persistence.data.enabled }}
-              hostPath:
-                path: {{ .Values.nextcloud.persistence.data.hostPath }}
-                type: Directory
-              {{- else }}
-              emptyDir: {}
-              {{- end }}
+          - name: nextcloud
+            {{- if .Values.nextcloud.persistence.config.enabled }}
+            persistentVolumeClaim:
+              claimName: {{ if .Values.nextcloud.persistence.existingClaim }}{{ .Values.nextcloud.persistence.existingClaim }}{{- else }}nextcloud-config-pvc{{- end }}
+            {{- else }}
+            emptyDir: {}
+            {{- end }}
+          - name: nextcloud-data
+            {{- if .Values.nextcloud.persistence.data.enabled }}
+            hostPath:
+              path: {{ .Values.nextcloud.persistence.data.hostPath }}
+              type: Directory
+            {{- else }}
+            emptyDir: {}
+            {{- end }}
 ---
 apiVersion: batch/v1
 kind: CronJob
@@ -72,22 +72,25 @@ spec:
               subPath: cron.sh
           restartPolicy: OnFailure
           volumes:
-            - name: nextcloud
-              {{- if .Values.nextcloud.persistence.config.enabled }}
-              persistentVolumeClaim:
-                claimName: {{ if .Values.nextcloud.persistence.existingClaim }}{{ .Values.nextcloud.persistence.existingClaim }}{{- else }}nextcloud-config-pvc{{- end }}
-              {{- else }}
-              emptyDir: {}
-              {{- end }}
-            - name: nextcloud-data
-              {{- if .Values.nextcloud.persistence.data.enabled }}
-              hostPath:
-                path: {{ .Values.nextcloud.persistence.data.hostPath }}
-                type: Directory
-              {{- else }}
-              emptyDir: {}
-              {{- end }}
-            - name: nextcloud-hooks
-              configMap:
-                name: nextcloud-hooks
-                defaultMode: 0755
+          - name: nextcloud
+            {{- if .Values.nextcloud.persistence.config.enabled }}
+            persistentVolumeClaim:
+              claimName: {{ if .Values.nextcloud.persistence.existingClaim }}{{ .Values.nextcloud.persistence.existingClaim }}{{- else }}nextcloud-config-pvc{{- end }}
+            {{- else }}
+            emptyDir: {}
+            {{- end }}
+          - name: nextcloud-data
+            {{- if .Values.nextcloud.persistence.data.enabled }}
+            hostPath:
+              path: {{ .Values.nextcloud.persistence.data.hostPath }}
+              type: Directory
+            {{- else }}
+            emptyDir: {}
+            {{- end }}
+          - name: nextcloud-hooks-folder
+            {{- if .Values.nextcloud.persistence.hooks.enabled }}
+            persistentVolumeClaim:
+              claimName: {{ if .Values.nextcloud.persistence.hooks.existingClaim }}{{ .Values.nextcloud.persistence.hooks.existingClaim }}{{- else }}nextcloud-hooks-pvc{{- end }}
+            {{- else }}
+            emptyDir: {}
+            {{- end }}

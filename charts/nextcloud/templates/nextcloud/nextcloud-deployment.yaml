@@ -75,21 +75,21 @@ spec:
           {{- include "nextcloud.volumeMounts" . | trim | nindent 10 }}
           - mountPath: /docker-entrypoint-hooks.d/
             name: nextcloud-hooks-folder
+          - mountPath: /tmp
+            name: tmp
       initContainers:
         - name: check-db-ready
           image: bitnami/postgresql:16
           command: ['sh', '-c', 'until pg_isready -d nextcloud -U nextcloud -h {{ .Release.Name }}-cnpg-r; do "echo waiting for database"; sleep 2; done;']
         - name: init-hooks
           image: busybox
-          command: ['sh', '-c', 'ls -l /tmp/hooks/before-starting && cp -r -f /tmp/hooks/* /docker-entrypoint-hooks.d/ && chown -R 33:33 /docker-entrypoint-hooks.d/ && chmod -R 755 /docker-entrypoint-hooks.d/']
+          command: ['sh', '-c', 'cp -r -f /tmp/hooks/* /docker-entrypoint-hooks.d/ && chown -R 82:82 /docker-entrypoint-hooks.d/ && chmod -R 755 /docker-entrypoint-hooks.d/']
           volumeMounts:
           - mountPath: /tmp/hooks/before-starting/before-starting.sh
             name: nextcloud-hooks
             subPath: before-starting.sh
           - mountPath: /docker-entrypoint-hooks.d
             name: nextcloud-hooks-folder
-          - mountPath: /tmp
-            name: tmp
         - name: init-volumes
           image: "busybox"
           command:
