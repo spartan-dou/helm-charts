@@ -9,21 +9,21 @@ spec:
       template:
         spec:
           volumes:
-            - name: nextcloud
-              {{- if .Values.nextcloud.persistence.config.enabled }}
-              persistentVolumeClaim:
-                claimName: {{ if .Values.nextcloud.persistence.existingClaim }}{{ .Values.nextcloud.persistence.existingClaim }}{{- else }}nextcloud-config-pvc{{- end }}
-              {{- else }}
-              emptyDir: {}
-              {{- end }}
-            - name: nextcloud-data
-              {{- if .Values.nextcloud.persistence.data.enabled }}
-              hostPath:
-                path: {{ .Values.nextcloud.persistence.data.hostPath }}
-                type: Directory
-              {{- else }}
-              emptyDir: {}
-              {{- end }}
+          - name: nextcloud
+            {{- if .Values.nextcloud.persistence.config.enabled }}
+            persistentVolumeClaim:
+              claimName: {{ if .Values.nextcloud.persistence.existingClaim }}{{ .Values.nextcloud.persistence.existingClaim }}{{- else }}nextcloud-config-pvc{{- end }}
+            {{- else }}
+            emptyDir: {}
+            {{- end }}
+          - name: nextcloud-data
+            {{- if .Values.nextcloud.persistence.data.enabled }}
+            hostPath:
+              path: {{ .Values.nextcloud.persistence.data.hostPath }}
+              type: Directory
+            {{- else }}
+            emptyDir: {}
+            {{- end }}
           securityContext:
             fsGroup: 82
           containers:
@@ -53,28 +53,28 @@ spec:
       template:
         spec:
           volumes:
-            - name: nextcloud
-              {{- if .Values.nextcloud.persistence.config.enabled }}
-              persistentVolumeClaim:
-                claimName: {{ if .Values.nextcloud.persistence.existingClaim }}{{ .Values.nextcloud.persistence.existingClaim }}{{- else }}nextcloud-config-pvc{{- end }}
-              {{- else }}
-              emptyDir: {}
-              {{- end }}
-            - name: nextcloud-data
-              {{- if .Values.nextcloud.persistence.data.enabled }}
-              hostPath:
-                path: {{ .Values.nextcloud.persistence.data.hostPath }}
-                type: Directory
-              {{- else }}
-              emptyDir: {}
-              {{- end }}
-            - name: nextcloud-hooks-folder
-              {{- if .Values.nextcloud.persistence.hooks.enabled }}
-              persistentVolumeClaim:
-                claimName: {{ if .Values.nextcloud.persistence.hooks.existingClaim }}{{ .Values.nextcloud.persistence.hooks.existingClaim }}{{- else }}nextcloud-hooks-pvc{{- end }}
-              {{- else }}
-              emptyDir: {}
-              {{- end }}
+          - name: nextcloud
+            {{- if .Values.nextcloud.persistence.config.enabled }}
+            persistentVolumeClaim:
+              claimName: {{ if .Values.nextcloud.persistence.existingClaim }}{{ .Values.nextcloud.persistence.existingClaim }}{{- else }}nextcloud-config-pvc{{- end }}
+            {{- else }}
+            emptyDir: {}
+            {{- end }}
+          - name: nextcloud-data
+            {{- if .Values.nextcloud.persistence.data.enabled }}
+            hostPath:
+              path: {{ .Values.nextcloud.persistence.data.hostPath }}
+              type: Directory
+            {{- else }}
+            emptyDir: {}
+            {{- end }}
+          - name: nextcloud-hooks-folder
+            {{- if .Values.nextcloud.persistence.hooks.enabled }}
+            persistentVolumeClaim:
+              claimName: {{ if .Values.nextcloud.persistence.hooks.existingClaim }}{{ .Values.nextcloud.persistence.hooks.existingClaim }}{{- else }}nextcloud-hooks-pvc{{- end }}
+            {{- else }}
+            emptyDir: {}
+            {{- end }}
           securityContext:
             fsGroup: 82
           containers:
