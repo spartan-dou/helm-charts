@@ -1,46 +1,46 @@
-apiVersion: batch/v1
-kind: CronJob
-metadata:
-  name: nextcloud-cron
-spec:
-  schedule: "*/5 * * * *"  # Exécution toutes les 5 minutes
-  jobTemplate:
-    spec:
-      template:
-        spec:
-          securityContext:
-            fsGroup: 82
-          containers:
-          - name: nextcloud-cron
-            image: "{{ .Values.nextcloud.image.repository }}:{{ .Values.nextcloud.image.tag }}{{- with .Values.nextcloud.image.flavor }}-{{ . }}{{- end }}"
-            securityContext:
-              runAsUser: 82
-              runAsGroup: 82
-            env:
-            {{- include "nextcloud.env" . | trim | nindent 14 }}
-            args:
-            - php
-            - -f
-            - /var/www/html/cron.php
-            volumeMounts:
-            {{- include "nextcloud.volumeMounts" . | trim | nindent 14 }}
-          restartPolicy: OnFailure
-          volumes:
-          - name: nextcloud
-            {{- if .Values.nextcloud.persistence.config.enabled }}
-            persistentVolumeClaim:
-              claimName: {{ if .Values.nextcloud.persistence.existingClaim }}{{ .Values.nextcloud.persistence.existingClaim }}{{- else }}nextcloud-config-pvc{{- end }}
-            {{- else }}
-            emptyDir: {}
-            {{- end }}
-          - name: nextcloud-data
-            {{- if .Values.nextcloud.persistence.data.enabled }}
-            hostPath:
-              path: {{ .Values.nextcloud.persistence.data.hostPath }}
-              type: Directory
-            {{- else }}
-            emptyDir: {}
-            {{- end }}
+# apiVersion: batch/v1
+# kind: CronJob
+# metadata:
+#   name: nextcloud-cron
+# spec:
+#   schedule: "*/5 * * * *"  # Exécution toutes les 5 minutes
+#   jobTemplate:
+#     spec:
+#       template:
+#         spec:
+#           securityContext:
+#             fsGroup: 82
+#           containers:
+#           - name: nextcloud-cron
+#             image: "{{ .Values.nextcloud.image.repository }}:{{ .Values.nextcloud.image.tag }}{{- with .Values.nextcloud.image.flavor }}-{{ . }}{{- end }}"
+#             securityContext:
+#               runAsUser: 82
+#               runAsGroup: 82
+#             env:
+#             {{- include "nextcloud.env" . | trim | nindent 14 }}
+#             args:
+#             - php
+#             - -f
+#             - /var/www/html/cron.php
+#             volumeMounts:
+#             {{- include "nextcloud.volumeMounts" . | trim | nindent 14 }}
+#           restartPolicy: OnFailure
+#           volumes:
+#           - name: nextcloud
+#             {{- if .Values.nextcloud.persistence.config.enabled }}
+#             persistentVolumeClaim:
+#               claimName: {{ if .Values.nextcloud.persistence.existingClaim }}{{ .Values.nextcloud.persistence.existingClaim }}{{- else }}nextcloud-config-pvc{{- end }}
+#             {{- else }}
+#             emptyDir: {}
+#             {{- end }}
+#           - name: nextcloud-data
+#             {{- if .Values.nextcloud.persistence.data.enabled }}
+#             hostPath:
+#               path: {{ .Values.nextcloud.persistence.data.hostPath }}
+#               type: Directory
+#             {{- else }}
+#             emptyDir: {}
+#             {{- end }}
 # ---
 # apiVersion: batch/v1
 # kind: CronJob
