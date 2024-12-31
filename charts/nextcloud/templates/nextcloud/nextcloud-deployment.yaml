@@ -38,36 +38,6 @@ spec:
             name: "http"
         env:
         {{- include "nextcloud.env" . | trim | nindent 10 }}
-        livenessProbe:
-          httpGet:
-            path: /status.php
-            port: {{ .Values.nextcloud.port }}
-            httpHeaders:
-            - name: Host
-              value: {{ .Values.nextcloud.host | quote }}
-          initialDelaySeconds: 60
-          periodSeconds: 20
-          timeoutSeconds: 5
-        readinessProbe:
-          httpGet:
-            path: /status.php
-            port: {{ .Values.nextcloud.port }}
-            httpHeaders:
-            - name: Host
-              value: {{ .Values.nextcloud.host | quote }}
-          initialDelaySeconds: 60
-          periodSeconds: 20
-          timeoutSeconds: 5
-        startupProbe:
-          httpGet:
-            path: /status.php
-            port: {{ .Values.nextcloud.port }}
-            httpHeaders:
-            - name: Host
-              value: {{ .Values.nextcloud.host | quote }}
-          initialDelaySeconds: 60
-          periodSeconds: 30
-          timeoutSeconds: 5
         volumeMounts:
           {{- include "nextcloud.volumeMounts" . | trim | nindent 10 }}
           - mountPath: /docker-entrypoint-hooks.d/
