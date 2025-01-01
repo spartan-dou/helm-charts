@@ -27,6 +27,8 @@ nextcloud:
     fromAddress: "" # Set the local-part for the 'from' field in the emails sent by Nextcloud.
     mailDomain: ""
   phoneRegion: FR
+  defaultLanguage: fr
+  defaultLocale: fr-FR
   apps:
     update: false
     install: []
