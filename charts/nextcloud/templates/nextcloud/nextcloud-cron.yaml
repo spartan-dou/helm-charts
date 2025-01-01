@@ -33,13 +33,13 @@ spec:
               runAsUser: 82
               runAsGroup: 82
             env:
-            {{- include "nextcloud.env" . | trim | nindent 14 }}
+              {{- include "nextcloud.env" . | trim | nindent 14 }}
             args:
             - php
             - -f
             - /var/www/html/cron.php
             volumeMounts:
-            {{- include "nextcloud.volumeMounts" . | trim | nindent 14 }}
+              {{- include "nextcloud.volumeMounts" . | trim | nindent 14 }}
           restartPolicy: OnFailure
 ---
 apiVersion: batch/v1
@@ -68,6 +68,13 @@ spec:
               {{- else }}
               emptyDir: {}
               {{- end }}
+            - name: nextcloud-hooks-folder
+              {{- if .Values.nextcloud.persistence.hooks.enabled }}
+              persistentVolumeClaim:
+                claimName: {{ if .Values.nextcloud.persistence.hooks.existingClaim }}{{ .Values.nextcloud.persistence.hooks.existingClaim }}{{- else }}nextcloud-hooks-pvc{{- end }}
+              {{- else }}
+              emptyDir: {}
+              {{- end }}
           securityContext:
             fsGroup: 82
           containers:
@@ -77,11 +84,14 @@ spec:
               runAsUser: 82
               runAsGroup: 82
             env:
-            {{- include "nextcloud.env" . | trim | nindent 14 }}
+              {{- include "nextcloud.env" . | trim | nindent 14 }}
             args:
-            - php
-            - -f
-            - /var/www/html/cron.php
+            - sh
+            - -c
+            - /docker-entrypoint-hooks.d/cron/cron.sh
             volumeMounts:
-            {{- include "nextcloud.volumeMounts" . | trim | nindent 14 }}
+              {{- include "nextcloud.volumeMounts" . | trim | nindent 14 }}
+              - name: nextcloud-hooks-folder
+                mountPath: /docker-entrypoint-hooks.d/cron/cron.sh
+                subPath: cron.sh
           restartPolicy: OnFailure

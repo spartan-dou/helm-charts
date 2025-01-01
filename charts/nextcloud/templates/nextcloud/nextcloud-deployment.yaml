@@ -21,7 +21,8 @@ spec:
       labels:
         {{- include "nextcloud.selectorLabels" . | nindent 8 }}
         app.kubernetes.io/component: nextcloud
-        hooks-hash: {{ (printf "%.63s" (tpl (.Files.Get "files/before-starting.sh.tpl") . | sha256sum)) }}
+        hooks/hash: {{ (printf "%.63s" (tpl (.Files.Get "files/before-starting.sh.tpl") . | sha256sum)) }}
+        nginx/hash: {{ (printf "%.63s" (tpl (.Files.Get "files/default.conf.tpl") . | sha256sum)) }}
     spec:
       securityContext:
         fsGroup: 82
@@ -37,50 +38,19 @@ spec:
             name: "http"
         env:
         {{- include "nextcloud.env" . | trim | nindent 10 }}
-        # livenessProbe:
-        #   httpGet:
-        #     path: /status.php
-        #     port: {{ .Values.nextcloud.port }}
-        #   initialDelaySeconds: 30
-        #   periodSeconds: 10
-        #   timeoutSeconds: 5
-        #   successThreshold: 1
-        #   failureThreshold: 1
-        # readinessProbe:
-        #   httpGet:
-        #     path: /status.php
-        #     port: {{ .Values.nextcloud.port }}
-        #     httpHeaders:
-        #     - name: Host
-        #       value: {{ $.Values.nextcloud.host | quote }}
-        #   initialDelaySeconds: 30
-        #   periodSeconds: 10
-        #   timeoutSeconds: 5
-        #   successThreshold: 1
-        #   failureThreshold: 1
-        # startupProbe:
-        #   httpGet:
-        #     path: /status.php
-        #     port: {{ .Values.nextcloud.port }}
-        #     httpHeaders:
-        #     - name: Host
-        #       value: {{ $.Values.nextcloud.host | quote }}
-        #   initialDelaySeconds: 30
-        #   periodSeconds: 15
-        #   timeoutSeconds: 5
-        #   successThreshold: 1
-        #   failureThreshold: 1
         volumeMounts:
           {{- include "nextcloud.volumeMounts" . | trim | nindent 10 }}
           - mountPath: /docker-entrypoint-hooks.d/
             name: nextcloud-hooks-folder
+          - mountPath: /tmp
+            name: tmp
       initContainers:
         - name: check-db-ready
           image: bitnami/postgresql:16
           command: ['sh', '-c', 'until pg_isready -d nextcloud -U nextcloud -h {{ .Release.Name }}-cnpg-r; do "echo waiting for database"; sleep 2; done;']
         - name: init-hooks
           image: busybox
-          command: ['sh', '-c', 'ls -l /tmp/hooks/before-starting && cp -r -f /tmp/hooks/* /docker-entrypoint-hooks.d/ && chown -R 33:33 /docker-entrypoint-hooks.d/ && chmod -R 755 /docker-entrypoint-hooks.d/']
+          command: ['sh', '-c', 'cp -r -f /tmp/hooks/* /docker-entrypoint-hooks.d/ && chown -R 82:82 /docker-entrypoint-hooks.d/ && chmod -R 755 /docker-entrypoint-hooks.d/']
           volumeMounts:
           - mountPath: /tmp/hooks/before-starting/before-starting.sh
             name: nextcloud-hooks
@@ -116,6 +86,9 @@ spec:
           {{- else }}
           emptyDir: {}
           {{- end }}
+        - name: tmp
+          emptyDir:
+            medium: "Memory"
         - name: nextcloud-hooks-folder
           {{- if .Values.nextcloud.persistence.hooks.enabled }}
           persistentVolumeClaim:

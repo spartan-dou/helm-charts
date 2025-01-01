@@ -88,26 +88,6 @@ php /var/www/html/occ config:app:set richdocuments wopi_allowlist --value="$COLL
 php /var/www/html/occ app:remove richdocuments
 {{- end }}
 
-# # Memories
-# {{- if .Values.memories.enabled }}
-# echo "Installation de Memories"
-# if ! [ -d "/var/www/html/custom_apps/memories" ]; then
-#     php /var/www/html/occ app:install memories
-# elif [ "$(php /var/www/html/occ config:app:get memories enabled)" != "yes" ]; then
-#     php /var/www/html/occ app:enable memories
-    
-# fi
-# if [ $UPDATE_APPS ]; then
-# php /var/www/html/occ app:update memories
-# fi
-
-# php /var/www/html/occ config:system:set memories.vod.external --value true --type bool
-# php /var/www/html/occ config:system:set memories.vod.connect --value {{ template "nextcloud.fullname" . }}-memories:47788
-# {{- else }}
-# php /var/www/html/occ app:remove memories
-# {{- end }}
-
-
 # Fulltextsearch
 {{- if .Values.fulltextsearch.enabled }}
 
@@ -207,33 +187,6 @@ if [ -n "$(php /var/www/html/occ config:system:get preview_imaginary_url)" ]; th
 fi
 {{- end }}
 
-# # Facerognition
-# {{- if .Values.facerecognition.enabled }}
-# echo "Installation de facerecognition"
-# if ! [ -d "/var/www/html/custom_apps/facerecognition" ]; then
-#     php /var/www/html/occ app:install facerecognition
-# elif [ "$(php /var/www/html/occ config:app:get facerecognition enabled)" != "yes" ]; then
-#     php /var/www/html/occ app:enable facerecognition
-# elif [ $UPDATE_APPS ]; then
-#     php /var/www/html/occ app:update facerecognition
-# fi
-
-# php /var/www/html/occ config:system:set facerecognition.external_model_url --value {{ template "nextcloud.fullname" . }}-facerecognition:5000
-# php /var/www/html/occ config:system:set facerecognition.external_model_api_key --value {{ .Values.facerecognition.secret }}
-# php /var/www/html/occ face:setup -m 5
-# php /var/www/html/occ face:setup -M 1G
-# php /var/www/html/occ config:app:set facerecognition analysis_image_area --value 4320000
-# php /var/www/html/occ config:system:set enabledFaceRecognitionMimetype 0 --value image/jpeg
-# php /var/www/html/occ config:system:set enabledFaceRecognitionMimetype 1 --value image/png
-# php /var/www/html/occ config:system:set enabledFaceRecognitionMimetype 2 --value image/heic
-# php /var/www/html/occ config:system:set enabledFaceRecognitionMimetype 3 --value image/tiff
-# php /var/www/html/occ config:system:set enabledFaceRecognitionMimetype 4 --value image/webp
-# php /var/www/html/occ face:background_job --defer-clustering &
-
-# {{- else }}
-# php /var/www/html/occ app:remove facerecognition
-# {{- end }}
-
 # # Apply log settings
 # echo "Applying default settings..."
 php /var/www/html/occ config:system:set loglevel --value="2" --type=integer
@@ -283,7 +236,10 @@ php /var/www/html/occ maintenance:repair --include-expensive
 php /var/www/html/occ db:add-missing-indices
 
 php /var/www/html/occ config:system:set default_phone_region --value="{{ .Values.nextcloud.phoneRegion }}"
+php /var/www/html/occ config:system:set default_language --value="{{ .Values.nextcloud.defaultLanguage }}" 
+php /var/www/html/occ config:system:set default_locale --value="{{ .Values.nextcloud.defaultLocale }}"
 
+php /var/www/html/occ config:system:set maintenance_window_start --type=integer --value=1
 
 # Install some apps by default
 {{- range .Values.nextcloud.apps.install }}
@@ -303,5 +259,52 @@ count=1
 php occ config:system:set trusted_domains $count --value={{ . }}
 count=$((count + 1))
 {{- end }}
+php occ config:system:set  overwrite.cli.url -value=https://{{ .Values.nextcloud.host }}
+# # Facerognition
+{{- if .Values.facerecognition.enabled }}
+echo "Installation de facerecognition"
+if ! [ -d "/var/www/html/custom_apps/facerecognition" ]; then
+    php /var/www/html/occ app:install facerecognition
+elif [ "$(php /var/www/html/occ config:app:get facerecognition enabled)" != "yes" ]; then
+    php /var/www/html/occ app:enable facerecognition
+elif [ $UPDATE_APPS ]; then
+    php /var/www/html/occ app:update facerecognition
+fi
+
+php /var/www/html/occ config:system:set facerecognition.external_model_url --value {{ template "nextcloud.fullname" . }}-facerecognition:5000
+php /var/www/html/occ config:system:set facerecognition.external_model_api_key --value {{ .Values.facerecognition.secret }}
+php /var/www/html/occ face:setup -m 5
+php /var/www/html/occ face:setup -M 1G
+php /var/www/html/occ config:app:set facerecognition analysis_image_area --value 4320000
+php /var/www/html/occ config:system:set enabledFaceRecognitionMimetype 0 --value image/jpeg
+php /var/www/html/occ config:system:set enabledFaceRecognitionMimetype 1 --value image/png
+php /var/www/html/occ config:system:set enabledFaceRecognitionMimetype 2 --value image/heic
+php /var/www/html/occ config:system:set enabledFaceRecognitionMimetype 3 --value image/tiff
+php /var/www/html/occ config:system:set enabledFaceRecognitionMimetype 4 --value image/webp
+php /var/www/html/occ face:background_job --defer-clustering &
+
+{{- else }}
+php /var/www/html/occ app:remove facerecognition
+{{- end }}
+
+
+# # Memories
+{{- if .Values.memories.enabled }}
+echo "Installation de Memories"
+if ! [ -d "/var/www/html/custom_apps/memories" ]; then
+    php /var/www/html/occ app:install memories
+elif [ "$(php /var/www/html/occ config:app:get memories enabled)" != "yes" ]; then
+    php /var/www/html/occ app:enable memories
+    
+elif [ $UPDATE_APPS ]; then
+    php /var/www/html/occ app:update memories
+fi
+
+php /var/www/html/occ config:system:set memories.vod.external --value true --type bool
+php /var/www/html/occ config:system:set memories.vod.connect --value {{ template "nextcloud.fullname" . }}-memories:47788
+{{- else }}
+php /var/www/html/occ app:remove memories
+{{- end }}
+
 
 echo "before statring end"
