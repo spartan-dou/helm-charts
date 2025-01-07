@@ -20,21 +20,7 @@ spec:
     spec:
       serviceAccountName: {{ include "mosquitto.serviceAccountName" . }}
       securityContext:
-        runAsUser: 1000
-        runAsGroup: 1000
-        fsGroup: 1000
-      initContainers:
-        - name: init-config
-          image: busybox
-          securityContext:
-            runAsUser: 0
-          command: ['sh', '-c', 'cp /tmp/configuration.yaml /app/data/configuration.yaml']
-          volumeMounts:
-            - name: data
-              mountPath: /app/data
-            - mountPath: /tmp/configuration.yaml
-              subPath: configuration.yaml
-              name: configmap
+        privileged: true
       containers:
         - name: zigbee2mqtt
           image: "{{ .Values.addons.zigbee2mqtt.image.repository }}:{{ .Values.addons.zigbee2mqtt.image.tag }}"
@@ -43,17 +29,28 @@ spec:
             - name: "main"
               containerPort: {{ .Values.addons.zigbee2mqtt.service.port }}
               protocol: TCP
+          env:
+            - name: TZ
+              value: {{ .Values.timezone }}
           livenessProbe:
-            {{- toYaml .Values.addons.zigbee2mqtt.livenessProbe | nindent 12 }}
-          readinessProbe:
-            {{- toYaml .Values.addons.zigbee2mqtt.readinessProbe | nindent 12 }}
-          resources:
-            {{- toYaml .Values.addons.zigbee2mqtt.resources | nindent 12 }}
+            failureThreshold: 5
+            httpGet:
+              path: /
+              port: web
+            initialDelaySeconds: 60
+            timeoutSeconds: 10
+            periodSeconds: 30
           volumeMounts:
             - mountPath: /app/data
               name: data
+            - mountPath: /app/data/configuration.yaml
+              subPath: configuration.yaml
             - name: usb-device
               mountPath: {{ .Values.addons.zigbee2mqtt.zigbee }}
+          {{- with .Values.addons.zigbee2mqtt.resources }}
+          resources:
+            {{ . | nindent 12 }}
+          {{- end }}
       volumes:
         - name: configmap
           configMap:

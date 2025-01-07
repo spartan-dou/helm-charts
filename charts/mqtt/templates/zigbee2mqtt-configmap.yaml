@@ -7,8 +7,13 @@ data:
   configuration.yaml: |
     # Home Assistant integration (MQTT discovery)
     homeassistant: {{ .Values.addons.zigbee2mqtt.homeassistant }}
+    {{- if .Values.addons.zigbee2mqtt.homeassistant }}
+    discovery_topic: 'homeassistant'
+    status_topic: 'hass/status'
+    {{- end }}
 
-    frontend: true
+    frontend:
+      port: 8080
 
     # allow new devices to join
     permit_join: true
