@@ -85,6 +85,22 @@ entries:
     version: 1.0.0
   home-assistant:
   - apiVersion: v2
+    appVersion: 2025.1.1
+    created: "2025-01-07T19:02:06.602226993Z"
+    description: Home Assistant
+    digest: 57859bb7121e08da645d19058e92080d33cf9cf9be4c765e03289cd951c64024
+    home: https://www.home-assistant.io/
+    icon: https://commons.wikimedia.org/wiki/File:New_Home_Assistant_logo.svg
+    keywords:
+    - home-assistant
+    - domotique
+    - vscode
+    name: home-assistant
+    type: application
+    urls:
+    - https://github.com/spartan-dou/helm-charts/releases/download/home-assistant-1.1.0/home-assistant-1.1.0.tgz
+    version: 1.1.0
+  - apiVersion: v2
     appVersion: 2024.12.5
     created: "2024-12-23T17:11:15.400077069Z"
     description: Home Assistant
@@ -326,6 +342,21 @@ entries:
     - https://github.com/spartan-dou/helm-charts/releases/download/mosquitto-1.0.0/mosquitto-1.0.0.tgz
     version: 1.0.0
   mqtt:
+  - apiVersion: v2
+    appVersion: 1.0.2
+    created: "2025-01-07T19:02:06.690522331Z"
+    description: A Helm chart for mqtt
+    digest: 3c3acc5918a0302cc378a027883bfa7e987d0a46d00a37c4fd3652c77d6ec1b8
+    keywords:
+    - mosquitto
+    - domotique
+    - mqtt
+    - zigbee2mqtt
+    name: mqtt
+    type: application
+    urls:
+    - https://github.com/spartan-dou/helm-charts/releases/download/mqtt-1.0.2/mqtt-1.0.2.tgz
+    version: 1.0.2
   - apiVersion: v2
     appVersion: 1.0.0
     created: "2024-12-29T13:26:45.473408539Z"
@@ -645,4 +676,4 @@ entries:
     urls:
     - https://github.com/spartan-dou/helm-charts/releases/download/vaultwarden-0.0.2/vaultwarden-0.0.2.tgz
     version: 0.0.2
-generated: "2025-01-01T18:32:54.080461211Z"
+generated: "2025-01-07T19:02:06.784698627Z"
