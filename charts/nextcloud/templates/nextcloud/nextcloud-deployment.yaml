@@ -44,6 +44,10 @@ spec:
             name: nextcloud-hooks-folder
           - mountPath: /tmp
             name: tmp
+          {{- range .Values.nextcloud.media }}
+          - name: {{ .name }}
+            mountPath: {{ .dir }}
+          {{- end }}
       initContainers:
         - name: check-db-ready
           image: bitnami/postgresql:16
@@ -96,6 +100,12 @@ spec:
           {{- else }}
           emptyDir: {}
           {{- end }}
+        {{- range .Values.nextcloud.media }}
+        - name: {{ .name }}
+          hostPath:
+            path: {{ .hostPath }}
+            type: Directory
+        {{- end }}
         - name: nextcloud-hooks
           configMap:
             name: nextcloud-hooks
