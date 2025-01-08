@@ -37,6 +37,8 @@ spec:
             protocol: TCP
             name: "http"
         env:
+          - name: TZ
+            value: {{ .Values.timezone }}
         {{- include "nextcloud.env" . | trim | nindent 10 }}
         volumeMounts:
           {{- include "nextcloud.volumeMounts" . | trim | nindent 10 }}
