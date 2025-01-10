@@ -9,12 +9,9 @@ metadata:
 spec:
   type: {{ .Values.httpd.service.type }}
   ports:
-    - name: "httpd-tcp"
+    - name: "httpd"
       port: 8000
-      targetPort: "httpd-tcp"
-    - name: "httpd-udp"
-      port: 8000
-      targetPort: "httpd-udp"
+      targetPort: "httpd"
   selector:
     {{- include "nextcloud.selectorLabels" . | nindent 4 }}
     app.kubernetes.io/component: httpd

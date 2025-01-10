@@ -85,7 +85,7 @@ spec:
               runAsGroup: 82
             env:
               {{- include "nextcloud.env" . | trim | nindent 14 }}
-            args:
+            command:
             - sh
             - -c
             - /docker-entrypoint-hooks.d/cron/cron.sh
