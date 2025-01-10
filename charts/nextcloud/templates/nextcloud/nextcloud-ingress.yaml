@@ -70,7 +70,7 @@ spec:
               service:
                 name: {{ template "nextcloud.fullname" . }}-httpd
                 port:
-                  name: "httpd-tcp"
+                  name: "httpd"
           {{- end }}
           {{- if .Values.whiteboard.enabled }}
           - path: /whiteboard
