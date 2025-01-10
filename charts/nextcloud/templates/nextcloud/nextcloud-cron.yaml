@@ -25,16 +25,16 @@ spec:
               emptyDir: {}
               {{- end }}
           securityContext:
-            fsGroup: 82
+            fsGroup: 33
           containers:
           - name: nextcloud-cron
             image: "{{ .Values.nextcloud.image.repository }}:{{ .Values.nextcloud.image.tag }}{{- with .Values.nextcloud.image.flavor }}-{{ . }}{{- end }}"
             securityContext:
-              runAsUser: 82
-              runAsGroup: 82
+              runAsUser: 33
+              runAsGroup: 33
             env:
               {{- include "nextcloud.env" . | trim | nindent 14 }}
-            args:
+            command:
             - php
             - -f
             - /var/www/html/cron.php
@@ -76,16 +76,16 @@ spec:
               emptyDir: {}
               {{- end }}
           securityContext:
-            fsGroup: 82
+            fsGroup: 33
           containers:
           - name: nextcloud-cron
             image: "{{ .Values.nextcloud.image.repository }}:{{ .Values.nextcloud.image.tag }}{{- with .Values.nextcloud.image.flavor }}-{{ . }}{{- end }}"
             securityContext:
-              runAsUser: 82
-              runAsGroup: 82
+              runAsUser: 33
+              runAsGroup: 33
             env:
               {{- include "nextcloud.env" . | trim | nindent 14 }}
-            args:
+            command:
             - sh
             - -c
             - /docker-entrypoint-hooks.d/cron/cron.sh

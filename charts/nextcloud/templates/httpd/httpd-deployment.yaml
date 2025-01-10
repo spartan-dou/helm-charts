@@ -22,8 +22,10 @@ spec:
       labels:
         {{- include "nextcloud.selectorLabels" . | nindent 8 }}
         app.kubernetes.io/component: httpd
-        nginx/hash: {{ (printf "%.63s" (tpl (.Files.Get "files/nextcloud.conf.tpl") . | sha256sum)) }}
+        nginx/hash: {{ tpl (.Files.Get "files/nextcloud.conf.tpl") . | sha256sum | trunc 63 }}
     spec:
+      securityContext:
+        fsGroup: 33
       containers:
       - env:
           - name: TZ
@@ -32,16 +34,16 @@ spec:
         name: httpd
         ports:
           - containerPort: 8000
-            protocol: TCP
-            name: "httpd-tcp"
-          - containerPort: 8000
-            protocol: UPD
-            name: "httpd-udp"
+            name: "httpd"
         volumeMounts:
           {{- include "nextcloud.volumeMounts" . | trim | nindent 10 }}
           - mountPath: /usr/local/apache2/conf/nextcloud.conf
             name: httpd
             subPath: nextcloud.conf
+            readOnly: true
+          - mountPath: /usr/local/apache2/conf/httpd.conf
+            name: httpd
+            subPath: httpd.conf
             readOnly: true
       volumes:
       - name: nextcloud-data

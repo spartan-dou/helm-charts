@@ -23,6 +23,10 @@ Listen 8000
         BrotliCompressionQuality 0
     </IfModule>
 
+    <IfModule mod_headers.c>
+      Header always set Strict-Transport-Security "max-age=15552000; includeSubDomains; preload"
+    </IfModule>
+
     # Nextcloud dir
     DocumentRoot /var/www/html/
     <Directory /var/www/html/>
@@ -41,13 +45,13 @@ Listen 8000
     </Files>
 
     # See https://httpd.apache.org/docs/current/en/mod/core.html#limitrequestbody
-    LimitRequestBody 102400
+    LimitRequestBody {{ include "convertToBytes" .Values.nextcloud.php.uploadLimit }}
 
     # See https://httpd.apache.org/docs/current/mod/core.html#timeout
-    Timeout 6000
+    Timeout 3600
 
     # See https://httpd.apache.org/docs/current/mod/mod_proxy.html#proxytimeout
-    ProxyTimeout 6000
+    ProxyTimeout 3600
 
     # See https://httpd.apache.org/docs/trunk/mod/core.html#traceenable
     TraceEnable Off
