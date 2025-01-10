@@ -137,8 +137,8 @@ LoadModule rewrite_module modules/mod_rewrite.so
 
 <IfModule unixd_module>
 
-User www-data
-Group www-data
+User 82
+Group 82
 
 </IfModule>
 

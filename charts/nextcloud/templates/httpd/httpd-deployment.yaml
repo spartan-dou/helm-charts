@@ -24,11 +24,16 @@ spec:
         app.kubernetes.io/component: httpd
         nginx/hash: {{ (printf "%.63s" (tpl (.Files.Get "files/nextcloud.conf.tpl") . | sha256sum)) }}
     spec:
+      securityContext:
+        fsGroup: 82
       containers:
       - env:
           - name: TZ
             value: "{{ .Values.timezone }}"
         image: "{{ .Values.httpd.repository }}:{{ .Values.httpd.tag }}"
+        securityContext:
+          runAsUser: 82
+          runAsGroup: 82
         name: httpd
         ports:
           - containerPort: 8000
