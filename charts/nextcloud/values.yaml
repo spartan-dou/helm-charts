@@ -79,10 +79,18 @@ redis:
       storageClass: ""
 
 nginx:
-  enabled: true
+  enabled: false
   replicaCount: 1
   repository: "nginx"
-  tag: "alpine"
+  tag: "1.27.3-alpine"
+  service:
+    type: ClusterIP
+
+httpd:
+  enabled: true
+  replicaCount: 1
+  repository: "httpd"
+  tag: "2.4.62-alpine"
   service:
     type: ClusterIP
 

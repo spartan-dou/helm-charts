@@ -1,13 +1,13 @@
-{{- if .Values.nginx.enabled }}
+{{- if .Values.httpd.enabled }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "nextcloud.fullname" . }}-nginx
+  name: {{ include "nextcloud.fullname" . }}-httpd
   labels:
     {{- include "nextcloud.labels" . | nindent 4 }}
-    app.kubernetes.io/component: nginx
+    app.kubernetes.io/component: httpd
 spec:
-  replicas: {{ .Values.nginx.replicaCount }}
+  replicas: {{ .Values.httpd.replicaCount }}
   strategy:
     type: RollingUpdate
     rollingUpdate:
@@ -16,39 +16,34 @@ spec:
   selector:
     matchLabels:
       {{- include "nextcloud.selectorLabels" . | nindent 6 }}
-      app.kubernetes.io/component: nginx
+      app.kubernetes.io/component: httpd
   template:
     metadata:
       labels:
         {{- include "nextcloud.selectorLabels" . | nindent 8 }}
-        app.kubernetes.io/component: nginx
-        nginx/hash: {{ tpl (.Files.Get "files/default.conf.tpl") . | sha256sum | trunc 63  }}
-        nginx/hash: {{ tpl (.Files.Get "files/nginx.conf.tpl") . | sha256sum | trunc 63  }}
+        app.kubernetes.io/component: httpd
+        nginx/hash: {{ tpl (.Files.Get "files/nextcloud.conf.tpl") . | sha256sum | trunc 63 }}
     spec:
-      # securityContext:
-      #   fsGroup: 82
+      securityContext:
+        fsGroup: 33
       containers:
       - env:
           - name: TZ
             value: "{{ .Values.timezone }}"
-        image: "{{ .Values.nginx.repository }}:{{ .Values.nginx.tag }}"
-        name: nginx
-        # securityContext:
-        #   runAsUser: 82
-        #   runAsGroup: 82
+        image: "{{ .Values.httpd.repository }}:{{ .Values.httpd.tag }}"
+        name: httpd
         ports:
-          - containerPort: 80
-            protocol: TCP
-            name: "nginx"
+          - containerPort: 8000
+            name: "httpd"
         volumeMounts:
           {{- include "nextcloud.volumeMounts" . | trim | nindent 10 }}
-          - mountPath: /etc/nginx/conf.d/default.conf
-            name: nginx
-            subPath: default.conf
+          - mountPath: /usr/local/apache2/conf/nextcloud.conf
+            name: httpd
+            subPath: nextcloud.conf
             readOnly: true
-          - mountPath: /etc/nginx/nginx.conf
-            name: nginx
-            subPath: nginx.conf
+          - mountPath: /usr/local/apache2/conf/httpd.conf
+            name: httpd
+            subPath: httpd.conf
             readOnly: true
       volumes:
       - name: nextcloud-data
@@ -66,7 +61,7 @@ spec:
         {{- else }}
         emptyDir: {}
         {{- end }}
-      - name: nginx
+      - name: httpd
         configMap:
-            name: nginx
+            name: httpd
 {{- end }}

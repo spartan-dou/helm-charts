@@ -61,6 +61,26 @@ Create the name of the service account to use
 {{- end }}
 {{- end }}
 
+{{- define "convertToBytes" -}}
+{{- $size := . -}}
+{{- $unit := regexFind "[a-zA-Z]+" $size -}}
+{{- $value := regexFind "[0-9.]+" $size | float64 -}}
+{{- $bytes := 0 -}}
+
+{{- if eq $unit "K" -}}
+  {{- $bytes = mul $value 1024 -}}
+{{- else if eq $unit "M" -}}
+  {{- $bytes = mul $value 1024 | mul 1024 -}}
+{{- else if eq $unit "G" -}}
+  {{- $bytes = mul $value 1024 | mul 1024 | mul 1024 -}}
+{{- else -}}
+  {{- $bytes = $value -}}
+{{- end -}}
+
+{{ $bytes }}
+{{- end -}}
+
+
 {{/*
 Create volume mounts for the nextcloud container as well as the cron sidecar container.
 */}}

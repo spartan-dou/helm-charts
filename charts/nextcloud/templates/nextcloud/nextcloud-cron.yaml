@@ -4,6 +4,8 @@ metadata:
   name: nextcloud-cron
 spec:
   schedule: "*/5 * * * *"  # Exécution toutes les 5 minutes
+  successfulJobsHistoryLimit: 1
+  failedJobsHistoryLimit: 1
   jobTemplate:
     spec:
       template:
@@ -25,19 +27,19 @@ spec:
               emptyDir: {}
               {{- end }}
           securityContext:
-            fsGroup: 82
+            fsGroup: 33
           containers:
           - name: nextcloud-cron
             image: "{{ .Values.nextcloud.image.repository }}:{{ .Values.nextcloud.image.tag }}{{- with .Values.nextcloud.image.flavor }}-{{ . }}{{- end }}"
             securityContext:
-              runAsUser: 82
-              runAsGroup: 82
+              runAsUser: 33
+              runAsGroup: 33
             env:
               {{- include "nextcloud.env" . | trim | nindent 14 }}
-            args:
-            - php
-            - -f
-            - /var/www/html/cron.php
+            command:
+            - /bin/sh
+            - -c
+            - echo "begining cronjob"; php -f /var/www/html/cron.php
             volumeMounts:
               {{- include "nextcloud.volumeMounts" . | trim | nindent 14 }}
           restartPolicy: OnFailure
@@ -48,6 +50,8 @@ metadata:
   name: application-cron
 spec:
   schedule: "0 2 * * *"
+  successfulJobsHistoryLimit: 1
+  failedJobsHistoryLimit: 1
   jobTemplate:
     spec:
       template:
@@ -76,19 +80,19 @@ spec:
               emptyDir: {}
               {{- end }}
           securityContext:
-            fsGroup: 82
+            fsGroup: 33
           containers:
           - name: nextcloud-cron
             image: "{{ .Values.nextcloud.image.repository }}:{{ .Values.nextcloud.image.tag }}{{- with .Values.nextcloud.image.flavor }}-{{ . }}{{- end }}"
             securityContext:
-              runAsUser: 82
-              runAsGroup: 82
+              runAsUser: 33
+              runAsGroup: 33
             env:
               {{- include "nextcloud.env" . | trim | nindent 14 }}
-            args:
-            - sh
+            command:
+            - /bin/sh
             - -c
-            - /docker-entrypoint-hooks.d/cron/cron.sh
+            - ls -l /docker-entrypoint-hooks.d/cron/; sh /docker-entrypoint-hooks.d/cron/cron.sh
             volumeMounts:
               {{- include "nextcloud.volumeMounts" . | trim | nindent 14 }}
               - name: nextcloud-hooks-folder

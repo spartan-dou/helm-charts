@@ -35,27 +35,24 @@ spec:
             - containerPort: 9000
               protocol: TCP
               name: "imaginary"
-          startupProbe:
-            exec:
-              command:
-                - /healthcheck.sh
-            initialDelaySeconds: 10
-            periodSeconds: 5
-            failureThreshold: 30
           readinessProbe:
-            exec:
-              command:
-                - /healthcheck.sh
-            initialDelaySeconds: 5
-            periodSeconds: 10
+            httpGet:
+              path: /health
+              port: imaginary
+              scheme: HTTP
             failureThreshold: 3
+            successThreshold: 1
+            periodSeconds: 10
+            timeoutSeconds: 1
           livenessProbe:
-            exec:
-              command:
-                - /healthcheck.sh
-            initialDelaySeconds: 15
-            periodSeconds: 20
-            failureThreshold: 5
+            httpGet:
+              path: /health
+              port: imaginary
+              scheme: HTTP
+            failureThreshold: 3
+            successThreshold: 1
+            periodSeconds: 10
+            timeoutSeconds: 1
           securityContext:
             runAsUser: 1000
             runAsNonRoot: true

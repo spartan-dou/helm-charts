@@ -21,17 +21,16 @@ spec:
       labels:
         {{- include "nextcloud.selectorLabels" . | nindent 8 }}
         app.kubernetes.io/component: nextcloud
-        hooks/hash: {{ (printf "%.63s" (tpl (.Files.Get "files/before-starting.sh.tpl") . | sha256sum)) }}
-        nginx/hash: {{ (printf "%.63s" (tpl (.Files.Get "files/default.conf.tpl") . | sha256sum)) }}
+        hooks/hash: {{ tpl (.Files.Get "files/before-starting.sh.tpl") . | sha256sum | trunc 63 }}
     spec:
       securityContext:
-        fsGroup: 82
+        fsGroup: 33
       containers:
       - name: {{ .Chart.Name }}
         image: "{{ .Values.nextcloud.image.repository }}:{{ .Values.nextcloud.image.tag }}{{- with .Values.nextcloud.image.flavor }}-{{ . }}{{- end }}"
         securityContext:
-          runAsUser: 82
-          runAsGroup: 82
+          runAsUser: 33
+          runAsGroup: 33
         ports:
           - containerPort: {{ .Values.nextcloud.port }}
             protocol: TCP
@@ -56,7 +55,7 @@ spec:
           command: ['sh', '-c', 'until pg_isready -d nextcloud -U nextcloud -h {{ .Release.Name }}-cnpg-r; do "echo waiting for database"; sleep 2; done;']
         - name: init-hooks
           image: busybox
-          command: ['sh', '-c', 'cp -r -f /tmp/hooks/* /docker-entrypoint-hooks.d/ && chown -R 82:82 /docker-entrypoint-hooks.d/ && chmod -R 755 /docker-entrypoint-hooks.d/']
+          command: ['sh', '-c', 'cp -r -f /tmp/hooks/* /docker-entrypoint-hooks.d/ && chown -R 33:33 /docker-entrypoint-hooks.d/ && chmod -R 755 /docker-entrypoint-hooks.d/']
           volumeMounts:
           - mountPath: /tmp/hooks/before-starting/before-starting.sh
             name: nextcloud-hooks
@@ -70,9 +69,9 @@ spec:
             - -c
             - |
               chmod -R 755 {{ .Values.nextcloud.persistence.data.dir }} &&
-              chown -R 82:82 {{ .Values.nextcloud.persistence.data.dir }} &&
+              chown -R 33:33 {{ .Values.nextcloud.persistence.data.dir }} &&
               chmod -R 755 /var/www/html &&
-              chown -R 82:82 /var/www/html
+              chown -R 33:33 /var/www/html
           volumeMounts:
             {{- include "nextcloud.volumeMounts" . | trim | nindent 10 }}
       terminationGracePeriodSeconds: 600
