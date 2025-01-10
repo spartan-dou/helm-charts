@@ -1,0 +1,65 @@
+{{- if .Values.httpd.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "nextcloud.fullname" . }}-httpd
+  labels:
+    {{- include "nextcloud.labels" . | nindent 4 }}
+    app.kubernetes.io/component: httpd
+spec:
+  replicas: {{ .Values.httpd.replicaCount }}
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 25%
+  selector:
+    matchLabels:
+      {{- include "nextcloud.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: httpd
+  template:
+    metadata:
+      labels:
+        {{- include "nextcloud.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/component: httpd
+        nginx/hash: {{ (printf "%.63s" (tpl (.Files.Get "files/nextcloud.conf.tpl") . | sha256sum)) }}
+    spec:
+      containers:
+      - env:
+          - name: TZ
+            value: "{{ .Values.timezone }}"
+        image: "{{ .Values.httpd.repository }}:{{ .Values.httpd.tag }}"
+        name: httpd
+        ports:
+          - containerPort: 8000
+            protocol: TCP
+            name: "httpd-tcp"
+          - containerPort: 8000
+            protocol: UPD
+            name: "httpd-udp"
+        volumeMounts:
+          {{- include "nextcloud.volumeMounts" . | trim | nindent 10 }}
+          - mountPath: /usr/local/apache2/conf/nextcloud.conf
+            name: httpd
+            subPath: nextcloud.conf
+            readOnly: true
+      volumes:
+      - name: nextcloud-data
+        {{- if .Values.nextcloud.persistence.data.enabled }}
+        hostPath:
+          path: {{ .Values.nextcloud.persistence.data.hostPath }}
+          type: Directory
+        {{- else }}
+        emptyDir: {}
+        {{- end }}
+      - name: nextcloud
+        {{- if .Values.nextcloud.persistence.config.enabled }}
+        persistentVolumeClaim:
+          claimName: {{ if .Values.nextcloud.persistence.config.existingClaim }}{{ .Values.nextcloud.persistence.config.existingClaim }}{{- else }}nextcloud-config-pvc{{- end }}
+        {{- else }}
+        emptyDir: {}
+        {{- end }}
+      - name: httpd
+        configMap:
+            name: httpd
+{{- end }}

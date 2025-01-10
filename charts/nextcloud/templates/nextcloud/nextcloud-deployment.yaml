@@ -22,7 +22,6 @@ spec:
         {{- include "nextcloud.selectorLabels" . | nindent 8 }}
         app.kubernetes.io/component: nextcloud
         hooks/hash: {{ (printf "%.63s" (tpl (.Files.Get "files/before-starting.sh.tpl") . | sha256sum)) }}
-        nginx/hash: {{ (printf "%.63s" (tpl (.Files.Get "files/default.conf.tpl") . | sha256sum)) }}
     spec:
       securityContext:
         fsGroup: 82

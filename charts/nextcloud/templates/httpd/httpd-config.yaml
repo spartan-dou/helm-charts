@@ -1,0 +1,9 @@
+{{- if .Values.httpd.enabled }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: nginx
+data:
+  nextcloud.conf: |-
+    {{- tpl (.Files.Get "files/nextcloud.conf.tpl") . | nindent 4 }}
+{{- end }}
