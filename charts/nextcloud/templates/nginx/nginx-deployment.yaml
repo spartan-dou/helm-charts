@@ -22,8 +22,8 @@ spec:
       labels:
         {{- include "nextcloud.selectorLabels" . | nindent 8 }}
         app.kubernetes.io/component: nginx
-        nginx/hash: {{ (printf "%.63s" (tpl (.Files.Get "files/default.conf.tpl") . | sha256sum)) }}
-        nginx/hash: {{ (printf "%.63s" (tpl (.Files.Get "files/nginx.conf.tpl") . | sha256sum)) }}
+        nginx/hash: {{ tpl (.Files.Get "files/default.conf.tpl") . | sha256sum | trunc 63  }}
+        nginx/hash: {{ tpl (.Files.Get "files/nginx.conf.tpl") . | sha256sum | trunc 63  }}
     spec:
       # securityContext:
       #   fsGroup: 82
