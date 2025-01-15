@@ -167,6 +167,7 @@ else
     php /var/www/html/occ config:app:set files_antivirus av_port --value="3310"
     php /var/www/html/occ config:app:set files_antivirus av_host --value="{{ template "nextcloud.fullname" . }}-clamav"
     php /var/www/html/occ config:app:set files_antivirus av_stream_max_length --value="{{ .Values.clamav.uploadLimit }}"
+    php /var/www/html/occ config:app:set files_antivirus av_max_file_size --value="{{ .Values.clamav.uploadLimit }}"
 fi
 {{- else }}
 php /var/www/html/occ app:remove files_antivirus

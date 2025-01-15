@@ -4,6 +4,8 @@ metadata:
   name: nextcloud-cron
 spec:
   schedule: "*/5 * * * *"  # Exécution toutes les 5 minutes
+  successfulJobsHistoryLimit: 1
+  failedJobsHistoryLimit: 1
   jobTemplate:
     spec:
       template:
@@ -35,9 +37,9 @@ spec:
             env:
               {{- include "nextcloud.env" . | trim | nindent 14 }}
             command:
-            - php
-            - -f
-            - /var/www/html/cron.php
+            - /bin/sh
+            - -c
+            - echo "begining cronjob"; php -f /var/www/html/cron.php
             volumeMounts:
               {{- include "nextcloud.volumeMounts" . | trim | nindent 14 }}
           restartPolicy: OnFailure
@@ -48,6 +50,8 @@ metadata:
   name: application-cron
 spec:
   schedule: "0 2 * * *"
+  successfulJobsHistoryLimit: 1
+  failedJobsHistoryLimit: 1
   jobTemplate:
     spec:
       template:
@@ -86,9 +90,9 @@ spec:
             env:
               {{- include "nextcloud.env" . | trim | nindent 14 }}
             command:
-            - sh
+            - /bin/sh
             - -c
-            - /docker-entrypoint-hooks.d/cron/cron.sh
+            - ls -l /docker-entrypoint-hooks.d/cron/; sh /docker-entrypoint-hooks.d/cron/cron.sh
             volumeMounts:
               {{- include "nextcloud.volumeMounts" . | trim | nindent 14 }}
               - name: nextcloud-hooks-folder

@@ -27,6 +27,14 @@ Listen 8000
       Header always set Strict-Transport-Security "max-age=15552000; includeSubDomains; preload"
     </IfModule>
 
+    <IfModule mod_rewrite.c>
+      RewriteEngine on
+      RewriteRule ^\.well-known/carddav /remote.php/dav [R=301,L]
+      RewriteRule ^\.well-known/caldav /remote.php/dav [R=301,L]
+      RewriteRule ^\.well-known/webfinger /index.php/.well-known/webfinger [R=301,L]
+      RewriteRule ^\.well-known/nodeinfo /index.php/.well-known/nodeinfo [R=301,L]
+    </IfModule>
+
     # Nextcloud dir
     DocumentRoot /var/www/html/
     <Directory /var/www/html/>

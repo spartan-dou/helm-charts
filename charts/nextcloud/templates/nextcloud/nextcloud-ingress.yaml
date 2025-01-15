@@ -54,7 +54,7 @@ spec:
     - host: {{ .Values.nextcloud.host }}
       http:
         paths:
-          {{- if .Values.nginx.enabled }}
+          {{- if and .Values.nginx.enabled (not .Values.httpd.enabled) }}
           - path: /
             pathType: Prefix
             backend:
@@ -63,7 +63,7 @@ spec:
                 port:
                   name: "nginx"
           {{- end }}
-          {{- if .Values.httpd.enabled }}
+          {{- if and .Values.httpd.enabled (not .Values.nginx.enabled) }}
           - path: /
             pathType: Prefix
             backend:
@@ -81,15 +81,6 @@ spec:
                 port:
                   name: "whiteboard"
           {{- end }}
-          # {{- if .Values.fulltextsearch.enabled }}
-          # - path: /fulltextsearch
-          #   pathType: Prefix
-          #   backend:
-          #     service:
-          #       name: {{ template "nextcloud.fullname" . }}-fulltextsearch
-          #       port:
-          #         name: "fulltextsearch"
-          # {{- end }}
           {{- if .Values.imaginary.enabled }}
           - path: /imaginary
             pathType: Prefix
