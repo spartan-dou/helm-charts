@@ -40,17 +40,18 @@ spec:
             initialDelaySeconds: 60
             timeoutSeconds: 10
             periodSeconds: 30
-          volumeMounts:
-            - mountPath: /app/data
-              name: data
-            - mountPath: /app/data/configuration.yaml
-              subPath: configuration.yaml
-            - name: usb-device
-              mountPath: {{ .Values.addons.zigbee2mqtt.zigbee }}
           {{- with .Values.addons.zigbee2mqtt.resources }}
           resources:
             {{ toYaml . | nindent 12 }}
           {{- end }}
+          volumeMounts:
+            - mountPath: /app/data
+              name: data
+            - mountPath: /app/data/configuration.yaml
+              name: configmap
+              subPath: configuration.yaml
+            - name: usb-device
+              mountPath: {{ .Values.addons.zigbee2mqtt.zigbee }}
       volumes:
         - name: configmap
           configMap:
