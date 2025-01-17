@@ -50,14 +50,14 @@ spec:
           env:
             - name: TZ
               value: {{ .Values.timezone }}
-          livenessProbe:
-            failureThreshold: 5
-            httpGet:
-              path: /
-              port: main
-            initialDelaySeconds: 60
-            timeoutSeconds: 10
-            periodSeconds: 30
+          # livenessProbe:
+          #   failureThreshold: 5
+          #   httpGet:
+          #     path: /
+          #     port: main
+          #   initialDelaySeconds: 60
+          #   timeoutSeconds: 10
+          #   periodSeconds: 30
           {{- with .Values.addons.zigbee2mqtt.resources }}
           resources:
             {{ toYaml . | nindent 12 }}

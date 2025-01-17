@@ -15,6 +15,4 @@ data:
 
     echo "password_file /mosquitto/configinc/passwordfile" > /mosquitto/configinc/passwordconfig.conf
 
-    chown -R 1883:1883 /mosquitto
-
     echo "Fin de l'initialisation de mqtt"
