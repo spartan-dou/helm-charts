@@ -65,8 +65,8 @@ spec:
           volumeMounts:
             - mountPath: /app/data
               name: data
-            - name: usb-device
-              mountPath: {{ .Values.addons.zigbee2mqtt.zigbee }}
+            - name: zigbee-controller
+              mountPath: {{ .Values.addons.zigbee2mqtt.path }}
       volumes:
         - name: configmap
           configMap:
@@ -78,8 +78,7 @@ spec:
           {{- else }}
           emptyDir: {}
           {{- end }}
-        - name: usb-device
+        - name: zigbee-controller
           hostPath:
-            path: {{ .Values.addons.zigbee2mqtt.zigbee }}
-            type: CharDevice
+            path: {{ .Values.addons.zigbee2mqtt.path }}
 {{- end }}
