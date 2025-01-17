@@ -45,6 +45,9 @@ spec:
             {{- toYaml .Values.flaresolverr.livenessProbe | nindent 12 }}
           readinessProbe:
             {{- toYaml .Values.flaresolverr.readinessProbe | nindent 12 }}
+          resources:
+            {{- toYaml .| nindent 12 }}
+          {{- end }}
       {{- with .Values.flaresolverr.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}

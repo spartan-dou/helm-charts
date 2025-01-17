@@ -61,6 +61,9 @@ spec:
             {{- toYaml .Values.prowlarr.livenessProbe | nindent 12 }}
           readinessProbe:
             {{- toYaml .Values.prowlarr.readinessProbe | nindent 12 }}
+          resources:
+            {{- toYaml .| nindent 12 }}
+          {{- end }}
           volumeMounts:
             - name: prowlarr-config
               mountPath: /config
