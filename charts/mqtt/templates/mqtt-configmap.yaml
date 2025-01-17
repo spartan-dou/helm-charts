@@ -8,7 +8,6 @@ data:
     listener 9001
     protocol websockets
     allow_anonymous false
-    password_file /mosquitto/configinc/passwordfile
     {{- if .Values.persistence.enabled }}
     persistence true
     persistence_location /mosquitto/data
