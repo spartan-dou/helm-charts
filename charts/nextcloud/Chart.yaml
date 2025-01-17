@@ -2,7 +2,7 @@ apiVersion: v2
 name: nextcloud
 description: Nextcloud
 type: application
-version: 0.1.6
+version: 0.1.7
 appVersion: "30.0.4"
 keywords:
   - nextcloud

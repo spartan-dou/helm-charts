@@ -98,7 +98,7 @@ clamav:
   enabled: false
   replicaCount: 1
   repository: "nextcloud/aio-clamav"
-  tag: "20241125_091756"
+  tag: "20250114_092611"
   uploadLimit: 1G
   persistence:
     enabled: true
@@ -133,15 +133,8 @@ imaginary:
   enabled: false
   replicaCount: 1
   repository: "nextcloud/aio-imaginary"
-  tag: "20241125_091756"
+  tag: "20250114_092611"
   secret: "changeme"
-  service:
-    type: ClusterIP
-
-notifyPush:
-  replicaCount: 1
-  repository: "nextcloud/aio-notify-push"
-  tag: "20241125_091756"
   service:
     type: ClusterIP
 
