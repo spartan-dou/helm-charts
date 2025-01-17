@@ -21,6 +21,22 @@ spec:
       serviceAccountName: {{ include "mosquitto.serviceAccountName" . }}
       securityContext:
         privileged: true
+      initContainers:
+        - name: init-volume
+          image: busybox
+          volumeMounts:
+            - mountPath: /app/data
+              name: data
+            - mountPath: /tmp/configuration.yaml
+              name: configmap
+              subPath: configuration.yaml
+          command:
+            - sh
+            - -c
+            - |
+              if [ ! -f "/app/data/configuration.yaml" ]; then
+                cp /tmp/configuration.yaml /app/data/configuration.yaml
+              fi
       containers:
         - name: zigbee2mqtt
           image: "{{ .Values.addons.zigbee2mqtt.image.repository }}:{{ .Values.addons.zigbee2mqtt.image.tag }}"
@@ -47,9 +63,6 @@ spec:
           volumeMounts:
             - mountPath: /app/data
               name: data
-            - mountPath: /app/data/configuration.yaml
-              name: configmap
-              subPath: configuration.yaml
             - name: usb-device
               mountPath: {{ .Values.addons.zigbee2mqtt.zigbee }}
       volumes:
