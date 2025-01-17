@@ -61,6 +61,9 @@ spec:
             {{- toYaml .Values.sonarr.livenessProbe | nindent 12 }}
           readinessProbe:
             {{- toYaml .Values.sonarr.readinessProbe | nindent 12 }}
+          resources:
+            {{- toYaml .| nindent 12 }}
+          {{- end }}
           volumeMounts:
             - name: sonarr-config
               mountPath: /config

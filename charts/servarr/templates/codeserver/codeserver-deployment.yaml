@@ -46,6 +46,9 @@ spec:
           readinessProbe:
             {{- toYaml . | nindent 12 }}
           {{- end }}
+          resources:
+            {{- toYaml .| nindent 12 }}
+          {{- end }}
           volumeMounts:
             - mountPath: /config
               name: codeserver-config

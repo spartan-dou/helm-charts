@@ -43,6 +43,9 @@ spec:
             {{- toYaml .Values.rdtclient.livenessProbe | nindent 12 }}
           readinessProbe:
             {{- toYaml .Values.rdtclient.readinessProbe | nindent 12 }}
+          resources:
+            {{- toYaml .| nindent 12 }}
+          {{- end }}
           volumeMounts:
             - name: rdtclient-config
               mountPath: /data/db
