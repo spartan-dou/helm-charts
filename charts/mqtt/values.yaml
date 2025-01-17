@@ -30,7 +30,7 @@ addons:
     replicaCount: 1
     homeassistant: false
     path: /dev/ttyACM0
-    port: /dev/serial/by-id/
+    port: /dev/ttyACM0
     adapter: deconz
     image:
       repository: koenkk/zigbee2mqtt

@@ -19,8 +19,6 @@ spec:
         app.kubernetes.io/component: zigbee2mqtt
     spec:
       serviceAccountName: {{ include "mosquitto.serviceAccountName" . }}
-      securityContext:
-        privileged: true
       initContainers:
         - name: init-volume
           image: busybox
@@ -41,6 +39,8 @@ spec:
               fi
       containers:
         - name: zigbee2mqtt
+          securityContext:
+            privileged: true
           image: "{{ .Values.addons.zigbee2mqtt.image.repository }}:{{ .Values.addons.zigbee2mqtt.image.tag }}"
           imagePullPolicy: {{ .Values.addons.zigbee2mqtt.image.pullPolicy }}
           ports:
@@ -49,7 +49,7 @@ spec:
               protocol: TCP
           env:
             - name: TZ
-              value: {{ .Values.timezone }}
+              value: {{ .Values.timezone | quote }}
           livenessProbe:
             failureThreshold: 5
             httpGet:
