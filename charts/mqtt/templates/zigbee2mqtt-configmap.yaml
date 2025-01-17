@@ -32,6 +32,5 @@ data:
       password: {{ .Values.password }}
 
     serial:
-      # port: {{ .Values.addons.zigbee2mqtt.port }}
-      # adapter: {{ .Values.addons.zigbee2mqtt.adapter }}
+      port: "{{ .Values.addons.zigbee2mqtt.path }}"
 {{- end }}
