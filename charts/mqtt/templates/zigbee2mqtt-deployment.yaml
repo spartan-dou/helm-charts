@@ -33,9 +33,11 @@ spec:
           command:
             - sh
             - -c
-            - |
-              if [ ! -f "/app/data/configuration.yaml" ]; then
-                cp /tmp/configuration.yaml /app/data/configuration.yaml
+            - >
+              if [ ! -f /app/data/configuration.yaml ]; then
+                cp /tmp/configuration.yaml /app/data/configuration.yaml;
+              else
+                echo "Le fichier /app/data/configuration.yaml existe déjà.";
               fi
       containers:
         - name: zigbee2mqtt
