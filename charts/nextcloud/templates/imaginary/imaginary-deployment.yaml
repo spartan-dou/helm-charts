@@ -23,6 +23,12 @@ spec:
         {{- include "nextcloud.selectorLabels" . | nindent 8 }}
         app.kubernetes.io/component: imaginary
     spec:
+      securityContext:
+        fsGroup: 65534
+        fsGroupChangePolicy: "OnRootMismatch"
+        runAsUser: 65534
+        runAsGroup: 65534
+        runAsNonRoot: true
       containers:
         - env:
             - name: IMAGINARY_SECRET
@@ -36,23 +42,19 @@ spec:
               protocol: TCP
               name: "imaginary"
           readinessProbe:
-            httpGet:
-              path: /health
-              port: imaginary
-              scheme: HTTP
+            exec:
+              command:
+                - /healthcheck.sh
             failureThreshold: 3
-            successThreshold: 1
-            periodSeconds: 10
-            timeoutSeconds: 1
+            periodSeconds: 30
+            timeoutSeconds: 30
           livenessProbe:
-            httpGet:
-              path: /health
-              port: imaginary
-              scheme: HTTP
+            exec:
+              command:
+                - /healthcheck.sh
             failureThreshold: 3
-            successThreshold: 1
-            periodSeconds: 10
-            timeoutSeconds: 1
+            periodSeconds: 30
+            timeoutSeconds: 30
           securityContext:
             runAsUser: 1000
             runAsNonRoot: true
