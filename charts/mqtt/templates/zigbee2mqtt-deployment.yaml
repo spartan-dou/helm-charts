@@ -65,7 +65,7 @@ spec:
           volumeMounts:
             - mountPath: /app/data
               name: data
-            - mountPath: /dev/ttyACM0
+            - mountPath: {{ .Values.addons.zigbee2mqtt.port }}
               name: zigbee-usb
       volumes:
         - name: configmap
@@ -80,5 +80,5 @@ spec:
           {{- end }}
         - name: zigbee-usb
           hostPath:
-            path: {{ .Values.addons.zigbee2mqtt.path }}
+            path: {{ .Values.addons.zigbee2mqtt.port }}
 {{- end }}

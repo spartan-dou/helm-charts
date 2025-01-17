@@ -32,5 +32,6 @@ data:
       password: {{ .Values.password }}
 
     serial:
-      port: "/dev/ttyACM0"
+      port: {{ .Values.addons.zigbee2mqtt.port }}
+      adapter: {{ .Values.addons.zigbee2mqtt.adapter }}
 {{- end }}
