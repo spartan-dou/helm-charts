@@ -6,6 +6,10 @@ metadata:
   labels:
     {{- include "mosquitto.labels" . | nindent 4 }}
     app.kubernetes.io/component: zigbee2mqtt
+  {{- with .Values.service.loadBalancerIP }}
+  annotations:
+    metallb.universe.tf/loadBalancerIPs: {{ . }}
+  {{- end }}
 spec:
   type: {{ .Values.addons.zigbee2mqtt.service.type }}
   ports:
