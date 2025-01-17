@@ -33,7 +33,7 @@ spec:
               protocol: TCP
           env:
             - name: TZ
-              value: {{ .Values.timezone }}
+              value: {{ .Values.timezone | quote }}
             - name: USERNAME
               valueFrom:
                 secretKeyRef:
@@ -57,7 +57,7 @@ spec:
           {{- end }}
           {{- with .Values.resources }}
           resources:
-            {{- toYaml .| nindent 12 }}
+            {{- toYaml . | nindent 12 }}
           {{- end }}
       volumes:
         - name: config
