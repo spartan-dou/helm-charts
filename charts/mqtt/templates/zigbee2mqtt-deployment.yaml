@@ -21,6 +21,24 @@ spec:
       serviceAccountName: {{ include "mosquitto.serviceAccountName" . }}
       securityContext:
         privileged: true
+      initContainers:
+        - name: init-volume
+          image: busybox
+          volumeMounts:
+            - mountPath: /app/data
+              name: data
+            - mountPath: /tmp/configuration.yaml
+              name: configmap
+              subPath: configuration.yaml
+          command:
+            - sh
+            - -c
+            - >
+              if [ ! -f /app/data/configuration.yaml ]; then
+                cp /tmp/configuration.yaml /app/data/configuration.yaml;
+              else
+                echo "Le fichier /app/data/configuration.yaml existe déjà.";
+              fi
       containers:
         - name: zigbee2mqtt
           image: "{{ .Values.addons.zigbee2mqtt.image.repository }}:{{ .Values.addons.zigbee2mqtt.image.tag }}"
@@ -36,21 +54,19 @@ spec:
             failureThreshold: 5
             httpGet:
               path: /
-              port: web
+              port: main
             initialDelaySeconds: 60
             timeoutSeconds: 10
             periodSeconds: 30
+          {{- with .Values.addons.zigbee2mqtt.resources }}
+          resources:
+            {{ toYaml . | nindent 12 }}
+          {{- end }}
           volumeMounts:
             - mountPath: /app/data
               name: data
-            - mountPath: /app/data/configuration.yaml
-              subPath: configuration.yaml
-            - name: usb-device
-              mountPath: {{ .Values.addons.zigbee2mqtt.zigbee }}
-          {{- with .Values.addons.zigbee2mqtt.resources }}
-          resources:
-            {{ . | nindent 12 }}
-          {{- end }}
+            - mountPath: {{ .Values.addons.zigbee2mqtt.port }}
+              name: zigbee-usb
       volumes:
         - name: configmap
           configMap:
@@ -62,8 +78,7 @@ spec:
           {{- else }}
           emptyDir: {}
           {{- end }}
-        - name: usb-device
+        - name: zigbee-usb
           hostPath:
-            path: {{ .Values.addons.zigbee2mqtt.zigbee }}
-            type: CharDevice
+            path: {{ .Values.addons.zigbee2mqtt.port }}
 {{- end }}
