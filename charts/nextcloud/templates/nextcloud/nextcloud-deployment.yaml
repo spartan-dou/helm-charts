@@ -28,9 +28,10 @@ spec:
       containers:
       - name: {{ .Chart.Name }}
         image: "{{ .Values.nextcloud.image.repository }}:{{ .Values.nextcloud.image.tag }}{{- with .Values.nextcloud.image.flavor }}-{{ . }}{{- end }}"
+        {{- with .Values.nextcloud.securityContext }}
         securityContext:
-          runAsUser: 33
-          runAsGroup: 33
+          {{- toYaml . | nindent 10 }}
+        {{- end }}
         ports:
           - containerPort: {{ .Values.nextcloud.port }}
             protocol: TCP
@@ -38,7 +39,7 @@ spec:
         env:
           - name: TZ
             value: {{ .Values.timezone }}
-        {{- include "nextcloud.env" . | trim | nindent 10 }}
+          {{- include "nextcloud.env" . | trim | nindent 10 }}
         volumeMounts:
           {{- include "nextcloud.volumeMounts" . | trim | nindent 10 }}
           - mountPath: /docker-entrypoint-hooks.d/
@@ -60,6 +61,9 @@ spec:
           - mountPath: /tmp/hooks/before-starting/before-starting.sh
             name: nextcloud-hooks
             subPath: before-starting.sh
+          - mountPath: /tmp/hooks/cron/cron-script.sh
+            name: nextcloud-hooks
+            subPath: cron-script.sh
           - mountPath: /docker-entrypoint-hooks.d
             name: nextcloud-hooks-folder
         - name: init-volumes

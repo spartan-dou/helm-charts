@@ -5,5 +5,5 @@ metadata:
 data:
   before-starting.sh: |-
     {{- tpl (.Files.Get "files/before-starting.sh.tpl") . | nindent 4 }}
-  cron.sh: |-
-    {{- tpl (.Files.Get "files/cron.sh.tpl") . | nindent 4 }}
+  cron-script.sh: |-
+    {{- .Values.nextcloud.job.script | nindent 4 }}

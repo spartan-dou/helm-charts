@@ -14,7 +14,7 @@ spec:
       storage: {{ .Values.nextcloud.persistence.config.size | quote }}
   storageClassName: "{{ .Values.nextcloud.persistence.config.storageClass }}"
 {{- end }}
-{{- if and .Values.nextcloud.persistence.data.enabled (not .Values.nextcloud.persistence.data.existingClaim) }}
+{{- if and .Values.nextcloud.persistence.data.enabled (empty .Values.nextcloud.persistence.data.hostPath) (not .Values.nextcloud.persistence.data.existingClaim) }}
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
