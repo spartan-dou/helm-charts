@@ -28,9 +28,10 @@ spec:
       containers:
       - name: {{ .Chart.Name }}
         image: "{{ .Values.nextcloud.image.repository }}:{{ .Values.nextcloud.image.tag }}{{- with .Values.nextcloud.image.flavor }}-{{ . }}{{- end }}"
+        {{- with .Values.nextcloud.securityContext }}
         securityContext:
-          runAsUser: 33
-          runAsGroup: 33
+          {{ . | nindent 10 }}
+        {{- end }}
         ports:
           - containerPort: {{ .Values.nextcloud.port }}
             protocol: TCP
@@ -60,6 +61,9 @@ spec:
           - mountPath: /tmp/hooks/before-starting/before-starting.sh
             name: nextcloud-hooks
             subPath: before-starting.sh
+          - mountPath: /tmp/hooks/job/job.sh
+            name: nextcloud-hooks
+            subPath: job.sh
           - mountPath: /docker-entrypoint-hooks.d
             name: nextcloud-hooks-folder
         - name: init-volumes
