@@ -4,7 +4,7 @@ nextcloud:
   replicaCount: 1
   image:
     repository: "nextcloud"
-    flavor: fpm-alpine
+    flavor: fpm
     tag: "30.0.5"
   host: ""
   service:

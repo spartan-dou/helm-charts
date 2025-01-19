@@ -32,6 +32,16 @@ spec:
     scheme: https
     permanent: true
 ---
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: redirectregex
+spec:
+  redirectRegex:
+    regex: https://(.*)/.well-known/(?:card|cal)dav
+    replacement: https://$${1}/remote.php/dav
+    permanent: true
+---
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
@@ -42,7 +52,8 @@ metadata:
     traefik.ingress.kubernetes.io/router.middlewares: | 
       {{ template "nextcloud.fullname" . }}-stripprefix@kubernetescrd,
       {{ template "nextcloud.fullname" . }}-redirectscheme@kubernetescrd,
-      {{ template "nextcloud.fullname" . }}-headers@kubernetescrd
+      {{ template "nextcloud.fullname" . }}-headers@kubernetescrd,
+      {{ template "nextcloud.fullname" . }}-redirectregex@kubernetescrd
     traefik.ingress.kubernetes.io/rewrite-target: /
 spec:
   tls:
