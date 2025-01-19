@@ -38,8 +38,8 @@ metadata:
   name: redirectregex
 spec:
   redirectRegex:
-    regex: https://(.*)/.well-known/(?:card|cal)dav
-    replacement: https://$${1}/remote.php/dav
+    regex: "https://(.*)/.well-known/(?:card|cal)dav"
+    replacement: "https://${1}/remote.php/dav"
     permanent: true
 ---
 apiVersion: networking.k8s.io/v1
@@ -49,6 +49,7 @@ metadata:
   annotations:
     cert-manager.io/cluster-issuer: "{{ .Values.nextcloud.ingress.tls }}"
     traefik.ingress.kubernetes.io/router.entrypoints: websecure
+    traefik.ingress.kubernetes.io/service.sticky.cookie: "true"
     traefik.ingress.kubernetes.io/router.middlewares: | 
       {{ template "nextcloud.fullname" . }}-stripprefix@kubernetescrd,
       {{ template "nextcloud.fullname" . }}-redirectscheme@kubernetescrd,
