@@ -27,9 +27,6 @@ Listen 8000
       Header always set Strict-Transport-Security "max-age=15552000; includeSubDomains; preload"
     </IfModule>
 
-    Redirect 301 /.well-known/carddav /remote.php/dav/
-    Redirect 301 /.well-known/caldav /remote.php/dav/
-
     # Nextcloud dir
     DocumentRoot /var/www/html/
     <Directory /var/www/html/>
