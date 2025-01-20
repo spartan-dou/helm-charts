@@ -46,9 +46,11 @@ spec:
           - name: TZ
             value: {{ .Values.timezone | quote }}
         livenessProbe:
-          {{- toYaml .Values.livenessProbe | nindent 12 }}
+          tcpSocket:
+            port: {{ .Values.service.port }}
         readinessProbe:
-          {{- toYaml .Values.readinessProbe | nindent 12 }}
+          tcpSocket:
+            port: {{ .Values.service.port }}
         resources:
           {{- toYaml .Values.resources | nindent 12 }}
         volumeMounts:
