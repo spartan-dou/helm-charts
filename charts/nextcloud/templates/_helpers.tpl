@@ -97,6 +97,9 @@ Create volume mounts for the nextcloud container as well as the cron sidecar con
   mountPath: /var/www/html/custom_apps
   subPath: custom_apps
 - name: nextcloud
+  mountPath: /var/www/html/apps
+  subPath: apps
+- name: nextcloud
   mountPath: /var/www/tmp
   subPath: tmp
 - name: nextcloud

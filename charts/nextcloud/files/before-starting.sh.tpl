@@ -175,13 +175,15 @@ php /var/www/html/occ app:remove files_antivirus
 
 # Imaginary
 {{- if .Values.imaginary.enabled }}
-php /var/www/html/occ config:system:set enabledPreviewProviders 20 --value="OC\\Preview\\Imaginary"
+php /var/www/html/occ config:system:set enabledPreviewProviders 20 --value="OC\Preview\Imaginary"
+php /var/www/html/occ config:system:set enabledPreviewProviders 21 --value="OC\Preview\ImaginaryPDF"
 php /var/www/html/occ config:system:set preview_imaginary_url --value="https://{{ .Values.nextcloud.host }}/imaginary"
 php /var/www/html/occ config:system:set preview_imaginary_key --value="{{ .Values.imaginary.secret }}"
 {{- else }}
 if [ -n "$(php /var/www/html/occ config:system:get preview_imaginary_url)" ]; then
     php /var/www/html/occ config:system:delete preview_imaginary_url
     php /var/www/html/occ config:system:delete enabledPreviewProviders 20
+    php /var/www/html/occ config:system:delete enabledPreviewProviders 21
 fi
 {{- end }}
 
@@ -202,13 +204,13 @@ php /var/www/html/occ config:system:set preview_max_y --value="2048" --type=inte
 php /var/www/html/occ config:system:set jpeg_quality --value="60" --type=integer
 php /var/www/html/occ config:app:set preview jpeg_quality --value="60"
 php /var/www/html/occ config:system:delete enabledPreviewProviders
-php /var/www/html/occ config:system:set enabledPreviewProviders 1 --value="OC\\Preview\\Image"
-php /var/www/html/occ config:system:set enabledPreviewProviders 2 --value="OC\\Preview\\MarkDown"
-php /var/www/html/occ config:system:set enabledPreviewProviders 3 --value="OC\\Preview\\MP3"
-php /var/www/html/occ config:system:set enabledPreviewProviders 4 --value="OC\\Preview\\TXT"
-php /var/www/html/occ config:system:set enabledPreviewProviders 5 --value="OC\\Preview\\OpenDocument"
-php /var/www/html/occ config:system:set enabledPreviewProviders 6 --value="OC\\Preview\\Movie"
-php /var/www/html/occ config:system:set enabledPreviewProviders 7 --value="OC\\Preview\\Krita"
+php /var/www/html/occ config:system:set enabledPreviewProviders 1 --value="OC\Preview\Image"
+php /var/www/html/occ config:system:set enabledPreviewProviders 2 --value="OC\Preview\MarkDown"
+php /var/www/html/occ config:system:set enabledPreviewProviders 3 --value="OC\Preview\MP3"
+php /var/www/html/occ config:system:set enabledPreviewProviders 4 --value="OC\Preview\TXT"
+php /var/www/html/occ config:system:set enabledPreviewProviders 5 --value="OC\Preview\OpenDocument"
+php /var/www/html/occ config:system:set enabledPreviewProviders 6 --value="OC\Preview\Movie"
+php /var/www/html/occ config:system:set enabledPreviewProviders 7 --value="OC\Preview\Krita"
 php /var/www/html/occ config:system:set enabledPreviewProviders 8 --value="OC\Preview\HEIC"
 php /var/www/html/occ config:system:set enabledPreviewProviders 9 --value="OC\Preview\MSOfficeDoc"
 php /var/www/html/occ config:system:set enabledPreviewProviders 10 --value="OC\Preview\PDF"
@@ -242,7 +244,7 @@ php /var/www/html/occ config:system:set maintenance_window_start --type=integer 
 # Install some apps by default
 {{- range .Values.nextcloud.apps.install }}
 echo "apps : {{ . }}"
-if [ -z "$(find /var/www/html/apps -type d -maxdepth 1 -mindepth 1 -name "$app" )" ]; then
+if [ -z "$(find /var/www/html/apps -type d -maxdepth 1 -mindepth 1 -name "$app" )" ] && [ -z "$(find /var/www/html/custom_apps -type d -maxdepth 1 -mindepth 1 -name "$app" )" ] ; then
     # If not shipped, install and enable the app
     php /var/www/html/occ app:install {{ . }}
     echo "installed {{ . }}"
