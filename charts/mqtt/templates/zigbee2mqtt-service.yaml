@@ -13,14 +13,10 @@ metadata:
 spec:
   type: {{ .Values.addons.zigbee2mqtt.service.type }}
   ports:
-    - name: main
+    - name: zigbee2mqtt
       port: {{ .Values.addons.zigbee2mqtt.service.port }}
       protocol: TCP
-      targetPort: main
-    - name: ws
-      port: 9001
-      protocol: TCP
-      targetPort: ws
+      targetPort: zigbee2mqtt
   selector:
     {{- include "mosquitto.selectorLabels" . | nindent 4 }}
     app.kubernetes.io/component: zigbee2mqtt

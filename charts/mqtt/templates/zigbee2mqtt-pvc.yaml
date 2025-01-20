@@ -1,4 +1,4 @@
-{{- if and .Values.addons.zigbee2mqtt.persistence.enabled (not .Values.addons.zigbee2mqtt.persistence.existingClaim) }}
+{{- if and .Values.addons.zigbee2mqtt.enabled .Values.addons.zigbee2mqtt.persistence.enabled (not .Values.addons.zigbee2mqtt.persistence.existingClaim) }}
 kind: PersistentVolumeClaim
 apiVersion: v1
 metadata:
