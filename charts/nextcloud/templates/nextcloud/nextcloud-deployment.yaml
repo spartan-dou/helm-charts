@@ -30,7 +30,7 @@ spec:
         image: "{{ .Values.nextcloud.image.repository }}:{{ .Values.nextcloud.image.tag }}{{- with .Values.nextcloud.image.flavor }}-{{ . }}{{- end }}"
         {{- with .Values.nextcloud.securityContext }}
         securityContext:
-          {{- toYaml . | indent 10 }}
+          {{- toYaml . | nindent 10 }}
         {{- end }}
         ports:
           - containerPort: {{ .Values.nextcloud.port }}
@@ -39,9 +39,9 @@ spec:
         env:
           - name: TZ
             value: {{ .Values.timezone }}
-        {{- include "nextcloud.env" . | trim | indent 10 }}
+          {{- include "nextcloud.env" . | trim | nindent 10 }}
         volumeMounts:
-          {{- include "nextcloud.volumeMounts" . | trim | indent 10 }}
+          {{- include "nextcloud.volumeMounts" . | trim | nindent 10 }}
           - mountPath: /docker-entrypoint-hooks.d/
             name: nextcloud-hooks-folder
           - mountPath: /tmp
@@ -77,7 +77,7 @@ spec:
               chmod -R 755 /var/www/html &&
               chown -R 33:33 /var/www/html
           volumeMounts:
-            {{- include "nextcloud.volumeMounts" . | trim | indent 10 }}
+            {{- include "nextcloud.volumeMounts" . | trim | nindent 10 }}
       terminationGracePeriodSeconds: 600
       volumes:
         - name: nextcloud
