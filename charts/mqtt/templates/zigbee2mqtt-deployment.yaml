@@ -43,7 +43,7 @@ spec:
             runAsNonRoot: false
             readOnlyRootFilesystem: false
             runAsUser: 0
-            runAsGroup: 0
+            privileged: true
           image: "{{ .Values.addons.zigbee2mqtt.image.repository }}:{{ .Values.addons.zigbee2mqtt.image.tag }}"
           imagePullPolicy: {{ .Values.addons.zigbee2mqtt.image.pullPolicy }}
           ports:
