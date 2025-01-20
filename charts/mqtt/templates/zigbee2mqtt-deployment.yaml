@@ -47,7 +47,7 @@ spec:
           image: "{{ .Values.addons.zigbee2mqtt.image.repository }}:{{ .Values.addons.zigbee2mqtt.image.tag }}"
           imagePullPolicy: {{ .Values.addons.zigbee2mqtt.image.pullPolicy }}
           ports:
-            - name: "main"
+            - name: "zigbee2mqtt"
               containerPort: {{ .Values.addons.zigbee2mqtt.service.port }}
               protocol: TCP
           env:
@@ -57,7 +57,7 @@ spec:
             failureThreshold: 5
             httpGet:
               path: /
-              port: main
+              port: zigbee2mqtt
             initialDelaySeconds: 60
             timeoutSeconds: 10
             periodSeconds: 30

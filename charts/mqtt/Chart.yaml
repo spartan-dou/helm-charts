@@ -2,8 +2,8 @@ apiVersion: v2
 name: mqtt
 description: A Helm chart for mqtt
 type: application
-version: 1.0.16
-appVersion: "1.0.16"
+version: 1.0.17
+appVersion: "1.0.17"
 keywords:
   - mosquitto
   - domotique

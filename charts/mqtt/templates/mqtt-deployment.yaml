@@ -36,10 +36,10 @@ spec:
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
         imagePullPolicy: {{ .Values.image.pullPolicy }}
         ports:
-        - name: "main"
+        - name: "mqtt"
           containerPort: {{ .Values.service.port }}
           protocol: TCP
-        - name: "ws"
+        - name: "mqtt-ws"
           containerPort: 9001
           protocol: TCP
         env:
