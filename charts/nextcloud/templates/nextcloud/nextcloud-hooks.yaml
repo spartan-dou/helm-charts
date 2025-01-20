@@ -4,6 +4,6 @@ metadata:
   name: nextcloud-hooks
 data:
   before-starting.sh: |-
-    {{- tpl (.Files.Get "files/before-starting.sh.tpl") . | nindent 4 }}
-  job.sh: |-
-    {{- .Values.nextcloud.job.script }}
+    {{- tpl (.Files.Get "files/before-starting.sh.tpl") . | indent 4 }}
+  cron-script.sh: |-
+    {{- .Values.nextcloud.job.script | indent 4 }}

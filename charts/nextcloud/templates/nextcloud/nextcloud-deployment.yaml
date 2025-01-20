@@ -61,9 +61,9 @@ spec:
           - mountPath: /tmp/hooks/before-starting/before-starting.sh
             name: nextcloud-hooks
             subPath: before-starting.sh
-          - mountPath: /tmp/hooks/job/job.sh
+          - mountPath: /tmp/hooks/cron/cron-script.sh
             name: nextcloud-hooks
-            subPath: job.sh
+            subPath: cron-script.sh
           - mountPath: /docker-entrypoint-hooks.d
             name: nextcloud-hooks-folder
         - name: init-volumes

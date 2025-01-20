@@ -80,6 +80,9 @@ spec:
               {{- else }}
               emptyDir: {}
               {{- end }}
+            - name: tmp
+              emptyDir:
+                medium: "Memory"
           securityContext:
             fsGroup: 33
           containers:
@@ -94,7 +97,11 @@ spec:
             command:
             - /bin/sh
             - -c
-            - /docker-entrypoint-hooks.d/cron/cron.sh
+            - /docker-entrypoint-hooks.d/cron/cron-script.sh
             volumeMounts:
               {{- include "nextcloud.volumeMounts" . | trim | nindent 14 }}
+              - mountPath: /docker-entrypoint-hooks.d/
+                name: nextcloud-hooks-folder
+              - mountPath: /tmp
+                name: tmp
           restartPolicy: OnFailure
