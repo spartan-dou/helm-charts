@@ -175,16 +175,13 @@ php /var/www/html/occ app:remove files_antivirus
 
 # Imaginary
 {{- if .Values.imaginary.enabled }}
-php /var/www/html/occ config:system:set enabledPreviewProviders 0 --value="OC\\Preview\\Imaginary"
+php /var/www/html/occ config:system:set enabledPreviewProviders 20 --value="OC\\Preview\\Imaginary"
 php /var/www/html/occ config:system:set preview_imaginary_url --value="https://{{ .Values.nextcloud.host }}/imaginary"
 php /var/www/html/occ config:system:set preview_imaginary_key --value="{{ .Values.imaginary.secret }}"
 {{- else }}
 if [ -n "$(php /var/www/html/occ config:system:get preview_imaginary_url)" ]; then
-    php /var/www/html/occ config:system:delete enabledPreviewProviders 0
     php /var/www/html/occ config:system:delete preview_imaginary_url
     php /var/www/html/occ config:system:delete enabledPreviewProviders 20
-    php /var/www/html/occ config:system:delete enabledPreviewProviders 21
-    php /var/www/html/occ config:system:delete enabledPreviewProviders 22
 fi
 {{- end }}
 

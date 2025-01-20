@@ -31,9 +31,10 @@ spec:
           containers:
           - name: nextcloud-cron
             image: "{{ .Values.nextcloud.image.repository }}:{{ .Values.nextcloud.image.tag }}{{- with .Values.nextcloud.image.flavor }}-{{ . }}{{- end }}"
+            {{- with .Values.nextcloud.securityContext }}
             securityContext:
-              runAsUser: 33
-              runAsGroup: 33
+              {{ . | nindent 10 }}
+            {{- end }}
             env:
               {{- include "nextcloud.env" . | trim | nindent 14 }}
             command:
@@ -49,7 +50,7 @@ kind: CronJob
 metadata:
   name: application-cron
 spec:
-  schedule: "0 2 * * *"
+  schedule: {{ .Values.nextcloud.job.cron | quote }}
   successfulJobsHistoryLimit: 1
   failedJobsHistoryLimit: 1
   jobTemplate:
@@ -84,18 +85,16 @@ spec:
           containers:
           - name: nextcloud-cron
             image: "{{ .Values.nextcloud.image.repository }}:{{ .Values.nextcloud.image.tag }}{{- with .Values.nextcloud.image.flavor }}-{{ . }}{{- end }}"
+            {{- with .Values.nextcloud.securityContext }}
             securityContext:
-              runAsUser: 33
-              runAsGroup: 33
+              {{ . | nindent 10 }}
+            {{- end }}
             env:
               {{- include "nextcloud.env" . | trim | nindent 14 }}
             command:
             - /bin/sh
             - -c
-            - ls -l /docker-entrypoint-hooks.d/cron/; sh /docker-entrypoint-hooks.d/cron/cron.sh
+            - /docker-entrypoint-hooks.d/cron/cron.sh
             volumeMounts:
               {{- include "nextcloud.volumeMounts" . | trim | nindent 14 }}
-              - name: nextcloud-hooks-folder
-                mountPath: /docker-entrypoint-hooks.d/cron/cron.sh
-                subPath: cron.sh
           restartPolicy: OnFailure

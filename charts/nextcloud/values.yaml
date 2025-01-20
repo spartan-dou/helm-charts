@@ -36,12 +36,12 @@ nextcloud:
     config:
       enabled: false
       accessMode: ReadWriteOnce
-      size: 1Gi
+      size: 5Gi
       storageClass: ""
     data:
       enabled: false
       accessMode: ReadWriteOnce
-      size: 1Gi
+      size: 5Gi
       storageClass: ""
       hostPath: ""
       dir: /var/www/html/data
@@ -56,12 +56,16 @@ nextcloud:
   php:
     memoryLimit: 1G
     uploadLimit: 10G
-  hooks:
-    pre-installation:
-    post-installation:
-    pre-upgrade:
-    post-upgrade:
-    before-starting:
+  # securityContext:
+  #   runAsUser: 33
+  #   runAsGroup: 33
+  #   runAsNonRoot: true
+  job:
+    cron: "0 2 * * *"
+    script: |
+      #!/bin/sh
+      echo "$(date) : Begining of cron..."
+      echo "$(date) : End of cron."
 
 postgresql:
   enabled: false
