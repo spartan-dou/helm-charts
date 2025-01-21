@@ -77,7 +77,7 @@ spec:
               name: media
             - mountPath: /config
               name: config
-            {{- range .Values.media.extra }}
+            {{- range .Values.persistence.media.extra }}
             - name: {{ .name }}
               mountPath: {{ .dir }}
             {{- end }}
@@ -100,7 +100,7 @@ spec:
           {{- else }}
           emptyDir: {}
           {{- end }}
-        {{- range .Values.media.extra }}
+        {{- range .Values.persistence.media.extra }}
         - name: {{ .name }}
           hostPath:
             path: {{ .hostPath }}
