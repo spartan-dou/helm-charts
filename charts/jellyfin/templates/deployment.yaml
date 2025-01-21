@@ -77,6 +77,10 @@ spec:
               name: media
             - mountPath: /config
               name: config
+            {{- range .Values.persistence.media.extra }}
+            - name: {{ .name }}
+              mountPath: {{ .dir }}
+            {{- end }}
           resources:
               limits:
                 nvidia.com/gpu: {{ .Values.gpu.nvidia }}
@@ -96,3 +100,9 @@ spec:
           {{- else }}
           emptyDir: {}
           {{- end }}
+        {{- range .Values.persistence.media.extra }}
+        - name: {{ .name }}
+          hostPath:
+            path: {{ .hostPath }}
+            type: Directory
+        {{- end }}
