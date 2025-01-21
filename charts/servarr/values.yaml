@@ -264,7 +264,7 @@ rdtclient:
   replicaCount: 1
   image:
     repository: rogerfar/rdtclient
-    tag: "2.0.94"
+    tag: "2.0.95"
   env:
     - name: PUID
       value: "1000"
@@ -312,7 +312,7 @@ addons:
       size: 1Gi
     image:
       repository: lscr.io/linuxserver/code-server
-      tag: "4.96.2"
+      tag: "4.96.4"
     env:
       - name: PUID
         value: "1000"
