@@ -21,15 +21,16 @@ spec:
         {{- include "frigate.selectorLabels" . | nindent 8 }}
     spec:
       serviceAccountName: {{ include "frigate.serviceAccountName" . }}
-      {{- if gt (int .Values.gpu.nvidia) 0 }}
-      runtimeClassName: nvidia
-      {{- end }}
+      securityContext:
+        fsgroup: 1000
       containers:
         - name: {{ .Chart.Name }}
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag  }}{{- if gt (int .Values.gpu.nvidia) 0 }}-tensorrt{{- end }}"
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag  }}{{- with .Values.image.flavor }}-{{ . }}{{- end }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
+          {{- with .Values.securityContext }}
           securityContext:
-            fsGroup: 1000
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
           ports:
             - name: http
               containerPort: 5000
@@ -82,9 +83,10 @@ spec:
             - mountPath: /tmp
               name: tmp
             {{- end }}
+          {{- with .Values.resources }}
           resources:
-            limits:
-              nvidia.com/gpu: {{ (int .Values.gpu.nvidia) }}
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
           {{- with .Values.livenessProbe }}
           livenessProbe:
             {{- toYaml . | nindent 12 }}
