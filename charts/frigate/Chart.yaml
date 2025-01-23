@@ -2,7 +2,7 @@ apiVersion: v2
 name: frigate
 description: Frigate chart
 type: application
-version: 1.0.2
+version: 1.0.3
 appVersion: "0.14.1"
 keywords:
   - home-assistant
