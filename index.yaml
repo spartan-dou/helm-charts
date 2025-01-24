@@ -71,6 +71,20 @@ entries:
   frigate:
   - apiVersion: v2
     appVersion: 0.14.1
+    created: "2025-01-24T11:28:33.841935379Z"
+    description: Frigate chart
+    digest: 49e0d7196622c3013df344f0ff1777a9b0171620eb864839a7433cfa2250b6b3
+    keywords:
+    - home-assistant
+    - NVR
+    - frigate
+    name: frigate
+    type: application
+    urls:
+    - https://github.com/spartan-dou/helm-charts/releases/download/frigate-1.0.6/frigate-1.0.6.tgz
+    version: 1.0.6
+  - apiVersion: v2
+    appVersion: 0.14.1
     created: "2025-01-24T11:25:21.131332963Z"
     description: Frigate chart
     digest: 37dc8c47d53cbb3b766c79fac07e7eef07de676a5ceb5e7d4723f3f7d7f02123
@@ -1358,4 +1372,4 @@ entries:
     urls:
     - https://github.com/spartan-dou/helm-charts/releases/download/vaultwarden-0.0.2/vaultwarden-0.0.2.tgz
     version: 0.0.2
-generated: "2025-01-24T11:25:21.131537756Z"
+generated: "2025-01-24T11:28:33.842124595Z"
