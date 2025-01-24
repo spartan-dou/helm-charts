@@ -62,8 +62,7 @@ spec:
           readinessProbe:
             {{- toYaml .Values.lidarr.readinessProbe | nindent 12 }}
           resources:
-            {{- toYaml . | nindent 12 }}
-          {{- end }}
+            {{- toYaml .Values.lidarr.resources | nindent 12 }}
           volumeMounts:
             - name: lidarr-config
               mountPath: /config

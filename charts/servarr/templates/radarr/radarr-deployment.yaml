@@ -62,8 +62,7 @@ spec:
           readinessProbe:
             {{- toYaml .Values.radarr.readinessProbe | nindent 12 }}
           resources:
-            {{- toYaml . | nindent 12 }}
-          {{- end }}
+            {{- toYaml .Values.radarr.resources | nindent 12 }}
           volumeMounts:
             - name: radarr-config
               mountPath: /config
