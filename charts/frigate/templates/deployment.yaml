@@ -53,7 +53,7 @@ spec:
           env:
             - name: TZ
               value: {{ .Values.timezone }}
-            {{- if gt (int .Values.resources.gpu.nvidia) 0 }}
+            {{- if gt (int .Values.gpu.nvidia) 0 }}
             - name: NVIDIA_DRIVER_CAPABILITIES
               value: "all"
             - name: NVIDIA_VISIBLE_DEVICES
