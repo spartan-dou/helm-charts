@@ -21,19 +21,15 @@ spec:
         {{- include "frigate.selectorLabels" . | nindent 8 }}
     spec:
       serviceAccountName: {{ include "frigate.serviceAccountName" . }}
-      {{- if gt (int .Values.gpu.nvidia) 0 }}
-      runtimeClassName: nvidia
-      {{- end }}
+      securityContext:
+        fsgroup: 1000
       containers:
         - name: {{ .Chart.Name }}
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag  }}{{- if gt (int .Values.gpu.nvidia) 0 }}-tensorrt{{- end }}"
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag  }}{{- with .Values.image.flavor }}-{{ . }}{{- end }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
-          {{- if .Values.coral.enabled }}
+          {{- with .Values.securityContext }}
           securityContext:
-            runAsNonRoot: false
-            readOnlyRootFilesystem: false
-            runAsUser: 0
-            privileged: true
+            {{ . }}
           {{- end }}
           ports:
             - name: http
@@ -57,7 +53,7 @@ spec:
           env:
             - name: TZ
               value: {{ .Values.timezone }}
-            {{- if gt (int .Values.gpu.nvidia) 0 }}
+            {{- if gt (int .Values.resources.gpu.nvidia) 0 }}
             - name: NVIDIA_DRIVER_CAPABILITIES
               value: "all"
             - name: NVIDIA_VISIBLE_DEVICES
@@ -87,9 +83,10 @@ spec:
             - mountPath: /tmp
               name: tmp
             {{- end }}
+          {{- with .Values.resources }}
           resources:
-            limits:
-              nvidia.com/gpu: {{ (int .Values.gpu.nvidia) }}
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
           {{- with .Values.livenessProbe }}
           livenessProbe:
             {{- toYaml . | nindent 12 }}
