@@ -21,6 +21,9 @@ spec:
         {{- include "frigate.selectorLabels" . | nindent 8 }}
     spec:
       serviceAccountName: {{ include "frigate.serviceAccountName" . }}
+      {{- if gt (int .Values.gpu.nvidia) 0 }}
+      runtimeClassName: nvidia
+      {{- end }}
       securityContext:
         fsGroup: 1000
       containers:
