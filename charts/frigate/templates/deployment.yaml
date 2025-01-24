@@ -22,7 +22,7 @@ spec:
     spec:
       serviceAccountName: {{ include "frigate.serviceAccountName" . }}
       securityContext:
-        fsgroup: 1000
+        fsGroup: 1000
       containers:
         - name: {{ .Chart.Name }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag  }}{{- with .Values.image.flavor }}-{{ . }}{{- end }}"

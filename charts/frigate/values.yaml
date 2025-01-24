@@ -6,8 +6,7 @@ image:
   repository: ghcr.io/blakeblackshear/frigate
   pullPolicy: IfNotPresent
   tag: "0.14.1"
-  flavor: ""
-  # flavor: "tensorrt"
+  flavor: "" # nvidia => "tensorrt"
 
 service:
   type: ClusterIP
@@ -29,17 +28,16 @@ gpu:
 
 resources: {}
   # limits:
-  #   cpu: 100m
-  #   memory: 128Mi
+  #   cpu: 500m
+  #   memory: 1Gi
   #   nvidia.com/gpu: 1
   # requests:
-  #   cpu: 100m
-  #   memory: 128Mi
+  #   cpu: 500m
+  #   memory: 500Mi
   #   nvidia.com/gpu: 1
 
 securityContext: {}
-  # runAsUser: 1000
-  # privileged: true
+  # privileged: true # for usb coral
 
 shmSize: 1Gi
 
