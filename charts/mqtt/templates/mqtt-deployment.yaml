@@ -59,10 +59,12 @@ spec:
         - mountPath: /mosquitto/config/mosquitto.conf
           subPath: mosquitto.conf
           name: configmap
+        {{- with .Values.authentication }}
         lifecycle:
           postStart:
             exec:
-              command: ["/bin/sh", "-c", "mosquitto_passwd -c -b /mosquitto/configinc/passwordfile {{ .Values.user }} {{ .Values.password }}"]
+              command: ["/bin/sh", "-c", "mosquitto_passwd -c -b /mosquitto/configinc/passwordfile {{ .Values.authentication.user }} {{ .Values.authentication.password }}"]
+        {{- end }}
       volumes:
       - name: configmap
         configMap:

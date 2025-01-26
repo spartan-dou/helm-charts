@@ -9,11 +9,13 @@ data:
     echo "Début de l'initialisation de mqtt"
 
     echo "mkdir /mosquitto/config"
-    mkdir /mosquitto/config
+    if [ ! -f "/mosquitto/config" ]; then
+      mkdir /mosquitto/config
+    fi
     echo "mkdir /mosquitto/configinc"
-    mkdir /mosquitto/configinc
-
-    echo "password_file /mosquitto/configinc/passwordfile" > /mosquitto/configinc/passwordconfig.conf
+    if [ ! -f "/mosquitto/configinc" ]; then
+      mkdir /mosquitto/configinc
+    fi
 
     chown -R 1883:1883 /mosquitto
 

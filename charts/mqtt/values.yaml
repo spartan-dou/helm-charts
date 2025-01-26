@@ -21,8 +21,9 @@ service:
 serviceAccount:
   create: false
 
-user: mosquitto
-password: changeme
+authentication:
+  user: mosquitto
+  password: changeme
 
 addons:
   zigbee2mqtt:
