@@ -20,7 +20,7 @@ service:
 ingress:
   enabled: false
   host: ""
-  tls: ""
+  annotations: {}
 
 livenessProbe:
   httpGet:
@@ -31,13 +31,13 @@ readinessProbe:
     path: /
     port: 6052
 
-resources:
-  requests:
-    memory: 500Mi
-    cpu: 200m
-  limits:
-    memory: 500Mi
-    cpu: 200m
+resources: {}
+  # requests:
+  #   memory: 500Mi
+  #   cpu: 500m
+  # limits:
+  #   memory: 500Mi
+  #   cpu: 200m
 
 persistence:
   enabled: false
