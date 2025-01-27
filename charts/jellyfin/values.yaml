@@ -19,6 +19,7 @@ gpu:
 service:
   type: ClusterIP
   port: 8096
+  annotations: {}
 
 env:
   - name: PUID
@@ -42,7 +43,6 @@ persistence:
 ingress:
   enabled: false
   host: ""
-  tls: ""
 
 livenessProbe:
   httpGet:
