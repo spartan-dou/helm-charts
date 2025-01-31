@@ -15,7 +15,7 @@ service:
 ingress:
   enabled: false
   host: ""
-  tls: ""
+  annotations: {}
 
 serviceAccount:
   create: false
