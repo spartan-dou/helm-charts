@@ -2,25 +2,25 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
- name: {{ include "servarr.fullname" . }}-lidarr
+  name: {{ include "servarr.fullname" . }}-lidarr
   {{- with .Values.lidarr.ingress.annotations }}
   annotations:
     {{ toYaml . | nindent 4 }}
   {{- end }}
 spec:
- tls:
-   - hosts:
-       - {{ .Values.lidarr.ingress.host }}
-     secretName: tls-lidarr
- rules:
-   - host: {{ .Values.lidarr.ingress.host }}
-     http:
-       paths:
-         - path: /
-           pathType: Prefix
-           backend:
-             service:
-               name: {{ include "servarr.fullname" . }}-lidarr
-               port:
-                 name: lidarr
+  tls:
+    - hosts:
+        - {{ .Values.lidarr.ingress.host }}
+      secretName: tls-lidarr
+  rules:
+    - host: {{ .Values.lidarr.ingress.host }}
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: {{ include "servarr.fullname" . }}-lidarr
+                port:
+                  name: lidarr
 {{- end }}

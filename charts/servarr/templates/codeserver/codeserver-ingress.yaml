@@ -2,25 +2,25 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
- name: {{ include "servarr.fullname" . }}-codeserver
+  name: {{ include "servarr.fullname" . }}-codeserver
   {{- with .Values.addons.codeserver.ingress.annotations }}
   annotations:
     {{ toYaml . | nindent 4 }}
   {{- end }}
 spec:
- tls:
-   - hosts:
-       - {{ .Values.addons.codeserver.ingress.host }}
-     secretName: tls-codeserver
- rules:
-   - host: {{ .Values.addons.codeserver.ingress.host }}
-     http:
-       paths:
-         - path: /
-           pathType: Prefix
-           backend:
-             service:
-               name: {{ include "servarr.fullname" . }}-codeserver
-               port:
-                 name: codeserver
+  tls:
+    - hosts:
+        - {{ .Values.addons.codeserver.ingress.host }}
+      secretName: tls-codeserver
+  rules:
+    - host: {{ .Values.addons.codeserver.ingress.host }}
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: {{ include "servarr.fullname" . }}-codeserver
+                port:
+                  name: codeserver
 {{- end }}
