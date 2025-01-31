@@ -434,6 +434,17 @@ entries:
     urls:
     - https://github.com/spartan-dou/helm-charts/releases/download/home-assistant-1.0.0/home-assistant-1.0.0.tgz
     version: 1.0.0
+  homepage:
+  - apiVersion: v2
+    appVersion: 0.10.6
+    created: "2025-01-31T07:40:11.263496867Z"
+    description: Homepage
+    digest: cd760b7be833f1a8d428d43115f704a0561628b43c85dcead91127f6889a81c3
+    name: homepage
+    type: application
+    urls:
+    - https://github.com/spartan-dou/helm-charts/releases/download/homepage-1.0.0/homepage-1.0.0.tgz
+    version: 1.0.0
   jellyfin:
   - apiVersion: v2
     appVersion: 10.10.5
@@ -1477,4 +1488,4 @@ entries:
     urls:
     - https://github.com/spartan-dou/helm-charts/releases/download/vaultwarden-0.0.2/vaultwarden-0.0.2.tgz
     version: 0.0.2
-generated: "2025-01-27T18:29:59.085415303Z"
+generated: "2025-01-31T07:40:11.347526098Z"
