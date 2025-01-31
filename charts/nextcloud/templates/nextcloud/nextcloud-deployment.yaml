@@ -40,6 +40,14 @@ spec:
           - name: TZ
             value: {{ .Values.timezone }}
           {{- include "nextcloud.env" . | trim | nindent 10 }}
+        livenessProbe:
+          exec:
+            command:
+            - php
+            - -f
+            - /var/www/html/status.php
+          initialDelaySeconds: 60
+          periodSeconds: 30
         volumeMounts:
           {{- include "nextcloud.volumeMounts" . | trim | nindent 10 }}
           - mountPath: /docker-entrypoint-hooks.d/
