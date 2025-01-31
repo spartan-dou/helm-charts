@@ -40,7 +40,7 @@ radarr:
   ingress:
     enabled: false
     host: ""
-    tls: ""
+    annotations: {}
   persistence:
     enabled: false
     path: /config
@@ -86,7 +86,7 @@ sonarr:
   ingress:
     enabled: false
     host: ""
-    tls: ""
+    annotations: {}
   persistence:
     enabled: false
     path: /config
@@ -120,7 +120,7 @@ prowlarr:
   ingress:
     enabled: false
     host: ""
-    tls: ""
+    annotations: {}
   image:
     repository: lscr.io/linuxserver/prowlarr
     tag: "1.30.2"
@@ -175,7 +175,7 @@ lidarr:
   ingress:
     enabled: false
     host: ""
-    tls: ""
+    annotations: {}
   persistence:
     enabled: false
     path: /config
@@ -277,7 +277,7 @@ rdtclient:
   ingress:
     enabled: false
     host: ""
-    tls: ""
+    annotations: {}
   persistence:
     enabled: false
     size: 1Gi
@@ -329,4 +329,4 @@ addons:
     ingress:
       enabled: false
       host: ""
-      tls: ""
+      annotations: {}

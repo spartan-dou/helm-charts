@@ -3,8 +3,10 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
  name: {{ include "servarr.fullname" . }}-prowlarr
- annotations:
-   cert-manager.io/cluster-issuer: "{{ .Values.prowlarr.ingress.tls }}"
+  {{- with .Values.prowlarr.ingress.annotations }}
+  annotations:
+    {{ toYaml . | nindent 4 }}
+  {{- end }}
 spec:
  tls:
    - hosts:
