@@ -3,8 +3,10 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
  name: {{ template "home-assistant.fullname" . }}
- annotations:
-   cert-manager.io/cluster-issuer: "{{ .Values.ingress.tls }}"
+  {{- with .Values.ingress.annotations }}
+  annotations:
+    {{ toYaml . | nindent 4 }}
+  {{- end }}
 spec:
  tls:
    - hosts:
