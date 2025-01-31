@@ -9,8 +9,8 @@ image:
 ingress:
   enabled: false
   host: ""
-  tls: ""
-
+  annotations: {}
+  
 service:
   type: ClusterIP
 

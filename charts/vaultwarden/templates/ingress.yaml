@@ -4,7 +4,10 @@ kind: Ingress
 metadata:
   name: {{ include "vaultwarden.fullname" . }}
   annotations:
-    cert-manager.io/cluster-issuer: "{{ .Values.ingress.tls }}"
+    {{- with .Values.ingress.annotations }}
+    annotations:
+      {{ toYaml . | nindent 4 }}
+    {{- end }}
 spec:
   tls:
     - hosts:
