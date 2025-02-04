@@ -4,7 +4,7 @@ timezone: "Europe/Paris"
 
 image:
   repository: vaultwarden/server
-  tag: "1.33.0-alpine"
+  tag: "1.33.1-alpine"
 
 ingress:
   enabled: false
