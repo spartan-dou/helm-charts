@@ -54,7 +54,8 @@ lldap:
     annotations: {}
   image:
     repository: lldap/lldap
-    tag: "2024-12-24-alpine-rootless"
+    tag: "2025-02-05"
+    flavor: "alpine-rootless"
   baseDn: "DC=example,DC=com"
   keySeed: changeme
   jwtSecret: changeme

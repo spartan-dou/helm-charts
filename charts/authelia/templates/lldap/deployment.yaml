@@ -27,36 +27,36 @@ spec:
         fsGroup: 1000
       containers:
       - name: {{ .Chart.Name }}
-        image: "{{ .Values.lldap.image.repository }}:{{ .Values.lldap.image.tag }}"
+        image: "{{ .Values.lldap.image.repository }}:{{ .Values.lldap.image.tag }}{{- with .Values.lldap.image.flavor }}-{{ . }}{{- end }}"
         env:
           - name: TZ
             value: "{{ .Values.timezone }}"
           - name: LLDAP_JWT_SECRET
             valueFrom:
               secretKeyRef:
-                name: secrets-lldap
+                name: {{ include "authelia.fullname" . }}-lldap
                 key: lldap-jwt-secret
           - name: LLDAP_LDAP_BASE_DN
             valueFrom:
               secretKeyRef:
-                name: secrets-lldap
+                name: {{ include "authelia.fullname" . }}-lldap
                 key: base-dn
           - name: LLDAP_LDAP_USER_DN
             value: "admin"
           - name: LLDAP_KEY_SEED
             valueFrom:
               secretKeyRef:
-                name: secrets-lldap
+                name: {{ include "authelia.fullname" . }}-lldap
                 key: lldap-key-seed
           - name: LLDAP_LDAP_USER_PASS
             valueFrom:
               secretKeyRef:
-                name: secrets-lldap
+                name: {{ include "authelia.fullname" . }}-lldap
                 key: lldap-ldap-user-pass
           - name: LLDAP_DATABASE_URL
             valueFrom:
               secretKeyRef:
-                name: secrets-lldap
+                name: {{ include "authelia.fullname" . }}-lldap
                 key: lldap-database-url
         ports:
           - containerPort: 3890

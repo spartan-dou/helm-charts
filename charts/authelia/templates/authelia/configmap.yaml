@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: config-authelia
+  name: {{ include "authelia.fullname" . }}
 data:
   configuration.yaml : |
     theme: light

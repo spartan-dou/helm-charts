@@ -94,7 +94,7 @@ spec:
       volumes:
         - name: config
           configMap:
-            name: config-authelia
+            name: {{ include "authelia.fullname" . }}
         - name: secrets
           secret:
-            secretName: secrets-authelia
+            secretName: {{ include "authelia.fullname" . }}
