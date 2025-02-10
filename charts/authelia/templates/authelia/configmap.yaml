@@ -52,7 +52,7 @@ data:
     authentication_backend:
       ldap:
         implementation: "custom"
-        address: ldap://{{ template "authelia.fullname" . }}-lldap:3890
+        address: ldap://{{ include "authelia.fullname" . }}-lldap:3890
         timeout: "5s"
         start_tls: false
         additional_users_dn: "ou=people"

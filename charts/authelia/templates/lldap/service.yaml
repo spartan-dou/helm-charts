@@ -2,7 +2,7 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ template "authelia.fullname" . }}-lldap
+  name: {{ include "authelia.fullname" . }}-lldap
   labels:
     {{- include "authelia.labels" . | nindent 4 }}
     app.kubernetes.io/component: lldap

@@ -2,7 +2,7 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: {{ template "authelia.fullname" . }}
+  name: {{ include "authelia.fullname" . }}
   {{- with .Values.ingress.annotations }}
   annotations:
     {{ toYaml . | nindent 4 }}
@@ -20,7 +20,7 @@ spec:
             pathType: Prefix
             backend:
               service:
-                name: {{ template "authelia.fullname" . }}
+                name: {{ include "authelia.fullname" . }}
                 port:
                   name: http
 {{- end }}
