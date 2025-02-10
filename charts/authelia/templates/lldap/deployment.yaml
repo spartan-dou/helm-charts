@@ -25,6 +25,7 @@ spec:
     spec:
       securityContext:
         fsGroup: 1000
+      enableServiceLinks: false
       containers:
       - name: {{ .Chart.Name }}
         image: "{{ .Values.lldap.image.repository }}:{{ .Values.lldap.image.tag }}{{- with .Values.lldap.image.flavor }}-{{ . }}{{- end }}"
