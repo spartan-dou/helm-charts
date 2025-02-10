@@ -1,0 +1,16 @@
+{{- if and .Values.lldap.enabled .Values.lldap.persistence.enabled (not .Values.lldap.persistence.existingClaim) }}
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: lldap-pvc
+  labels:
+    {{- include "authelia.labels" . | nindent 4 }}
+    app.kubernetes.io/component: lldap
+spec:
+  accessModes:
+    - {{ .Values.lldap.persistence.accessMode | quote }}
+  resources:
+    requests:
+      storage: {{ .Values.lldap.persistence.size | quote }}
+  storageClassName: "{{ .Values.lldap.persistence.storageClass }}"
+{{- end }}

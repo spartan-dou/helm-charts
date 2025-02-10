@@ -1,0 +1,133 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: config-authelia
+data:
+  configuration.yaml : |
+    theme: light
+    default_2fa_method: ""
+    server:
+      address: "tcp://:9091/"
+      asset_path: ""
+      headers:
+        csp_template: ""
+      buffers:
+        read: 4096
+        write: 4096
+      timeouts:
+        read: "6s"
+        write: "6s"
+        idle: "30s"
+      endpoints:
+        enable_pprof: false
+        enable_expvars: false
+    log:
+      level: "info"
+      format: "text"
+      file_path: ""
+      keep_stdout: true
+    identity_validation:
+      elevated_session:
+        code_lifespan: "5m"
+        elevation_lifespan: "10m"
+        characters: 8
+        require_second_factor: false
+        skip_second_factor: false
+      reset_password:
+        jwt_lifespan: "5m"
+        jwt_algorithm: "HS256"
+    webauthn:
+      disable: false
+      display_name: "Authelia"
+      attestation_conveyance_preference: "indirect"
+      user_verification: "preferred"
+      timeout: "1m"
+    ntp:
+      address: "udp://time.cloudflare.com:123"
+      version: 3
+      max_desync: "3s"
+      disable_startup_check: false
+      disable_failure: false
+    {{- if .Values.lldap.enabled }}
+    authentication_backend:
+      ldap:
+        implementation: "custom"
+        address: ldap://{{ template "authelia.fullname" . }}-lldap:3890
+        timeout: "5s"
+        start_tls: false
+        additional_users_dn: "ou=people"
+        users_filter: "(&({username_attribute}={input})(objectClass=person))"
+        additional_groups_dn: "ou=groups"
+        groups_filter: "(member={dn})"
+        attributes: 
+          group_name: cn
+          mail: mail
+          display_name: displayName
+        base_dn: '{{ .Values.lldap.baseDn }}'
+        user: 'uid=admin,ou=people,{{ .Values.lldap.baseDn }}'
+    {{- end }}
+    password_policy:
+      standard:
+        enabled: true
+        min_length: 6
+        max_length: 50
+        require_uppercase: true
+        require_lowercase: true
+        require_number: true
+        require_special: false
+    session:
+      name: "authelia_session"
+      same_site: "lax"
+      inactivity: "5m"
+      expiration: "1h"
+      remember_me: "1M"
+      cookies:
+        - domain: '{{ .Values.ingress.domain }}'
+          authelia_url: 'https://{{ .Values.ingress.host }}'
+          name: 'authelia_session' 
+          same_site: 'lax'
+          inactivity: '5m'
+          expiration: '1h'
+          remember_me: '1d'
+      redis:
+        host: {{ .Release.Name }}-redis-master
+        port: 6379
+        database_index: 0
+        minimum_idle_connections: 0
+    regulation:
+      max_retries: 3
+      find_time: "2m"
+      ban_time: "2m"
+    {{- if .Values.postgresql.enabled }}
+    storage:
+      postgres:
+        address: {{ .Release.Name }}-cnpg-rw
+        timeout: "5s"
+        database: "authelia"
+        schema: "public"
+        username: {{ .Values.postgresql.authelia.user }}
+    {{- end }}
+    access_control:
+      default_policy: "one_factor"
+    notifier:
+      smtp:
+        address: "{{ .Values.smtp.address }}"
+        username: "{{ .Values.smtp.username }}"
+        sender: "{{ .Values.smtp.sender }}"
+    {{- if .Values.oidc.enabled }}
+    identity_providers:
+      oidc:
+        lifespans:
+          access_token: "1h"
+          authorize_code: "1m"
+          id_token: "1h"
+          refresh_token: "1h and 30m"
+        enforce_pkce: "public_clients_only"
+        enable_pkce_plain_challenge: false
+        enable_client_debug_messages: false
+        enable_jwt_access_token_stateless_introspection: false
+        minimum_parameter_entropy: 8
+        discovery_signed_response_alg: ""
+        discovery_signed_response_key_id: ""
+        require_pushed_authorization_requests: false
+    {{- end }}

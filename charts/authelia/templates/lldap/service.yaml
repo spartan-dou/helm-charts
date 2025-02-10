@@ -1,0 +1,27 @@
+{{- if .Values.lldap.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ template "authelia.fullname" . }}-lldap
+  labels:
+    {{- include "authelia.labels" . | nindent 4 }}
+    app.kubernetes.io/component: lldap
+  {{- with .Values.lldap.service.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  type: {{ .Values.lldap.service.type }}
+  ports:
+  - name: http
+    protocol: TCP
+    port: 17170
+    targetPort: 17170
+  - name: lldap
+    protocol: TCP
+    port: 3890
+    targetPort: 3890
+  selector:
+    {{- include "authelia.selectorLabels" . | nindent 4 }}
+    app.kubernetes.io/component: lldap
+{{- end }}

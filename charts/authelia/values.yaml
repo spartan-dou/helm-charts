@@ -1,0 +1,77 @@
+replicaCount: 1
+
+timezone: "Europe/Paris"
+
+image:
+  repository: authelia/authelia
+  tag: "4.38.17"
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+serviceAccount:
+  create: true
+  automount: true
+
+service:
+  type: ClusterIP
+  annotations: {}
+
+ingress:
+  enabled: false
+  host: ""
+  domain: ""
+  annotations: {}
+
+postgresql:
+  enabled: false
+  storageClass: ""
+  authelia:
+    user: authelia
+    password: changeme
+  lldap:
+    user: lldap
+    password: changeme
+
+smtp:
+  address: submission://smtp.gmail.com:587
+  username: "@gmail.com"
+  password: changeme
+  sender: admin@example.com
+
+jwtSecret: changeme
+sessionSecret: changeme 
+storageEncryptionKey: changemechangemechangemechangeme
+
+oidc:
+  enabled: false
+
+lldap:
+  enabled: false
+  service:
+    type: ClusterIP
+    annotations: {}
+  image:
+    repository: lldap/lldap
+    tag: "2024-12-24-alpine-rootless"
+  baseDn: "DC=example,DC=com"
+  keySeed: changeme
+  jwtSecret: changeme
+  password: changeme
+  persistence:
+    enabled: false
+    accessMode: ReadWriteOnce
+    size: 100Mi
+    existingClaim: false
+    storageClass: ""
+
+redis:
+  architecture: standalone
+  global:
+    defaultStorageClass: ""
+    redis:
+      password: changeme
+  master:
+    persistence:
+      storageClass: ""
