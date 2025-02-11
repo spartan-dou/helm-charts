@@ -72,8 +72,8 @@ addons:
     tag: "4.92.2"
     ingress:
       enabled: false
+      annotations: {}
       host: ""
-      tls: ""
     resources:
       requests:
         memory: "256Mi"
