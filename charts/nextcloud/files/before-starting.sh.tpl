@@ -284,34 +284,6 @@ count=$((count + 1))
 {{- end }}
 php occ config:system:set  overwrite.cli.url -value=https://{{ .Values.nextcloud.host }}
 
-# # Facerognition
-{{- if .Values.facerecognition.enabled }}
-echo "Installation de facerecognition"
-if ! [ -d "/var/www/html/custom_apps/facerecognition" ]; then
-    php /var/www/html/occ app:install facerecognition
-elif [ "$(php /var/www/html/occ config:app:get facerecognition enabled)" != "yes" ]; then
-    php /var/www/html/occ app:enable facerecognition
-elif [ $UPDATE_APPS ]; then
-    php /var/www/html/occ app:update facerecognition
-fi
-
-php /var/www/html/occ config:system:set facerecognition.external_model_url --value {{ template "nextcloud.fullname" . }}-facerecognition:5000
-php /var/www/html/occ config:system:set facerecognition.external_model_api_key --value {{ .Values.facerecognition.secret }}
-php /var/www/html/occ face:setup -m 5
-php /var/www/html/occ face:setup -M 1G
-php /var/www/html/occ config:app:set facerecognition analysis_image_area --value 4320000
-php /var/www/html/occ config:system:set enabledFaceRecognitionMimetype 0 --value image/jpeg
-php /var/www/html/occ config:system:set enabledFaceRecognitionMimetype 1 --value image/png
-php /var/www/html/occ config:system:set enabledFaceRecognitionMimetype 2 --value image/heic
-php /var/www/html/occ config:system:set enabledFaceRecognitionMimetype 3 --value image/tiff
-php /var/www/html/occ config:system:set enabledFaceRecognitionMimetype 4 --value image/webp
-php /var/www/html/occ face:background_job --defer-clustering &
-
-{{- else }}
-php /var/www/html/occ app:remove facerecognition
-{{- end }}
-
-
 # # Memories
 {{- if .Values.memories.enabled }}
 echo "Installation de Memories"
