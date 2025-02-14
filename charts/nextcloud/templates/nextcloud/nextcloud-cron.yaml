@@ -10,6 +10,9 @@ spec:
     spec:
       template:
         spec:
+          {{- if gt (int .Values.nextcloud.gpu.nvidia) 0 }}
+          runtimeClassName: nvidia
+          {{- end }}
           volumes:
             - name: nextcloud
               {{- if .Values.nextcloud.persistence.config.enabled }}
@@ -43,6 +46,9 @@ spec:
             - echo "begining cronjob"; php -f /var/www/html/cron.php
             volumeMounts:
               {{- include "nextcloud.volumeMounts" . | trim | nindent 14 }}
+            resources:
+              limits:
+                nvidia.com/gpu: {{ .Values.nextcloud.gpu.nvidia }}
           restartPolicy: OnFailure
 ---
 apiVersion: batch/v1
@@ -57,6 +63,9 @@ spec:
     spec:
       template:
         spec:
+          {{- if gt (int .Values.nextcloud.gpu.nvidia) 0 }}
+          runtimeClassName: nvidia
+          {{- end }}
           volumes:
             - name: nextcloud
               {{- if .Values.nextcloud.persistence.config.enabled }}
@@ -104,4 +113,7 @@ spec:
                 name: nextcloud-hooks-folder
               - mountPath: /tmp
                 name: tmp
+            resources:
+              limits:
+                nvidia.com/gpu: {{ .Values.nextcloud.gpu.nvidia }}
           restartPolicy: OnFailure

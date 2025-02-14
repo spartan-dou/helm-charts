@@ -53,6 +53,8 @@ nextcloud:
   trustedDomains: []
   trustedProxies: []
   overwriteprotocol: https
+  gpu:
+    nvidia: 0
   php:
     memoryLimit: 1G
     uploadLimit: 10G
