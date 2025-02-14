@@ -6,6 +6,29 @@ echo "before statring ..."
 NEXTCLOUD_DATA_DIR={{ .Values.nextcloud.persistence.data.dir }}
 UPDATE_APPS={{ .Values.nextcloud.apps.update }}
 
+# redis
+echo "Check redis is enabled ..."
+{{- if .Values.redis.enabled }}
+echo "Installation de redis"
+
+while ! curl --output /dev/null --silent --fail http://{{ .Release.Name }}-redis-master:6379 && [ "$count" -lt 90 ];do
+    echo "waiting for redis to become available..."
+    sleep 5
+done
+
+occ config:system:set redis host --value="{{ .Release.Name }}-redis-master"
+occ config:system:set redis password --value="{{ .Values.redis.global.redis.password }}"
+occ config:system:set redis port --value="6379"
+occ config:system:set memcache.local --value="\\OC\\Memcache\\APCu"
+occ config:system:set memcache.distributed --value="\\OC\\Memcache\\Redis"
+occ config:system:set memcache.locking --value="\\OC\\Memcache\\Redis"
+{{- else }}
+occ config:system:set memcache.local --value="\\OC\\Memcache\\APCu"
+occ config:system:delete memcache.distributed
+occ config:system:delete memcache.locking
+occ config:system:delete redis
+{{- end }}
+
 # whiteboard
 echo "Check whiteboard is enabled ..."
 {{- if .Values.whiteboard.enabled }}

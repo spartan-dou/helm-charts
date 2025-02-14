@@ -47,7 +47,6 @@ kind: Ingress
 metadata:
   name: {{ template "nextcloud.fullname" . }}
   annotations:
-    cert-manager.io/cluster-issuer: "{{ .Values.nextcloud.ingress.tls }}"
     traefik.ingress.kubernetes.io/router.entrypoints: websecure
     traefik.ingress.kubernetes.io/service.sticky.cookie: "true"
     traefik.ingress.kubernetes.io/router.middlewares: | 
@@ -56,6 +55,9 @@ metadata:
       {{ template "nextcloud.fullname" . }}-headers@kubernetescrd,
       {{ template "nextcloud.fullname" . }}-redirectregex@kubernetescrd
     traefik.ingress.kubernetes.io/rewrite-target: /
+    {{- whith .Values.nextcloud.ingress.annotations }}
+    {{ toYaml . | nindent 4 }}
+    {{- end }}
 spec:
   tls:
     - hosts:

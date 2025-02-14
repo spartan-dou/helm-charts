@@ -141,12 +141,6 @@ Create env-variable for the nextcloud container as well as the cron sidecar cont
   value: {{ .Values.nextcloud.apps.update | quote }}
 - name: NEXTCLOUD_DATA_DIR
   value: {{ .Values.nextcloud.persistence.data.dir | quote }}
-- name: REDIS_HOST
-  value: {{ .Release.Name }}-redis-master
-- name: REDIS_HOST_PORT
-  value: "6379"
-- name: REDIS_HOST_PASSWORD
-  value: {{ .Values.redis.global.redis.password }}
 {{- if .Values.nextcloud.smtp.enabled }}
 - name: MAIL_FROM_ADDRESS
   value: {{ .Values.nextcloud.smtp.fromAddress | quote }}

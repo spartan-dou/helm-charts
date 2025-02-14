@@ -12,7 +12,7 @@ nextcloud:
   port: 9000 
   ingress:
     enabled: false
-    tls: ""
+    annotations: {}
   admin:
     user: admin
     password: changeme
@@ -73,6 +73,7 @@ postgresql:
   password: changeme
 
 redis:
+  enabled: false
   architecture: standalone
   global:
     defaultStorageClass: ""
