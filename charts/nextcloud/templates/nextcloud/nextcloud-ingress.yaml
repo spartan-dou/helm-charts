@@ -55,7 +55,7 @@ metadata:
       {{ template "nextcloud.fullname" . }}-headers@kubernetescrd,
       {{ template "nextcloud.fullname" . }}-redirectregex@kubernetescrd
     traefik.ingress.kubernetes.io/rewrite-target: /
-    {{- whith .Values.nextcloud.ingress.annotations }}
+    {{- with .Values.nextcloud.ingress.annotations }}
     {{ toYaml . | nindent 4 }}
     {{- end }}
 spec:

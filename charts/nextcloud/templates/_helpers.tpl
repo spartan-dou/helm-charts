@@ -111,6 +111,14 @@ Create volume mounts for the nextcloud container as well as the cron sidecar con
 Create env-variable for the nextcloud container as well as the cron sidecar container.
 */}}
 {{- define "nextcloud.env" -}}
+- name: TZ
+  value: {{ .Values.timezone }}
+{{- if gt (int .Values.nextcloud.gpu.nvidia) 0 }}
+- name: NVIDIA_VISIBLE_DEVICES
+  value: "all"
+- name: NVIDIA_DRIVER_CAPABILITIES
+  value: "compute,video,utility,graphics"
+{{- end }}
 - name: NEXTCLOUD_ADMIN_USER
   valueFrom:
     secretKeyRef:
