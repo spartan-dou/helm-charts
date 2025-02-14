@@ -16,17 +16,17 @@ while ! curl --output /dev/null --silent --fail http://{{ .Release.Name }}-redis
     sleep 5
 done
 
-occ config:system:set redis host --value="{{ .Release.Name }}-redis-master"
-occ config:system:set redis password --value="{{ .Values.redis.global.redis.password }}"
-occ config:system:set redis port --value="6379"
-occ config:system:set memcache.local --value="\\OC\\Memcache\\APCu"
-occ config:system:set memcache.distributed --value="\\OC\\Memcache\\Redis"
-occ config:system:set memcache.locking --value="\\OC\\Memcache\\Redis"
+php /var/www/html/occ config:system:set redis host --value="{{ .Release.Name }}-redis-master"
+php /var/www/html/occ config:system:set redis password --value="{{ .Values.redis.global.redis.password }}"
+php /var/www/html/occ config:system:set redis port --value="6379"
+php /var/www/html/occ config:system:set memcache.local --value="\\OC\\Memcache\\APCu"
+php /var/www/html/occ config:system:set memcache.distributed --value="\\OC\\Memcache\\Redis"
+php /var/www/html/occ config:system:set memcache.locking --value="\\OC\\Memcache\\Redis"
 {{- else }}
-occ config:system:set memcache.local --value="\\OC\\Memcache\\APCu"
-occ config:system:delete memcache.distributed
-occ config:system:delete memcache.locking
-occ config:system:delete redis
+php /var/www/html/occ config:system:set memcache.local --value="\\OC\\Memcache\\APCu"
+php /var/www/html/occ config:system:delete memcache.distributed
+php /var/www/html/occ config:system:delete memcache.locking
+php /var/www/html/occ config:system:delete redis
 {{- end }}
 
 # whiteboard
@@ -283,6 +283,7 @@ php occ config:system:set trusted_domains $count --value={{ . }}
 count=$((count + 1))
 {{- end }}
 php occ config:system:set  overwrite.cli.url -value=https://{{ .Values.nextcloud.host }}
+
 # # Facerognition
 {{- if .Values.facerecognition.enabled }}
 echo "Installation de facerecognition"
