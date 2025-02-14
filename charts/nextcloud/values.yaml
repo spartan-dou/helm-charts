@@ -176,15 +176,3 @@ memories:
     type: ClusterIP
   gpu:
     nvidia: 0
-
-facerecognition:
-  enabled: false
-  replicaCount: 1
-  repository: "matiasdelellis/facerecognition-external-model"
-  tag: "v1"
-  service:
-    type: ClusterIP
-  facemodel: 3
-  secret: changeme
-  gpu:
-    nvidia: 0

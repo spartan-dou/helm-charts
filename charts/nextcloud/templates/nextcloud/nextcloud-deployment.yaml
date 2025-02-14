@@ -40,14 +40,6 @@ spec:
             protocol: TCP
             name: "http"
         env:
-          - name: TZ
-            value: {{ .Values.timezone }}
-          {{- if gt (int .Values.nextcloud.gpu.nvidia) 0 }}
-          - name: NVIDIA_VISIBLE_DEVICES
-            value: "all"
-          - name: NVIDIA_DRIVER_CAPABILITIES
-            value: "compute,video,utility,graphics"
-          {{- end }}
           {{- include "nextcloud.env" . | trim | nindent 10 }}
         livenessProbe:
           exec:

@@ -54,6 +54,10 @@ spec:
         resources:
           limits:
             nvidia.com/gpu: {{ (int .Values.memories.gpu.nvidia) }}
+        {{- with .Values.nextcloud.securityContext }}
+        securityContext:
+          {{- toYaml . | nindent 10 }}
+        {{- end }}
       volumes:
       - name: nextcloud-data
         {{- if .Values.nextcloud.persistence.data.enabled }}
