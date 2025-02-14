@@ -23,6 +23,9 @@ spec:
         app.kubernetes.io/component: nextcloud
         hooks/hash: {{ tpl (.Files.Get "files/before-starting.sh.tpl") . | sha256sum | trunc 63 }}
     spec:
+      {{- if gt (int .Values.nextcloud.gpu.nvidia) 0 }}
+      runtimeClassName: nvidia
+      {{- end }}
       securityContext:
         fsGroup: 33
       containers:
@@ -39,6 +42,12 @@ spec:
         env:
           - name: TZ
             value: {{ .Values.timezone }}
+          {{- if gt (int .Values.nextcloud.gpu.nvidia) 0 }}
+          - name: NVIDIA_VISIBLE_DEVICES
+            value: "all"
+          - name: NVIDIA_DRIVER_CAPABILITIES
+            value: "compute,video,utility,graphics"
+          {{- end }}
           {{- include "nextcloud.env" . | trim | nindent 10 }}
         livenessProbe:
           exec:
@@ -86,6 +95,9 @@ spec:
               chown -R 33:33 /var/www/html
           volumeMounts:
             {{- include "nextcloud.volumeMounts" . | trim | nindent 10 }}
+          resources:
+              limits:
+                nvidia.com/gpu: {{ .Values.nextcloud.gpu.nvidia }}
       terminationGracePeriodSeconds: 600
       volumes:
         - name: nextcloud
