@@ -46,9 +46,10 @@ spec:
             name: "memories"
         volumeMounts:
         {{- include "nextcloud.volumeMounts" . | trim | nindent 10 }}
+        {{- with .Values.memories.resources }}
         resources:
-          limits:
-            nvidia.com/gpu: {{ (int .Values.memories.gpu.nvidia) }}
+          {{- toYaml . | nindent 10 }}
+        {{- end }}
       volumes:
       - name: nextcloud-data
         {{- if .Values.nextcloud.persistence.data.enabled }}

@@ -87,9 +87,10 @@ spec:
               chown -R 33:33 /var/www/html
           volumeMounts:
             {{- include "nextcloud.volumeMounts" . | trim | nindent 10 }}
+          {{- with .Values.nextcloud.resources }}
           resources:
-              limits:
-                nvidia.com/gpu: {{ .Values.nextcloud.gpu.nvidia }}
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
       terminationGracePeriodSeconds: 600
       volumes:
         - name: nextcloud

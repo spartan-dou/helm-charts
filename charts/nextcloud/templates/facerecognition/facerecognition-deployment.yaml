@@ -48,7 +48,8 @@ spec:
           - name: NVIDIA_VISIBLE_DEVICES
             value: "all"
           {{- end }}
+        {{- with .Values.facerecognition.resources }}
         resources:
-          limits:
-            nvidia.com/gpu: {{ (int .Values.facerecognition.gpu.nvidia) }}
+          {{- toYaml . | nindent 10 }}
+        {{- end }}
 {{- end }}

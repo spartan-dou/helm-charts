@@ -68,6 +68,15 @@ nextcloud:
       #!/bin/sh
       echo "$(date) : Begining of cron..."
       echo "$(date) : End of cron."
+  resources:
+    limits:
+      nvidia.com/gpu: 0
+    #   cpu: 500m
+    #   memory: 1Gi
+    requests:
+      nvidia.com/gpu: 0
+    #   cpu: 500m
+    #   memory: 500Mi
 
 postgresql:
   enabled: false
@@ -176,6 +185,15 @@ memories:
     type: ClusterIP
   gpu:
     nvidia: 0
+  resources:
+    limits:
+      nvidia.com/gpu: 0
+    #   cpu: 500m
+    #   memory: 1Gi
+    requests:
+      nvidia.com/gpu: 0
+    #   cpu: 500m
+    #   memory: 500Mi
 
 facerecognition:
   enabled: false
@@ -188,3 +206,12 @@ facerecognition:
   secret: changeme
   gpu:
     nvidia: 0
+  resources:
+    limits:
+      nvidia.com/gpu: 0
+    #   cpu: 500m
+    #   memory: 1Gi
+    requests:
+      nvidia.com/gpu: 0
+    #   cpu: 500m
+    #   memory: 500Mi
