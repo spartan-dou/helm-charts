@@ -45,12 +45,7 @@ spec:
             protocol: TCP
             name: "memories"
         volumeMounts:
-          - mountPath: /var/www/html
-            name: nextcloud
-            readOnly: true
-          - mountPath: {{ .Values.nextcloud.persistence.data.dir }}
-            name: nextcloud-data
-            readOnly: true
+        {{- include "nextcloud.volumeMounts" . | trim | nindent 10 }}
         resources:
           limits:
             nvidia.com/gpu: {{ (int .Values.memories.gpu.nvidia) }}
