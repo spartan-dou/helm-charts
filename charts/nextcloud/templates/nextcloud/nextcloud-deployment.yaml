@@ -95,7 +95,7 @@ spec:
         - name: nextcloud
           {{- if .Values.nextcloud.persistence.config.enabled }}
           persistentVolumeClaim:
-            claimName: {{ if .Values.nextcloud.persistence.existingClaim }}{{ .Values.nextcloud.persistence.existingClaim }}{{- else }}nextcloud-config-pvc{{- end }}
+            claimName: {{ if .Values.nextcloud.persistence.config.existingClaim }}{{ .Values.nextcloud.persistence.config.existingClaim }}{{- else }}nextcloud-config-pvc{{- end }}
           {{- else }}
           emptyDir: {}
           {{- end }}
