@@ -41,7 +41,7 @@ spec:
           - name: FACE_MODEL
             value: "{{ .Values.facerecognition.facemodel }}"
           - name: API_KEY
-            value: "{{ .Values.facerecognition.apikey }}"
+            value: "{{ .Values.facerecognition.secret }}"
           {{- if gt (int .Values.facerecognition.gpu.nvidia) 0 }}
           - name: NVIDIA_DRIVER_CAPABILITIES
             value: "all"
