@@ -320,6 +320,22 @@ entries:
     version: 1.0.0
   home-assistant:
   - apiVersion: v2
+    appVersion: 2025.2.4
+    created: "2025-02-15T22:54:20.173233845Z"
+    description: Home Assistant
+    digest: 8d9715fad431fc8a9f163cc239be43bbcc61506cc94e883ef09991040e640dd3
+    home: https://www.home-assistant.io/
+    icon: https://commons.wikimedia.org/wiki/File:New_Home_Assistant_logo.svg
+    keywords:
+    - home-assistant
+    - domotique
+    - vscode
+    name: home-assistant
+    type: application
+    urls:
+    - https://github.com/spartan-dou/helm-charts/releases/download/home-assistant-1.2.1/home-assistant-1.2.1.tgz
+    version: 1.2.1
+  - apiVersion: v2
     appVersion: 2025.2.2
     created: "2025-02-11T18:12:38.656748702Z"
     description: Home Assistant
@@ -1909,4 +1925,4 @@ entries:
     urls:
     - https://github.com/spartan-dou/helm-charts/releases/download/vaultwarden-0.0.2/vaultwarden-0.0.2.tgz
     version: 0.0.2
-generated: "2025-02-15T22:07:31.955465586Z"
+generated: "2025-02-15T22:54:20.173477381Z"
