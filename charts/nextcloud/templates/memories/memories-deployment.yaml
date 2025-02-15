@@ -49,9 +49,6 @@ spec:
         resources:
           limits:
             nvidia.com/gpu: {{ (int .Values.memories.gpu.nvidia) }}
-        securityContext:
-          runAsUser: 33
-          runAsGroup: 33
       volumes:
       - name: nextcloud-data
         {{- if .Values.nextcloud.persistence.data.enabled }}
