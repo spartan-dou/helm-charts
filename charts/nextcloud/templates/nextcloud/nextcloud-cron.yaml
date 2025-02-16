@@ -46,9 +46,10 @@ spec:
             - echo "begining cronjob"; php -f /var/www/html/cron.php
             volumeMounts:
               {{- include "nextcloud.volumeMounts" . | trim | nindent 14 }}
+            {{- with .Values.nextcloud.resources }}
             resources:
-              limits:
-                nvidia.com/gpu: {{ .Values.nextcloud.gpu.nvidia }}
+              {{- toYaml . | nindent 14 }}
+            {{- end }}
           restartPolicy: OnFailure
 ---
 apiVersion: batch/v1
@@ -113,7 +114,8 @@ spec:
                 name: nextcloud-hooks-folder
               - mountPath: /tmp
                 name: tmp
+            {{- with .Values.nextcloud.resources }}
             resources:
-              limits:
-                nvidia.com/gpu: {{ .Values.nextcloud.gpu.nvidia }}
+              {{- toYaml . | nindent 14 }}
+            {{- end }}
           restartPolicy: OnFailure
