@@ -8,23 +8,23 @@ data:
     default_2fa_method: {{ .Values.config.default_2fa_method }}
 
     {{- with .Values.config.server }}
-    {{- toyaml . | nindent 4 }}
+    {{- toYaml . | nindent 4 }}
     {{- end }}
 
     {{- with .Values.config.log }}
-    {{- toyaml . | nindent 4 }}
+    {{- toYaml . | nindent 4 }}
     {{- end }}
 
     {{- with .Values.config.identity_validation }}
-    {{- toyaml . | nindent 4 }}
+    {{- toYaml . | nindent 4 }}
     {{- end }}
 
     {{- with .Values.config.webauthn }}
-    {{- toyaml . | nindent 4 }}
+    {{- toYaml . | nindent 4 }}
     {{- end }}
 
     {{- with .Values.config.totp }}
-    {{- toyaml . | nindent 4 }}
+    {{- toYaml . | nindent 4 }}
     {{- end }}
 
     ntp:
@@ -37,7 +37,7 @@ data:
     {{- if .Values.lldap.enabled }}
     authentication_backend:
       {{- with .Values.config.password_reset }}
-      {{- toyaml . | nindent 6 }}
+      {{- toYaml . | nindent 6 }}
       {{- end }}
       ldap:
         implementation: "custom"
@@ -57,7 +57,7 @@ data:
     {{- end }}
 
     {{- with .Values.config.password_policy }}
-    {{- toyaml . | nindent 4 }}
+    {{- toYaml . | nindent 4 }}
     {{- end }}
 
     session:
@@ -81,7 +81,7 @@ data:
         minimum_idle_connections: 0
     
     {{- with .Values.config.regulation }}
-    {{- toyaml . | nindent 4 }}
+    {{- toYaml . | nindent 4 }}
     {{- end }}
 
     {{- if .Values.postgresql.enabled }}
@@ -95,7 +95,7 @@ data:
     {{- end }}
 
     {{- with .Values.config.access_control }}
-    {{- toyaml . | nindent 4 }}
+    {{- toYaml . | nindent 4 }}
     {{- end }}
 
     notifier:
@@ -105,9 +105,9 @@ data:
         sender: "{{ .Values.smtp.sender }}"
 
     {{- with .Values.config.identity_providers }}
-    {{- toyaml . | nindent 4 }}
+    {{- toYaml . | nindent 4 }}
     {{- end }}
 
     {{- with .Values.config.telemetry }}
-    {{- toyaml . | nindent 4 }}
+    {{- toYaml . | nindent 4 }}
     {{- end }}
