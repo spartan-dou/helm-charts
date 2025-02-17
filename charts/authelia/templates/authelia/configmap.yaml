@@ -8,23 +8,28 @@ data:
     default_2fa_method: {{ .Values.config.default_2fa_method }}
 
     {{- with .Values.config.server }}
-    {{- toYaml . | nindent 4 }}
+    server:
+      {{- toYaml . | nindent 6 }}
     {{- end }}
 
     {{- with .Values.config.log }}
-    {{- toYaml . | nindent 4 }}
+    log:
+      {{- toYaml . | nindent 6 }}
     {{- end }}
 
     {{- with .Values.config.identity_validation }}
-    {{- toYaml . | nindent 4 }}
+    identity_validation:
+      {{- toYaml . | nindent 6 }}
     {{- end }}
 
     {{- with .Values.config.webauthn }}
-    {{- toYaml . | nindent 4 }}
+    webauthn:
+      {{- toYaml . | nindent 6 }}
     {{- end }}
 
     {{- with .Values.config.totp }}
-    {{- toYaml . | nindent 4 }}
+    totp:
+      {{- toYaml . | nindent 6 }}
     {{- end }}
 
     ntp:
@@ -37,7 +42,8 @@ data:
     {{- if .Values.lldap.enabled }}
     authentication_backend:
       {{- with .Values.config.password_reset }}
-      {{- toYaml . | nindent 6 }}
+      password_reset:
+        {{- toYaml . | nindent 8 }}
       {{- end }}
       ldap:
         implementation: "custom"
@@ -57,7 +63,8 @@ data:
     {{- end }}
 
     {{- with .Values.config.password_policy }}
-    {{- toYaml . | nindent 4 }}
+    password_policy:
+      {{- toYaml . | nindent 6 }}
     {{- end }}
 
     session:
@@ -81,7 +88,8 @@ data:
         minimum_idle_connections: 0
     
     {{- with .Values.config.regulation }}
-    {{- toYaml . | nindent 4 }}
+    regulation:
+      {{- toYaml . | nindent 6 }}
     {{- end }}
 
     {{- if .Values.postgresql.enabled }}
@@ -95,7 +103,8 @@ data:
     {{- end }}
 
     {{- with .Values.config.access_control }}
-    {{- toYaml . | nindent 4 }}
+    access_control:
+      {{- toYaml . | nindent 6 }}
     {{- end }}
 
     notifier:
@@ -105,9 +114,11 @@ data:
         sender: "{{ .Values.smtp.sender }}"
 
     {{- with .Values.config.identity_providers }}
-    {{- toYaml . | nindent 4 }}
+    identity_providers:
+      {{- toYaml . | nindent 6 }}
     {{- end }}
 
     {{- with .Values.config.telemetry }}
-    {{- toYaml . | nindent 4 }}
+    telemetry:
+      {{- toYaml . | nindent 6 }}
     {{- end }}
