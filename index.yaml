@@ -14,6 +14,22 @@ entries:
   authelia:
   - apiVersion: v2
     appVersion: 1.16.0
+    created: "2025-02-17T16:21:26.569851669Z"
+    dependencies:
+    - name: redis
+      repository: https://charts.bitnami.com/bitnami
+      version: 20.7.0
+    description: A Helm chart for Kubernetes
+    digest: cafcc8bdfec78cd2ddefabc03420ad620c2571c7590f58ba70bdbdf478b537d1
+    keywords:
+    - authelia
+    name: authelia
+    type: application
+    urls:
+    - https://github.com/spartan-dou/helm-charts/releases/download/authelia-0.1.7/authelia-0.1.7.tgz
+    version: 0.1.7
+  - apiVersion: v2
+    appVersion: 1.16.0
     created: "2025-02-17T16:14:53.825098215Z"
     dependencies:
     - name: redis
@@ -1987,4 +2003,4 @@ entries:
     urls:
     - https://github.com/spartan-dou/helm-charts/releases/download/vaultwarden-0.0.2/vaultwarden-0.0.2.tgz
     version: 0.0.2
-generated: "2025-02-17T16:14:53.825376293Z"
+generated: "2025-02-17T16:21:26.570108469Z"
