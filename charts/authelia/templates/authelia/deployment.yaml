@@ -21,6 +21,8 @@ spec:
       labels:
         {{- include "authelia.selectorLabels" . | nindent 8 }}
         app.kubernetes.io/component: authelia
+        config/hash: {{ tpl (print $.Template.BasePath "/authelia/configmap.yaml") . | sha256sum | trunc 63 }}
+        secret/hash: {{ tpl (print $.Template.BasePath "/authelia/secret.yaml") . | sha256sum | trunc 63 }}
     spec:
       securityContext:
         fsGroup: 1000
@@ -55,18 +57,18 @@ spec:
             - name: http
               containerPort: 9091
               protocol: TCP
-          # livenessProbe:
-          #   httpGet:
-          #     path: /
-          #     port: 9091
-          #   initialDelaySeconds: 60
-          #   periodSeconds: 30
-          # readinessProbe:
-          #   httpGet:
-          #     path: /
-          #     port: 9091
-          #   initialDelaySeconds: 30
-          #   periodSeconds: 15
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 9091
+            initialDelaySeconds: 60
+            periodSeconds: 30
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 9091
+            initialDelaySeconds: 30
+            periodSeconds: 15
           volumeMounts:
             - mountPath: /config/configuration.yml
               name: config
