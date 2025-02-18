@@ -55,4 +55,8 @@ spec:
             failureThreshold: 3
             periodSeconds: 30
             timeoutSeconds: 30
+          {{- with .Values.imaginary.resources }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
 {{- end }}

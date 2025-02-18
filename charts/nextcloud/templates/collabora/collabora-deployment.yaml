@@ -50,4 +50,8 @@ spec:
                 - SYS_ADMIN
               drop:
                 - NET_RAW
+          {{- with .Values.collabora.resources }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
 {{- end }}

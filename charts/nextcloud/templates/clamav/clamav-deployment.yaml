@@ -45,6 +45,10 @@ spec:
             - mountPath: /var/lib/clamav
               subPath: data
               name: clamav
+          {{- with .Values.clamav.resources }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
       volumes:
         - name: clamav
           {{- if .Values.clamav.persistence.enabled }}

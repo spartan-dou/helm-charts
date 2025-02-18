@@ -59,6 +59,10 @@ spec:
           volumeMounts:
             - mountPath: /var/www/onlyoffice/Data
               name: onlyoffice
+          {{- with .Values.onlyoffice.resources }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
       volumes:
         - name: onlyoffice
           {{- if .Values.onlyoffice.persistence.enabled }}

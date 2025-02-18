@@ -62,4 +62,8 @@ spec:
             initialDelaySeconds: 15
             periodSeconds: 20
             failureThreshold: 5
+          {{- with .Values.whiteboard.resources }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
 {{- end }}

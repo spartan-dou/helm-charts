@@ -122,6 +122,13 @@ clamav:
     size: 20Gi
   service:
     type: ClusterIP
+  resources:
+    limits:
+      cpu: 500m
+      memory: 750Mi
+    requests:
+      cpu: 100m
+      memory: 200Mi
 
 collabora:
   enabled: false
@@ -131,6 +138,13 @@ collabora:
   dictionaries: de_DE en_GB en_US es_ES fr_FR it nl pt_BR pt_PT
   service:
     type: ClusterIP
+  resources:
+    limits:
+      cpu: 250m
+      memory: 500Mi
+    requests:
+      cpu: 100m
+      memory: 200Mi
 
 onlyoffice:
   enabled: false
@@ -144,6 +158,13 @@ onlyoffice:
     size: 1Gi
   service:
     type: ClusterIP
+  resources:
+    limits:
+      cpu: 500m
+      memory: 750Mi
+    requests:
+      cpu: 100m
+      memory: 200Mi
 
 imaginary:
   enabled: false
@@ -153,6 +174,13 @@ imaginary:
   secret: "changeme"
   service:
     type: ClusterIP
+  resources:
+    limits:
+      cpu: 500m
+      memory: 500Mi
+    requests:
+      cpu: 100m
+      memory: 200Mi
 
 fulltextsearch:
   enabled: false
@@ -166,6 +194,13 @@ fulltextsearch:
   tag: "8.15.3"
   service:
     type: ClusterIP
+  resources:
+    limits:
+      cpu: 250m
+      memory: 1Gi
+    requests:
+      cpu: 100m
+      memory: 200Mi
 
 whiteboard:
   enabled: false
@@ -175,6 +210,13 @@ whiteboard:
   service:
     type: ClusterIP
   secret: "changeme"
+  resources:
+    limits:
+      cpu: 250m
+      memory: 500Mi
+    requests:
+      cpu: 100m
+      memory: 200Mi
 
 memories:
   enabled: false
@@ -188,12 +230,12 @@ memories:
   resources:
     limits:
       nvidia.com/gpu: 0
-    #   cpu: 500m
-    #   memory: 1Gi
+      cpu: 500m
+      memory: 1Gi
     requests:
       nvidia.com/gpu: 0
-    #   cpu: 500m
-    #   memory: 500Mi
+      cpu: 250m
+      memory: 500Mi
 
 facerecognition:
   enabled: false
@@ -209,9 +251,9 @@ facerecognition:
   resources:
     limits:
       nvidia.com/gpu: 0
-    #   cpu: 500m
-    #   memory: 1Gi
+      cpu: 500m
+      memory: 1Gi
     requests:
       nvidia.com/gpu: 0
-    #   cpu: 500m
-    #   memory: 500Mi
+      cpu: 250m
+      memory: 500Mi

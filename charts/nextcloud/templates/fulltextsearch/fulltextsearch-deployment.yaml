@@ -61,6 +61,10 @@ spec:
         - containerPort: 9200
           protocol: TCP
           name: "fulltextsearch"
+        {{- with .Values.fulltextsearch.resources }}
+        resources:
+          {{- toYaml . | nindent 10 }}
+        {{- end }}
         startupProbe:
           httpGet:
             path: /
