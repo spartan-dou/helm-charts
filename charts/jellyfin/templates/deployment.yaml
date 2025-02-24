@@ -81,9 +81,10 @@ spec:
             - name: {{ .name }}
               mountPath: {{ .dir }}
             {{- end }}
+          {{- with .Values.resources }}
           resources:
-              limits:
-                nvidia.com/gpu: {{ .Values.gpu.nvidia }}
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
       volumes:
         - name: media
           {{- if .Values.persistence.media.enabled }}
