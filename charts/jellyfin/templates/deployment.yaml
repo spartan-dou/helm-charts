@@ -22,9 +22,6 @@ spec:
       {{- if gt (int .Values.gpu.nvidia) 0 }}
       runtimeClassName: nvidia
       {{- end }}
-      {{- if .Values.enableDLNA }}
-      hostNetwork: true
-      {{- end }}
       securityContext:
         runAsUser: 1000
         runAsGroup: 1000
