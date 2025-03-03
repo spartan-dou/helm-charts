@@ -19,8 +19,8 @@ spec:
     spec:
       serviceAccountName: {{ include "mosquitto.serviceAccountName" . }}
       securityContext:
-        # runAsUser: 1883
-        # runAsGroup: 1883
+        runAsUser: 1883
+        runAsGroup: 1883
         fsGroup: 1883
       initContainers:
       - name: "init-volumes"
@@ -31,9 +31,6 @@ spec:
           name: mosquitto
         - mountPath: /scripts
           name: script
-        - mountPath: /tmp/mosquitto.conf
-          subPath: mosquitto.conf
-          name: configmap
       containers:
       - name: {{ .Chart.Name }}
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
@@ -61,6 +58,9 @@ spec:
         volumeMounts:
         - mountPath: /mosquitto
           name: mosquitto
+        - mountPath: /mosquitto/config/mosquitto.conf
+          subPath: mosquitto.conf
+          name: configmap
         {{- with .Values.authentication }}
         lifecycle:
           postStart:

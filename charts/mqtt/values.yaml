@@ -14,6 +14,19 @@ persistence:
   existingClaim: false
   storageClass: ""
 
+config:
+  listener {{ .Values.service.port }}
+  listener 9001
+  protocol websockets
+  allow_anonymous false
+  {{- if .Values.persistence.enabled }}
+  persistence true
+  persistence_location /mosquitto/data
+  autosave_interval 1800
+  include_dir /mosquitto/configinc
+  log_dest file /mosquitto/log/mosquitto.log
+  {{- end }}
+
 service:
   type: ClusterIP
   port: 1883
@@ -21,9 +34,9 @@ service:
 serviceAccount:
   create: false
 
-authentication:
-  user: mosquitto
-  password: changeme
+# authentication:
+#   user: mosquitto
+#   password: changeme
 
 addons:
   zigbee2mqtt:
