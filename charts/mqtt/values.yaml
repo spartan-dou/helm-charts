@@ -3,7 +3,7 @@ replicaCount: 1
 image:
   repository: eclipse-mosquitto
   pullPolicy: IfNotPresent
-  tag: "2.0.20"
+  tag: "2.0.21"
 
 timezone: "Europe/Paris"
 
@@ -14,6 +14,17 @@ persistence:
   existingClaim: false
   storageClass: ""
 
+config: |
+  listener 1883
+  listener 9001
+  protocol websockets
+  allow_anonymous true
+  # persistence true
+  # persistence_location /mosquitto/data
+  # autosave_interval 1800
+  # include_dir /mosquitto/configinc
+  # log_dest file /mosquitto/log/mosquitto.log
+
 service:
   type: ClusterIP
   port: 1883
@@ -21,9 +32,9 @@ service:
 serviceAccount:
   create: false
 
-authentication:
-  user: mosquitto
-  password: changeme
+# authentication:
+#   user: mosquitto
+#   password: changeme
 
 addons:
   zigbee2mqtt:

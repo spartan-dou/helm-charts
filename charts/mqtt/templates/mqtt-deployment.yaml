@@ -16,6 +16,7 @@ spec:
       labels:
         {{- include "mosquitto.selectorLabels" . | nindent 8 }}
         app.kubernetes.io/component: mqtt
+        config.yaml/hash: {{ sha256sum .Values.config | trunc 63 }}
     spec:
       serviceAccountName: {{ include "mosquitto.serviceAccountName" . }}
       securityContext:
@@ -51,8 +52,10 @@ spec:
         readinessProbe:
           tcpSocket:
             port: {{ .Values.service.port }}
+        {{- with .Values.resources }}
         resources:
-          {{- toYaml .Values.resources | nindent 12 }}
+          {{- toYaml . | nindent 10 }}
+        {{- end }}
         volumeMounts:
         - mountPath: /mosquitto
           name: mosquitto
@@ -63,7 +66,7 @@ spec:
         lifecycle:
           postStart:
             exec:
-              command: ["/bin/sh", "-c", "mosquitto_passwd -c -b /mosquitto/configinc/passwordfile {{ .Values.authentication.user }} {{ .Values.authentication.password }}"]
+              command: ["/bin/sh", "-c", "mosquitto_passwd -c -b /mosquitto/configinc/passwordfile {{ .user }} {{ .password }}"]
         {{- end }}
       volumes:
       - name: configmap

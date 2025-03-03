@@ -4,14 +4,4 @@ metadata:
   name: {{ include "mosquitto.fullname" . }}
 data:
   mosquitto.conf: |
-    listener {{ .Values.service.port }}
-    listener 9001
-    protocol websockets
-    allow_anonymous false
-    {{- if .Values.persistence.enabled }}
-    persistence true
-    persistence_location /mosquitto/data
-    autosave_interval 1800
-    include_dir /mosquitto/configinc
-    log_dest file /mosquitto/log/mosquitto.log
-    {{- end }}
+    {{- .Values.config | nindent 4 }}
