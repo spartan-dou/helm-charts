@@ -58,7 +58,7 @@ spec:
         volumeMounts:
         - mountPath: /mosquitto
           name: mosquitto
-        - mountPath: /mosquitto/config/mosquitto.conf
+        - mountPath: /tmp/mosquitto.conf
           subPath: mosquitto.conf
           name: configmap
         {{- with .Values.authentication }}

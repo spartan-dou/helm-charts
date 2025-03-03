@@ -17,6 +17,8 @@ data:
       mkdir /mosquitto/configinc
     fi
 
+    mv /tmp/mosquitto.conf /mosquitto/config/mosquitto.conf
+
     chown -R 1883:1883 /mosquitto
 
     echo "Fin de l'initialisation de mqtt"
