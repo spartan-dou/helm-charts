@@ -14,7 +14,7 @@ persistence:
   existingClaim: false
   storageClass: ""
 
-config:
+config: |
   listener {{ .Values.service.port }}
   listener 9001
   protocol websockets

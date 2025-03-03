@@ -4,4 +4,4 @@ metadata:
   name: {{ include "mosquitto.fullname" . }}
 data:
   mosquitto.conf: |
-    {{- toYaml .Values.config | nindent 4 }}
+    {{- .Values.config | nindent 4 }}
