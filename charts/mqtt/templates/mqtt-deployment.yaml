@@ -65,7 +65,7 @@ spec:
         lifecycle:
           postStart:
             exec:
-              command: ["/bin/sh", "-c", "mosquitto_passwd -c -b /mosquitto/configinc/passwordfile {{ .Values.authentication.user }} {{ .Values.authentication.password }}"]
+              command: ["/bin/sh", "-c", "mosquitto_passwd -c -b /mosquitto/configinc/passwordfile {{ .user }} {{ .password }}"]
         {{- end }}
       volumes:
       - name: configmap
