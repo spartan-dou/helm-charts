@@ -158,6 +158,20 @@ entries:
     version: 0.1.0
   esphome:
   - apiVersion: v2
+    appVersion: 2025.2.1
+    created: "2025-03-03T15:59:12.945987266Z"
+    description: esphome
+    digest: ec62e982e961915d04e377c535110bc96bd81213cfa54708ce300b48a422a37f
+    keywords:
+    - home-assistant
+    - domotique
+    - esphome
+    name: esphome
+    type: application
+    urls:
+    - https://github.com/spartan-dou/helm-charts/releases/download/esphome-1.1.0/esphome-1.1.0.tgz
+    version: 1.1.0
+  - apiVersion: v2
     appVersion: 2024.12.4
     created: "2025-02-17T15:15:02.6135951Z"
     description: esphome
@@ -2143,4 +2157,4 @@ entries:
     urls:
     - https://github.com/spartan-dou/helm-charts/releases/download/vaultwarden-0.0.2/vaultwarden-0.0.2.tgz
     version: 0.0.2
-generated: "2025-03-03T15:59:07.371753403Z"
+generated: "2025-03-03T15:59:12.946225251Z"
