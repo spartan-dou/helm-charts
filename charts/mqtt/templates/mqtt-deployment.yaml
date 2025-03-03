@@ -31,6 +31,9 @@ spec:
           name: mosquitto
         - mountPath: /scripts
           name: script
+        - mountPath: /tmp/mosquitto.conf
+          subPath: mosquitto.conf
+          name: configmap
       containers:
       - name: {{ .Chart.Name }}
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
@@ -58,9 +61,6 @@ spec:
         volumeMounts:
         - mountPath: /mosquitto
           name: mosquitto
-        - mountPath: /tmp/mosquitto.conf
-          subPath: mosquitto.conf
-          name: configmap
         {{- with .Values.authentication }}
         lifecycle:
           postStart:
