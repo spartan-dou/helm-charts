@@ -51,8 +51,10 @@ spec:
         readinessProbe:
           tcpSocket:
             port: {{ .Values.service.port }}
+        {{- with .Values.resources }}
         resources:
-          {{- toYaml .Values.resources | nindent 12 }}
+          {{- toYaml . | nindent 10 }}
+        {{- end }}
         volumeMounts:
         - mountPath: /mosquitto
           name: mosquitto
