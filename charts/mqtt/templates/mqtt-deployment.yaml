@@ -16,6 +16,7 @@ spec:
       labels:
         {{- include "mosquitto.selectorLabels" . | nindent 8 }}
         app.kubernetes.io/component: mqtt
+        config.yaml/hash: {{ sha256sum .Values.config | trunc 63 }}
     spec:
       serviceAccountName: {{ include "mosquitto.serviceAccountName" . }}
       securityContext:
