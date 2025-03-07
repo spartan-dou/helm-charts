@@ -873,6 +873,21 @@ entries:
     version: 1.0.0
   mqtt:
   - apiVersion: v2
+    appVersion: 1.0.33
+    created: "2025-03-07T14:13:27.13964779Z"
+    description: A Helm chart for mqtt
+    digest: 73ed848237411c2b56549cb286297d26a5eb21c54cd0a3c7bf4b82a5efd51fb9
+    keywords:
+    - mosquitto
+    - domotique
+    - mqtt
+    - zigbee2mqtt
+    name: mqtt
+    type: application
+    urls:
+    - https://github.com/spartan-dou/helm-charts/releases/download/mqtt-1.0.33/mqtt-1.0.33.tgz
+    version: 1.0.33
+  - apiVersion: v2
     appVersion: 1.0.32
     created: "2025-03-07T14:02:09.529821344Z"
     description: A Helm chart for mqtt
@@ -2308,4 +2323,4 @@ entries:
     urls:
     - https://github.com/spartan-dou/helm-charts/releases/download/vaultwarden-0.0.2/vaultwarden-0.0.2.tgz
     version: 0.0.2
-generated: "2025-03-07T14:02:09.530281492Z"
+generated: "2025-03-07T14:13:27.14006956Z"
