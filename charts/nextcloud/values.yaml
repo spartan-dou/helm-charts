@@ -114,7 +114,7 @@ clamav:
   enabled: false
   replicaCount: 1
   repository: "nextcloud/aio-clamav"
-  tag: "20250114_092611"
+  tag: "20250225_125724"
   uploadLimit: 1G
   persistence:
     enabled: true
