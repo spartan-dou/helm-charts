@@ -28,8 +28,8 @@ data:
     mqtt:
       base_topic: zigbee2mqtt
       server: 'mqtt://{{ template "mosquitto.fullname" . }}'
-      user: {{ .Values.user }}
-      password: {{ .Values.password }}
+      user: {{ .Values.authentification.user }}
+      password: {{ .Values.authentification.password }}
 
     serial:
       port: {{ .Values.addons.zigbee2mqtt.port }}
