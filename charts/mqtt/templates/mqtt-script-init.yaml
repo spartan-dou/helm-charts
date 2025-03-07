@@ -16,9 +16,9 @@ data:
     if [ ! -f "/mosquitto/configinc" ]; then
       mkdir /mosquitto/configinc
       echo "password_file /mosquitto/configinc/passwordfile" > /mosquitto/configinc/passwordconfig.conf
-    else
-      rm -f /mosquitto/configinc/passwordfile
     fi
+    
+    echo "" > /mosquitto/configinc/passwordfile
 
     chown -R 1883:1883 /mosquitto
 
