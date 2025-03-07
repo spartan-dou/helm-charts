@@ -13,7 +13,7 @@ data:
       mkdir /mosquitto/config
     fi
     echo "mkdir /mosquitto/configinc"
-    if [ ! -f "/mosquitto/configinc" ]; then
+    if [ ! -d "/mosquitto/configinc" ]; then
       mkdir /mosquitto/configinc
       echo "password_file /mosquitto/configinc/passwordfile" > /mosquitto/configinc/passwordconfig.conf
       echo "" > /mosquitto/configinc/passwordfile
