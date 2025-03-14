@@ -1415,6 +1415,22 @@ entries:
   nextcloud:
   - apiVersion: v2
     appVersion: 31.0.0
+    created: "2025-03-14T18:39:47.924316158Z"
+    dependencies:
+    - name: redis
+      repository: https://charts.bitnami.com/bitnami
+      version: 20.9.0
+    description: Nextcloud
+    digest: a8063e06baed8f16716a51c39183753031cf006c650701c5994ab2bb087497da
+    keywords:
+    - nextcloud
+    name: nextcloud
+    type: application
+    urls:
+    - https://github.com/spartan-dou/helm-charts/releases/download/nextcloud-0.3.2/nextcloud-0.3.2.tgz
+    version: 0.3.2
+  - apiVersion: v2
+    appVersion: 31.0.0
     created: "2025-03-07T18:25:31.229564286Z"
     dependencies:
     - name: redis
@@ -2339,4 +2355,4 @@ entries:
     urls:
     - https://github.com/spartan-dou/helm-charts/releases/download/vaultwarden-0.0.2/vaultwarden-0.0.2.tgz
     version: 0.0.2
-generated: "2025-03-07T18:25:31.230202423Z"
+generated: "2025-03-14T18:39:48.015687161Z"
