@@ -46,7 +46,7 @@ spec:
             - echo "begining cronjob"; php -f /var/www/html/cron.php
             volumeMounts:
               {{- include "nextcloud.volumeMounts" . | trim | nindent 14 }}
-            {{- with .Values.nextcloud.resources }}
+            {{- with .Values.nextcloud.job.resources }}
             resources:
               {{- toYaml . | nindent 14 }}
             {{- end }}
@@ -114,7 +114,7 @@ spec:
                 name: nextcloud-hooks-folder
               - mountPath: /tmp
                 name: tmp
-            {{- with .Values.nextcloud.resources }}
+            {{- with .Values.nextcloud.job.resources }}
             resources:
               {{- toYaml . | nindent 14 }}
             {{- end }}
