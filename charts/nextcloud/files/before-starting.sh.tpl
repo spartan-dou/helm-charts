@@ -16,17 +16,17 @@ while ! curl --output /dev/null --silent --fail http://{{ .Release.Name }}-redis
     sleep 5
 done
 
-php /var/www/html/occ config:system:set redis host --value="{{ .Release.Name }}-redis-master"
-php /var/www/html/occ config:system:set redis password --value="{{ .Values.redis.global.redis.password }}"
-php /var/www/html/occ config:system:set redis port --value="6379"
-php /var/www/html/occ config:system:set memcache.local --value="\\OC\\Memcache\\APCu"
-php /var/www/html/occ config:system:set memcache.distributed --value="\\OC\\Memcache\\Redis"
-php /var/www/html/occ config:system:set memcache.locking --value="\\OC\\Memcache\\Redis"
-{{- else }}
-php /var/www/html/occ config:system:set memcache.local --value="\\OC\\Memcache\\APCu"
-php /var/www/html/occ config:system:delete memcache.distributed
-php /var/www/html/occ config:system:delete memcache.locking
-php /var/www/html/occ config:system:delete redis
+# php /var/www/html/occ config:system:set redis host --value="{{ .Release.Name }}-redis-master"
+# php /var/www/html/occ config:system:set redis password --value="{{ .Values.redis.global.redis.password }}"
+# php /var/www/html/occ config:system:set redis port --value="6379"
+# php /var/www/html/occ config:system:set memcache.local --value="\\OC\\Memcache\\APCu"
+# php /var/www/html/occ config:system:set memcache.distributed --value="\\OC\\Memcache\\Redis"
+# php /var/www/html/occ config:system:set memcache.locking --value="\\OC\\Memcache\\Redis"
+# {{- else }}
+# php /var/www/html/occ config:system:set memcache.local --value="\\OC\\Memcache\\APCu"
+# php /var/www/html/occ config:system:delete memcache.distributed
+# php /var/www/html/occ config:system:delete memcache.locking
+# php /var/www/html/occ config:system:delete redis
 {{- end }}
 
 # whiteboard
