@@ -119,7 +119,7 @@ Create env-variable for the nextcloud container as well as the cron sidecar cont
 - name: NVIDIA_DRIVER_CAPABILITIES
   value: "compute,video,utility,graphics"
 {{- end }}
-{{- if .values.redis.enabled }}
+{{- if .Values.redis.enabled }}
 - name: REDIS_HOST
   value: "{{ .Release.Name }}-redis-master"
 - name: REDIS_HOST_PASSWORD
