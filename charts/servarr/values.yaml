@@ -73,7 +73,7 @@ sonarr:
   replicaCount: 1
   image:
     repository: lscr.io/linuxserver/sonarr
-    tag: "4.0.13"
+    tag: "4.0.14"
   env:
     - name: PUID
       value: "1000"
