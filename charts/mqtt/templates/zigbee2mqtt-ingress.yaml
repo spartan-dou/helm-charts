@@ -1,0 +1,26 @@
+{{- if .Values.addons.zigbee2mqtt.ingress.enabled }}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ include "mosquitto.fullname" . }}-zigbee2mqtt
+  {{- with .Values.addons.zigbee2mqtt.ingress.annotations }}
+  annotations:
+    {{ toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  tls:
+    - hosts:
+        - {{ .Values.addons.zigbee2mqtt.ingress.host }}
+      secretName: tls-zigbee2mqtt
+  rules:
+    - host: {{ .Values.addons.zigbee2mqtt.ingress.host }}
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: {{ include "mosquitto.fullname" . }}-zigbee2mqtt
+                port:
+                  name: zigbee2mqtt
+{{- end }}

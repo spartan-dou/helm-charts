@@ -54,6 +54,10 @@ addons:
       existingClaim: false
       storageClass: ""
     config: {}
+    ingress:
+      enabled: false
+      annotations: {}
+      host: ""
     service:
       type: ClusterIP
       port: 8080
