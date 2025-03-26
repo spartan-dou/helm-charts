@@ -34,4 +34,6 @@ data:
     serial:
       port: {{ .Values.addons.zigbee2mqtt.port }}
       adapter: {{ .Values.addons.zigbee2mqtt.adapter }}
+
+    {{ .Values.addons.zigbee2mqtt.config }}
 {{- end }}

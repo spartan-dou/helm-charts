@@ -53,6 +53,7 @@ addons:
       size: 1Gi
       existingClaim: false
       storageClass: ""
+    config: {}
     service:
       type: ClusterIP
       port: 8080
