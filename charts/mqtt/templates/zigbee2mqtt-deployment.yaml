@@ -17,6 +17,7 @@ spec:
       labels:
         {{- include "mosquitto.selectorLabels" . | nindent 8 }}
         app.kubernetes.io/component: zigbee2mqtt
+        config/hash: {{ tpl (print $.Template.BasePath "/zigbee2mqtt-configmap.yaml") . | sha256sum | trunc 63 }}
     spec:
       serviceAccountName: {{ include "mosquitto.serviceAccountName" . }}
       initContainers:

@@ -35,5 +35,7 @@ data:
       port: {{ .Values.addons.zigbee2mqtt.port }}
       adapter: {{ .Values.addons.zigbee2mqtt.adapter }}
 
-    {{ .Values.addons.zigbee2mqtt.config }}
+    {{- with .Values.addons.zigbee2mqtt.config }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
 {{- end }}
