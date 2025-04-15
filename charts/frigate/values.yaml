@@ -5,7 +5,7 @@ timezone: "Europe/Paris"
 image:
   repository: ghcr.io/blakeblackshear/frigate
   pullPolicy: IfNotPresent
-  tag: "0.15.0"
+  tag: "0.15.1"
   flavor: "" # nvidia => "tensorrt"
 
 service:
