@@ -32,5 +32,7 @@ data:
       touch $SECRETS
     fi
 
+    chown 1000:1000 -R /config
+
     echo "Mise à jour du fichier de configuration de Home Assistant"
     echo "Fin de la configuration de Home Assistant .."
