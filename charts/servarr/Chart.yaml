@@ -2,8 +2,8 @@ apiVersion: v2
 name: servarr
 description: A Helm chart for arr aps
 type: application
-version: 1.0.13
-appVersion: "1.0.13"
+version: 1.0.14
+appVersion: "1.0.14"
 keywords:
   - servarr
   - radarr
