@@ -1,0 +1,62 @@
+{{- if .Values.byparr.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "servarr.fullname" . }}-byparr
+  labels:
+    {{- include "servarr.labels" . | nindent 4 }}
+    app.kubernetes.io/component: byparr
+spec:
+  replicas: 1
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 25%
+  selector:
+    matchLabels:
+      {{- include "servarr.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: byparr
+  template:
+    metadata:
+      labels:
+        {{- include "servarr.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/component: byparr
+    spec:
+      securityContext:
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+      serviceAccountName: {{ include "servarr.serviceAccountName" . }}
+      containers:
+        - name: byparr
+          image: "{{ .Values.byparr.image.repository }}:{{ .Values.byparr.image.tag }}"
+          imagePullPolicy: IfNotPresent
+          env:
+            {{- range .Values.byparr.env }}
+            - name: {{ .name }}
+              value: {{ .value | quote }}
+            {{- end }}
+          ports:
+            - name: byparr
+              containerPort: {{ .Values.byparr.port }}
+              protocol: TCP
+          livenessProbe:
+            {{- toYaml .Values.byparr.livenessProbe | nindent 12 }}
+          readinessProbe:
+            {{- toYaml .Values.byparr.readinessProbe | nindent 12 }}
+          resources:
+            {{- toYaml .Values.byparr.resources | nindent 12 }}
+      {{- with .Values.byparr.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.byparr.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.byparr.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+{{- end }}
