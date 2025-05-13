@@ -257,6 +257,35 @@ flaresolverr:
     periodSeconds: 15
 
 ##############################
+########### BYPARR ###########
+##############################
+byparr:
+  enabled: false
+  replicaCount: 1
+  image:
+    repository: ghcr.io/thephaseless/byparr
+    tag: "v1.1.2"
+  env:
+    - name: TZ
+      value: "Europe/Paris"
+  port: 8191
+  service:
+    type: ClusterIP
+    port: 8191
+  livenessProbe:
+    httpGet:
+      path: /
+      port: 8191
+    initialDelaySeconds: 60
+    periodSeconds: 30
+  readinessProbe:
+    httpGet:
+      path: /
+      port: 8191
+    initialDelaySeconds: 30
+    periodSeconds: 15
+
+##############################
 ########## RDTCLIENT #########
 ##############################
 rdtclient:
