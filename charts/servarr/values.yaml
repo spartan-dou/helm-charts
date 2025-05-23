@@ -293,7 +293,7 @@ rdtclient:
   replicaCount: 1
   image:
     repository: rogerfar/rdtclient
-    tag: "2.0.112"
+    tag: "2.0.113"
   env:
     - name: PUID
       value: "1000"
