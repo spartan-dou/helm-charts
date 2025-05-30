@@ -1,7 +1,7 @@
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
-  name: {{ include "homepage.serviceAccountName" . }}
+  name: homepage
   labels:
     {{- include "homepage.labels" . | nindent 4 }}
 rules:
@@ -58,4 +58,3 @@ roleRef:
 subjects:
   - kind: ServiceAccount
     name: {{ include "homepage.serviceAccountName" . }}
-    namespace: {{ .Release.Namespace }}

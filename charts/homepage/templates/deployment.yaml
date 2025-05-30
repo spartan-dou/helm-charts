@@ -6,6 +6,7 @@ metadata:
     {{- include "homepage.labels" . | nindent 4 }}
 spec:
   replicas: {{ .Values.replicaCount }}
+  revisionHistoryLimit: 3
   strategy:
     type: RollingUpdate
     rollingUpdate:
@@ -37,6 +38,10 @@ spec:
           env:
             - name: TZ
               value: {{ .Values.timezone }}
+            {{- with .Values.ingress.host }}}}
+            - name: HOMEPAGE_ALLOWED_HOSTS
+              value: {{ . }}
+            {{- end }}
           ports:
             - name: http
               containerPort: {{ .Values.service.port }}
