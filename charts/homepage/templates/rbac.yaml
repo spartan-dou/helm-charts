@@ -58,3 +58,4 @@ roleRef:
 subjects:
   - kind: ServiceAccount
     name: {{ include "homepage.serviceAccountName" . }}
+    namespace: {{ .Release.Namespace }}
