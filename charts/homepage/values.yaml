@@ -17,7 +17,7 @@ ingress:
 
 serviceAccount:
   create: true
-  name: ""
+  name: "homepage"
 
 resources:
  limits:
