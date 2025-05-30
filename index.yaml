@@ -885,6 +885,16 @@ entries:
     version: 1.0.0
   homepage:
   - apiVersion: v2
+    appVersion: 1.2.0
+    created: "2025-05-30T09:08:33.357968539Z"
+    description: Homepage
+    digest: 0fce90932d9d2b6d483489103ae20812e06cb7ba207e780bd8d1f241822e416a
+    name: homepage
+    type: application
+    urls:
+    - https://github.com/spartan-dou/helm-charts/releases/download/homepage-1.1.0/homepage-1.1.0.tgz
+    version: 1.1.0
+  - apiVersion: v2
     appVersion: 0.10.6
     created: "2025-01-31T07:40:11.263496867Z"
     description: Homepage
@@ -2703,4 +2713,4 @@ entries:
     urls:
     - https://github.com/spartan-dou/helm-charts/releases/download/vaultwarden-0.0.2/vaultwarden-0.0.2.tgz
     version: 0.0.2
-generated: "2025-05-30T09:07:37.227454778Z"
+generated: "2025-05-30T09:08:33.358442438Z"
