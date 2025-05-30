@@ -936,6 +936,22 @@ entries:
     version: 1.0.0
   jellyfin:
   - apiVersion: v2
+    appVersion: 10.10.7
+    created: "2025-05-30T13:32:05.77755785Z"
+    description: Jellyfin Media Server
+    digest: 71fa8c0e105c0090edda4e5b9275a7f8c3c2ac4381b0330a7a66be7c97481650
+    home: https://jellyfin.org/
+    icon: https://jellyfin.org/images/logo.svg
+    keywords:
+    - jellyfin
+    - media
+    - self-hosted
+    name: jellyfin
+    type: application
+    urls:
+    - https://github.com/spartan-dou/helm-charts/releases/download/jellyfin-1.0.8/jellyfin-1.0.8.tgz
+    version: 1.0.8
+  - apiVersion: v2
     appVersion: 10.10.6
     created: "2025-02-24T14:35:59.019945156Z"
     description: Jellyfin Media Server
@@ -2743,4 +2759,4 @@ entries:
     urls:
     - https://github.com/spartan-dou/helm-charts/releases/download/vaultwarden-0.0.2/vaultwarden-0.0.2.tgz
     version: 0.0.2
-generated: "2025-05-30T10:22:57.828921075Z"
+generated: "2025-05-30T13:32:05.777909306Z"
