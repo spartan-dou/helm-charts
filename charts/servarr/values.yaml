@@ -264,7 +264,7 @@ byparr:
   replicaCount: 1
   image:
     repository: ghcr.io/thephaseless/byparr
-    tag: "1.2.0"
+    tag: "1.2.1"
   env:
     - name: TZ
       value: "Europe/Paris"
