@@ -162,7 +162,7 @@ lidarr:
   replicaCount: 1
   image:
     repository: lscr.io/linuxserver/lidarr
-    tag: "2.11.2"
+    tag: "2.12.4"
   env:
     - name: PUID
       value: "1000"
