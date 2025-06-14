@@ -1,0 +1,48 @@
+{{- if .Values.whisper.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "assist.fullname" . }}-whisper
+  labels:
+    {{- include "assist.labels" . | nindent 4 }}
+    app.kubernetes.io/component: whisper
+spec:
+  replicas: {{ .Values.whisper.replicaCount }}
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 25%
+  selector:
+    matchLabels:
+      {{- include "assist.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: whisper
+  template:
+    metadata:
+      labels:
+        {{- include "assist.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/component: whisper
+    spec:
+      securityContext:
+        fsGroup: 1000
+      serviceAccountName: {{ include "assist.serviceAccountName" . }}
+      containers:
+        - name: whisper
+          image: "{{ .Values.whisper.image.repository }}:{{ .Values.whisper.image.tag }}"
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: {{ .Values.whisper.port }}
+              protocol: TCP
+          env:
+            {{- range .Values.whisper.env }}
+            - name: {{ .name }}
+              value: {{ .value | quote }}
+            {{- end }}
+          livenessProbe:
+            {{- toYaml .Values.whisper.livenessProbe | nindent 12 }}
+          readinessProbe:
+            {{- toYaml .Values.whisper.readinessProbe | nindent 12 }}
+          resources:
+            {{- toYaml .Values.whisper.resources | nindent 12 }}
+{{- end }}

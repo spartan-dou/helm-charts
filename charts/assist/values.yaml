@@ -1,18 +1,115 @@
-# Default values for assist.
-# This is a YAML-formatted file.
-# Declare variables to be passed into your templates.
+whisper:
+  enabled: false
+  replicaCount: 1
+  image:
+    repository: lscr.io/linuxserver/faster-whisper
+    tag: "2.0.0-gpu"
+  env:
+    - name: WHISPER_MODEL
+      value: tiny-int8
+    - name: WHISPER_BEAM
+      value: 1
+    - name: WHISPER_LANG
+      value: fr
+    - name: PUID
+      value: "1000"
+    - name: PGID
+      value: "1000"
+    - name: UMASK
+      values: "022"
+  persistence:
+    enabled: true
+    path: /config
+    size: 1Gi
+  port: 10300
+  service:
+    type: ClusterIP
+    port: 10300
+  ingress:
+    enabled: false
+    host: ""
+    annotations: {}
+  resources:
+    limits:
+      cpu: 1000m
+      memory: 8000Mi
+      nvidia.com/gpu: 0
+    requests:
+      cpu: 100m
+      memory: 128Mi
+      nvidia.com/gpu: 0
+  livenessProbe:
+    httpGet:
+      path: /
+      port: http
+  readinessProbe:
+    httpGet:
+      path: /
+      port: http
 
-replicaCount: 1
+piper:
+  enabled: false
+  replicaCount: 1
+  image:
+    repository: lscr.io/linuxserver/piper
+    tag: "1.4.0"
+  env:
+    - name: PIPER_VOICE
+      value: en_US-lessac-medium
+    - name: PIPER_LENGTH
+      value: 1.0
+    - name: PIPER_NOISE
+      value: 0.667
+    - name: PIPER_NOISEW
+      value: 0.333
+    - name: PIPER_SPEAKER
+      value: 0
+    - name: PIPER_PROCS
+      value: 1
+    - name: PUID
+      value: "1000"
+    - name: PGID
+      value: "1000"
+  persistence:
+    enabled: true
+    path: /config
+    size: 1Gi
+  port: 10300
+  service:
+    type: ClusterIP
+    port: 10300
+  ingress:
+    enabled: false
+    host: ""
+    annotations: {}
+  resources:
+    limits:
+      cpu: 1000m
+      memory: 8000Mi
+      nvidia.com/gpu: 0
+    requests:
+      cpu: 100m
+      memory: 128Mi
+      nvidia.com/gpu: 0
+  livenessProbe:
+    httpGet:
+      path: /
+      port: http
+  readinessProbe:
+    httpGet:
+      path: /
+      port: http
 
-image:
-  repository: nginx
-  pullPolicy: IfNotPresent
-  # Overrides the image tag whose default is the chart appVersion.
-  tag: ""
+openwakeword:
+  enabled: false
+  replicaCount: 1
+  image:
+    repository: lscr.io/linuxserver/piper
+    tag: "1.4.0"
+  env:
 
-imagePullSecrets: []
-nameOverride: ""
-fullnameOverride: ""
+porcupine:
+
 
 serviceAccount:
   # Specifies whether a service account should be created
@@ -24,12 +121,6 @@ serviceAccount:
   # The name of the service account to use.
   # If not set and create is true, a name is generated using the fullname template
   name: ""
-
-podAnnotations: {}
-podLabels: {}
-
-podSecurityContext: {}
-  # fsGroup: 2000
 
 securityContext: {}
   # capabilities:
@@ -54,54 +145,3 @@ ingress:
       paths:
         - path: /
           pathType: ImplementationSpecific
-  tls: []
-  #  - secretName: chart-example-tls
-  #    hosts:
-  #      - chart-example.local
-
-resources: {}
-  # We usually recommend not to specify default resources and to leave this as a conscious
-  # choice for the user. This also increases chances charts run on environments with little
-  # resources, such as Minikube. If you do want to specify resources, uncomment the following
-  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
-  # limits:
-  #   cpu: 100m
-  #   memory: 128Mi
-  # requests:
-  #   cpu: 100m
-  #   memory: 128Mi
-
-livenessProbe:
-  httpGet:
-    path: /
-    port: http
-readinessProbe:
-  httpGet:
-    path: /
-    port: http
-
-autoscaling:
-  enabled: false
-  minReplicas: 1
-  maxReplicas: 100
-  targetCPUUtilizationPercentage: 80
-  # targetMemoryUtilizationPercentage: 80
-
-# Additional volumes on the output Deployment definition.
-volumes: []
-# - name: foo
-#   secret:
-#     secretName: mysecret
-#     optional: false
-
-# Additional volumeMounts on the output Deployment definition.
-volumeMounts: []
-# - name: foo
-#   mountPath: "/etc/foo"
-#   readOnly: true
-
-nodeSelector: {}
-
-tolerations: []
-
-affinity: {}

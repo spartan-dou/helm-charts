@@ -1,0 +1,48 @@
+{{- if .Values.openwakeword.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "assist.fullname" . }}-openwakeword
+  labels:
+    {{- include "assist.labels" . | nindent 4 }}
+    app.kubernetes.io/component: openwakeword
+spec:
+  replicas: {{ .Values.openwakeword.replicaCount }}
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 25%
+  selector:
+    matchLabels:
+      {{- include "assist.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: openwakeword
+  template:
+    metadata:
+      labels:
+        {{- include "assist.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/component: openwakeword
+    spec:
+      securityContext:
+        fsGroup: 1000
+      serviceAccountName: {{ include "assist.serviceAccountName" . }}
+      containers:
+        - name: openwakeword
+          image: "{{ .Values.openwakeword.image.repository }}:{{ .Values.openwakeword.image.tag }}"
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: {{ .Values.openwakeword.port }}
+              protocol: TCP
+          env:
+            {{- range .Values.openwakeword.env }}
+            - name: {{ .name }}
+              value: {{ .value | quote }}
+            {{- end }}
+          livenessProbe:
+            {{- toYaml .Values.openwakeword.livenessProbe | nindent 12 }}
+          readinessProbe:
+            {{- toYaml .Values.openwakeword.readinessProbe | nindent 12 }}
+          resources:
+            {{- toYaml .Values.openwakeword.resources | nindent 12 }}
+{{- end }}

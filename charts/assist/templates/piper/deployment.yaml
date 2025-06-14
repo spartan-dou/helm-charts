@@ -1,0 +1,48 @@
+{{- if .Values.piper.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "assist.fullname" . }}-piper
+  labels:
+    {{- include "assist.labels" . | nindent 4 }}
+    app.kubernetes.io/component: piper
+spec:
+  replicas: {{ .Values.piper.replicaCount }}
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 25%
+  selector:
+    matchLabels:
+      {{- include "assist.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: piper
+  template:
+    metadata:
+      labels:
+        {{- include "assist.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/component: piper
+    spec:
+      securityContext:
+        fsGroup: 1000
+      serviceAccountName: {{ include "assist.serviceAccountName" . }}
+      containers:
+        - name: piper
+          image: "{{ .Values.piper.image.repository }}:{{ .Values.piper.image.tag }}"
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: {{ .Values.piper.port }}
+              protocol: TCP
+          env:
+            {{- range .Values.piper.env }}
+            - name: {{ .name }}
+              value: {{ .value | quote }}
+            {{- end }}
+          livenessProbe:
+            {{- toYaml .Values.piper.livenessProbe | nindent 12 }}
+          readinessProbe:
+            {{- toYaml .Values.piper.readinessProbe | nindent 12 }}
+          resources:
+            {{- toYaml .Values.piper.resources | nindent 12 }}
+{{- end }}
