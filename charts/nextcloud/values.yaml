@@ -5,7 +5,7 @@ nextcloud:
   image:
     repository: "nextcloud"
     flavor: fpm
-    tag: "31.0.5"
+    tag: "31.0.6"
   host: ""
   service:
     type: ClusterIP
