@@ -4,9 +4,9 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "commons.fullname" . }}-{{ $component.name }}
+  name: {{ include "commons.fullname" (dict "Chart" $.Chart "Values" $.Values "Release" $.Release "name" $component.name) }}
   labels:
-    {{- include "commons.labels" . | nindent 4 }}
+    {{ include "commons.labels" (dict "Chart" $.Chart "Values" $.Values "Release" $.Release "name" $component.name) | nindent 4 }}
 spec:
   replicas: {{ default 1 .replicas }}
   selector:
@@ -19,32 +19,36 @@ spec:
     spec:
       containers:
         - name: {{ $component.name }}
-          image: {{ .image }}:{{ .tag }}
+          image: "{{ .image }}:{{ default "latest" .tag }}"
           env:
             - name: TZ
-              value: {{ $.Values.timezone }}
+              value: {{ $.Values.timezone | quote }}
             {{- range .env }}
             - name: {{ .name }}
               value: {{ .value | quote }}
             {{- end }}
+          {{- if .volumeMounts }}
           volumeMounts:
             {{- range .volumeMounts }}
             - name: {{ .name }}
               mountPath: {{ .mountPath }}
             {{- end }}
+          {{- end }}
+          {{- if .ports }}
           ports:
             {{- range .ports }}
             - name: {{ .name }}
               containerPort: {{ .containerPort }}
-              protocol: {{ default "tcp" .containerPort }}
+              protocol: {{ default "TCP" .protocol }}
               {{- with .hostPort }}
               hostPort: {{ . }}
               {{- end }}
             {{- end }}
+          {{- end }}
+      {{- if .volumes }}
       volumes:
-        {{- if .volumes }}
         {{- toYaml .volumes | nindent 8 }}
-        {{- end }}
-{{- end }}
+      {{- end }}
 ---
+{{- end }}
 {{- end }}
