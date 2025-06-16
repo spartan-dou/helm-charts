@@ -104,12 +104,30 @@ openwakeword:
   enabled: false
   replicaCount: 1
   image:
-    repository: lscr.io/linuxserver/piper
-    tag: "1.4.0"
-  env:
-
-porcupine:
-
+    repository:  rhasspy/wyoming-openwakeword
+    tag: "1.10.0"
+  extraArgs:
+    - --preload-model
+    - ok_nabu
+    - --custom-model-dir
+    - /custom
+  port: 10400
+  service:
+    type: ClusterIP
+    port: 10400
+  ingress:
+    enabled: false
+    host: ""
+    annotations: {}
+  resources:
+    limits:
+      cpu: 1000m
+      memory: 8000Mi
+      nvidia.com/gpu: 0
+    requests:
+      cpu: 100m
+      memory: 128Mi
+      nvidia.com/gpu: 0
 
 serviceAccount:
   # Specifies whether a service account should be created
@@ -129,19 +147,3 @@ securityContext: {}
   # readOnlyRootFilesystem: true
   # runAsNonRoot: true
   # runAsUser: 1000
-
-service:
-  type: ClusterIP
-  port: 80
-
-ingress:
-  enabled: false
-  className: ""
-  annotations: {}
-    # kubernetes.io/ingress.class: nginx
-    # kubernetes.io/tls-acme: "true"
-  hosts:
-    - host: chart-example.local
-      paths:
-        - path: /
-          pathType: ImplementationSpecific

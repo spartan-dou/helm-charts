@@ -1,0 +1,19 @@
+{{- if .Values.piper.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "assist.fullname" . }}-piper
+  labels:
+    {{- include "assist.labels" . | nindent 4 }}
+    app.kubernetes.io/component: piper
+spec:
+  type: {{ .Values.piper.service.type }}
+  ports:
+    - port: {{ .Values.piper.service.port }}
+      targetPort: http
+      protocol: TCP
+      name: http
+  selector:
+    {{- include "assist.selectorLabels" . | nindent 4 }}
+    app.kubernetes.io/component: piper
+{{- end }}

@@ -39,6 +39,10 @@ spec:
             - name: {{ .name }}
               value: {{ .value | quote }}
             {{- end }}
+          args:
+            {{- range .Values.openwakeword.extraArgs }}
+            - {{ . | quote }}
+            {{- end }}
           livenessProbe:
             {{- toYaml .Values.openwakeword.livenessProbe | nindent 12 }}
           readinessProbe:
