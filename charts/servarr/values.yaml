@@ -27,7 +27,7 @@ radarr:
   replicaCount: 1
   image:
     repository: lscr.io/linuxserver/radarr
-    tag: "5.25.0"
+    tag: "5.26.2"
   env:
     - name: PUID
       value: "1000"
