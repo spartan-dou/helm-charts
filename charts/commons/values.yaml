@@ -1,0 +1,83 @@
+nameOverride: ""
+fullname: ""
+timezone: "Europe/Paris"
+
+deployment.replicas
+deployment.containers.image
+deployment.containers.tag
+deployment.containers.env
+deployment.containers.volumeMounts
+deployment.containers.ports
+
+components:
+  - name: web
+    deployment:
+      replicas: 2
+      containers:
+        - name: app
+          image: nginx:stable
+          ports:
+            - name: http
+              containerPort: 80
+          env:
+            - name: ENV
+              value: prod
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8080
+            initialDelaySeconds: 10
+            periodSeconds: 5
+          readinessProbe:
+            httpGet:
+              path: /ready
+              port: 8080
+            initialDelaySeconds: 5
+            periodSeconds: 3
+          startupProbe:
+            httpGet:
+              path: /startup
+              port: 8080
+            failureThreshold: 30
+            periodSeconds: 10
+          volumeMounts:
+            - name: config
+              mountPath: /etc/config
+        - name: metrics
+          image: prom/prometheus
+          ports:
+            - name: metrics
+              containerPort: 9100
+      volumes:
+        - name: config
+          configMap:
+            name: nginx-config
+    service:
+      enabled: true
+      type: ClusterIP
+      annotations:
+        metallb.universe.tf/address-pool: "default"
+        prometheus.io/scrape: "true"
+      ports:
+        - name: http
+          port: 80
+          targetPort: 8080
+    ingress:
+      enabled: true
+      className: nginx
+      annotations:
+        nginx.ingress.kubernetes.io/rewrite-target: /
+      hosts:
+        - host: web.mondomaine.local
+          paths:
+            - path: /
+              pathType: Prefix
+      tls:
+        - hosts:
+            - web.mondomaine.local
+          secretName: web-cert
+    pvc:
+      - name: data
+        accessModes: [ReadWriteOnce]
+        storage: 1Gi
+        storageClassName: local-path

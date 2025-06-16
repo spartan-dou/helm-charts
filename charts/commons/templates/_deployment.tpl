@@ -18,7 +18,8 @@ spec:
         app: {{ $component.name }}
     spec:
       containers:
-        - name: {{ $component.name }}
+        {{- range .containers }}
+        - name: {{ .name }}
           image: "{{ .image }}:{{ default "latest" .tag }}"
           env:
             - name: TZ
@@ -45,6 +46,19 @@ spec:
               {{- end }}
             {{- end }}
           {{- end }}
+          {{- with .livenessProbe }}
+          livenessProbe:
+            {{- toYaml . | nindent 6 }}
+          {{- end }}
+          {{- with .readinessProbe }}
+          readinessProbe:
+            {{- toYaml . | nindent 6 }}
+          {{- end }}
+          {{- with .startupProbe }}
+          startupProbe:
+            {{- toYaml . | nindent 6 }}
+          {{- end }}
+        {{- end }}  
       {{- if .volumes }}
       volumes:
         {{- toYaml .volumes | nindent 8 }}

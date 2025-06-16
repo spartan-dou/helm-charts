@@ -1,0 +1,33 @@
+{{- range .Values.components }}
+{{- $component := . }}
+{{- with $component.service }}
+{{- if .enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "commons.fullname" (dict "Chart" $.Chart "Values" $.Values "Release" $.Release "name" $component.name) }}
+  labels:
+    {{ include "commons.labels" (dict "Chart" $.Chart "Values" $.Values "Release" $.Release "name" $component.name) | nindent 4 }}
+  {{- with .annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  type: {{ default "ClusterIP" .type }}
+  selector:
+    app: {{ $component.name }}
+  ports:
+    {{- range .ports }}
+    - name: {{ .name }}
+      port: {{ .port }}
+      targetPort: {{ .targetPort | default .port }}
+      {{- if eq $.type "NodePort" }}
+      {{- with .nodePort }}
+      nodePort: {{ . }}
+      {{- end }}
+      {{- end }}
+    {{- end }}
+---
+{{- end }}
+{{- end }}
+{{- end }}
