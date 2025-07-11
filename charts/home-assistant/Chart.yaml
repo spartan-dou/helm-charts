@@ -2,8 +2,8 @@ apiVersion: v2
 name: home-assistant
 description: Home Assistant
 type: application
-version: 1.5.0
-appVersion: "2025.6.1"
+version: 1.6.0
+appVersion: "2025.7.1"
 home: https://www.home-assistant.io/
 icon: https://commons.wikimedia.org/wiki/File:New_Home_Assistant_logo.svg
 keywords:

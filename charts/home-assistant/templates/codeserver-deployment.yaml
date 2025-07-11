@@ -25,9 +25,7 @@ spec:
     spec:
       serviceAccountName: {{ include "home-assistant.serviceAccountName" . }}
       securityContext:
-        {{- if .Values.usbMount.enabled }}
         runAsUser: 0
-        {{- end }}
       containers:
         - name: codeserver
           image: "{{ .Values.addons.codeserver.image }}:{{ .Values.addons.codeserver.tag }}"
