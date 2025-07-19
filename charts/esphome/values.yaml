@@ -3,7 +3,7 @@ replicaCount: 1
 image:
   repository: esphome/esphome
   pullPolicy: IfNotPresent
-  tag: "2025.7.1"
+  tag: "2025.7.2"
 
 authentification:
   enabled: false
