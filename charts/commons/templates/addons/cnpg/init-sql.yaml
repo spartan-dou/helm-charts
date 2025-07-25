@@ -1,0 +1,31 @@
+{{- $init := .Values.addons.postgres.init }}
+{{- $enabled := .Values.addons.postgres.enable }}
+{{- if and $enabled $init.databases }}
+
+{{- $dbNames := pluck "name" $init.databases | flatten }}
+{{- $userNames := pluck "owner" $init.databases | flatten }}
+
+{{- $uniqueDbNames := uniq $dbNames }}
+{{- $uniqueUserNames := uniq $userNames }}
+
+{{- if and (eq (len $dbNames) (len $uniqueDbNames)) (eq (len $userNames) (len $uniqueUserNames)) }}
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ printf "%s-init-sql" (default "postgres" $.Values.addons.postgres.cluster.name) }}
+data:
+  init.sql: |
+    {{- range $init.databases }}
+    CREATE USER {{ .owner }} WITH ENCRYPTED PASSWORD '{{ .password }}';
+    CREATE DATABASE {{ .name }} OWNER {{ .owner }};
+    GRANT ALL PRIVILEGES ON DATABASE {{ .name }} TO {{ .owner }};
+    {{- end }}
+
+{{- else }}
+# ⚠️ Erreur : noms de bases ou d'utilisateurs en doublon détectés
+# Bases : {{ $dbNames }}
+# Utilisateurs : {{ $userNames }}
+# Veuillez corriger les doublons dans addons.postgres.init.databases
+{{- end }}
+{{- end }}

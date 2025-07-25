@@ -1,4 +1,5 @@
-{{- range .Values.components }}
+{{- $components := include "commons.withAddons" . | fromYaml }}
+{{- range $components }}
 {{- $component := . }}
 {{- with $component.ingress }}
 {{- if .enabled }}

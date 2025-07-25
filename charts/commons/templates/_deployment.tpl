@@ -1,4 +1,5 @@
-{{- range .Values.components }}
+{{- $components := include "commons.withAddons" . | fromYaml }}
+{{- range $components }}
 {{- $component := . }}
 {{- with $component.deployment }}
 apiVersion: apps/v1
@@ -20,7 +21,7 @@ spec:
       containers:
         {{- range .containers }}
         - name: {{ .name }}
-          image: "{{ .image }}:{{ default "latest" .tag }}"
+          image: {{ .image }}:{{ default "latest" .tag }}
           env:
             - name: TZ
               value: {{ $.Values.timezone | quote }}

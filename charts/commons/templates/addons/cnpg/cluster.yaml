@@ -1,0 +1,34 @@
+{{- with .Values.addons.postgres }}
+{{- if .enable }}
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
+metadata:
+  name: {{ .name | default "postgres" }}
+  labels:
+    app.kubernetes.io/name: postgres
+    app.kubernetes.io/instance: {{ .name | default "postgres" }}
+spec:
+  instances: {{ .instances | default 1 }}
+  postgresql:
+    parameters:
+      timezone: {{ .Values.timezone | quote }}
+  storage:
+    size: {{ .storage.size | default "1Gi" }}
+    storageClass: {{ .storage.storageClass | default "standard" }}
+  imageName: {{ .image | default "ghcr.io/cloudnative-pg/postgresql" }}:{{ .tag | default "latest" }}
+  bootstrap:
+    initdb:
+      database: {{ .cluster.database | default "app" }}
+      owner: {{ .cluster.owner | default "app" }}
+      secret:
+        name: {{ .Release.Name }}-postgres-secret
+    {{- if .init.databases }}
+    postInitApplicationSQL:
+      - configMap:
+          name: {{ printf "%s-init-sql" (.cluster.name | default "postgres") }}
+          key: init.sql
+    {{- end }}
+  monitoring:
+    enablePodMonitor: {{ .monitoring | default false }}
+{{- end }}
+{{- end }}

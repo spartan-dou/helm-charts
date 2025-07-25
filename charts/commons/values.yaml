@@ -81,3 +81,18 @@ components:
         accessModes: [ReadWriteOnce]
         storage: 1Gi
         storageClassName: local-path
+
+addons:
+  vscode:
+    enabled: false
+  postgres:
+    enabled: false
+    tag: 16
+    cluster:
+      owner: changeme
+      password: changeme
+    init:
+      databases:
+        - name: analytics
+          owner: analyst
+          password: securepass
