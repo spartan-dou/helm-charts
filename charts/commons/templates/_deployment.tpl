@@ -18,6 +18,42 @@ spec:
       labels:
         app: {{ $component.name }}
     spec:
+      {{- if $component.initContainers.containers }}
+      initContainers:
+      {{- if .Values.addons.redis.enable }}
+        {{ include "commons.redisInitContainer" . | indent 2 }}
+      {{- end }}
+      {{- range $component.initContainers.containers }}
+        - name: {{ .name }}
+          image: {{ .image }}:{{ default "latest" .tag }}
+          {{- if .command }}
+          command:
+            {{- range .command }}
+            - {{ . }}
+            {{- end }}
+          {{- end }}
+          {{- if .args }}
+          args:
+            {{- range .args }}
+            - {{ . }}
+            {{- end }}
+          {{- end }}
+          {{- if .env }}
+          env:
+            {{- range .env }}
+            - name: {{ .name }}
+              value: {{ .value | quote }}
+            {{- end }}
+          {{- end }}
+          {{- if .volumeMounts }}
+          volumeMounts:
+            {{- range .volumeMounts }}
+            - name: {{ .name }}
+              mountPath: {{ .mountPath }}
+            {{- end }}
+          {{- end }}
+      {{- end }}
+      {{- end }}
       containers:
         - name: {{ .name }}
           image: {{ .image }}:{{ default "latest" .tag }}

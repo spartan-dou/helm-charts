@@ -13,6 +13,14 @@ components:
   - name: web
     deployment:
       replicas: 2
+      initContainers:
+        containers:
+          - name: wait-for-redis
+            image: busybox
+            command: ['sh', '-c', 'until nc -z redis 6379; do echo waiting for redis; sleep 2; done']
+          - name: setup-volume
+            image: alpine
+            command: ['sh', '-c', 'mkdir -p /data/init']
       name: nginx
       image: nginx:stable
       ports:
