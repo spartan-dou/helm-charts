@@ -13,45 +13,35 @@ components:
   - name: web
     deployment:
       replicas: 2
-      containers:
-        - name: app
-          image: nginx:stable
-          ports:
-            - name: http
-              containerPort: 80
-          env:
-            - name: ENV
-              value: prod
-          livenessProbe:
-            httpGet:
-              path: /health
-              port: 8080
-            initialDelaySeconds: 10
-            periodSeconds: 5
-          readinessProbe:
-            httpGet:
-              path: /ready
-              port: 8080
-            initialDelaySeconds: 5
-            periodSeconds: 3
-          startupProbe:
-            httpGet:
-              path: /startup
-              port: 8080
-            failureThreshold: 30
-            periodSeconds: 10
-          volumeMounts:
-            - name: config
-              mountPath: /etc/config
-        - name: metrics
-          image: prom/prometheus
-          ports:
-            - name: metrics
-              containerPort: 9100
-      volumes:
+      name: nginx
+      image: nginx:stable
+      ports:
+        - name: http
+          containerPort: 80
+      env:
+        - name: ENV
+          value: prod
+      livenessProbe:
+        httpGet:
+          path: /health
+          port: 8080
+        initialDelaySeconds: 10
+        periodSeconds: 5
+      readinessProbe:
+        httpGet:
+          path: /ready
+          port: 8080
+        initialDelaySeconds: 5
+        periodSeconds: 3
+      startupProbe:
+        httpGet:
+          path: /startup
+          port: 8080
+        failureThreshold: 30
+        periodSeconds: 10
+      volumeMounts:
         - name: config
-          configMap:
-            name: nginx-config
+          mountPath: /etc/config
     service:
       enabled: true
       type: ClusterIP
@@ -85,6 +75,16 @@ components:
 addons:
   vscode:
     enabled: false
+  redis:
+    enabled: false
+    name: redis
+    image: bitnami/redis
+    port: 6379
+    password: changeme
+    resources:
+      limits:
+        cpu: 100m
+        memory: 128Mi
   postgres:
     enabled: false
     tag: 16

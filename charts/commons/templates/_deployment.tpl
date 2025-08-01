@@ -19,7 +19,6 @@ spec:
         app: {{ $component.name }}
     spec:
       containers:
-        {{- range .containers }}
         - name: {{ .name }}
           image: {{ .image }}:{{ default "latest" .tag }}
           env:
@@ -59,7 +58,6 @@ spec:
           startupProbe:
             {{- toYaml . | nindent 6 }}
           {{- end }}
-        {{- end }}  
       {{- if .volumes }}
       volumes:
         {{- toYaml .volumes | nindent 8 }}
