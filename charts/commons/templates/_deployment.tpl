@@ -20,13 +20,13 @@ spec:
     spec:
       {{- if $component.initContainers.containers }}
       initContainers:
-      {{- if .Values.addons.redis.enable }}
-        {{ include "commons.redisInitContainer" (dict "Values" .Values "Chart" .Chart "Release" .Release "component" $component) | indent 8 }}
-      {{- end }}
-      {{- if .Values.addons.redis.enable }}
+        {{- if $.Values.addons.redis.enable }}
+        {{ include "commons.redisInitContainer" (dict "Values" $.Values "Chart" $.Chart "Release" $.Release "component" $component) | indent 8 }}
+        {{- end }}
+        {{- if $.Values.addons.postgres.enable }}
         {{ include "commons.waitForPostgres" dict | indent 8 }}
-      {{- end }}
-      {{- range $component.initContainers.containers }}
+        {{- end }}
+        {{- range $component.initContainers }}
         - name: {{ .name }}
           image: {{ .image }}:{{ default "latest" .tag }}
           {{- if .command }}
@@ -55,28 +55,29 @@ spec:
               mountPath: {{ .mountPath }}
             {{- end }}
           {{- end }}
+        {{- end }}
       {{- end }}
-      {{- end }}
+
       containers:
-        - name: {{ .name }}
-          image: {{ .image }}:{{ default "latest" .tag }}
+        - name: {{ $component.name }}
+          image: {{ $component.image }}:{{ default "latest" $component.tag }}
           env:
             - name: TZ
               value: {{ $.Values.timezone | quote }}
-            {{- range .env }}
+            {{- range $component.env }}
             - name: {{ .name }}
               value: {{ .value | quote }}
             {{- end }}
-          {{- if .volumeMounts }}
+          {{- if $component.volumeMounts }}
           volumeMounts:
-            {{- range .volumeMounts }}
+            {{- range $component.volumeMounts }}
             - name: {{ .name }}
               mountPath: {{ .mountPath }}
             {{- end }}
           {{- end }}
-          {{- if .ports }}
+          {{- if $component.ports }}
           ports:
-            {{- range .ports }}
+            {{- range $component.ports }}
             - name: {{ .name }}
               containerPort: {{ .containerPort }}
               protocol: {{ default "TCP" .protocol }}
@@ -85,22 +86,23 @@ spec:
               {{- end }}
             {{- end }}
           {{- end }}
-          {{- with .livenessProbe }}
+          {{- with $component.livenessProbe }}
           livenessProbe:
-            {{- toYaml . | nindent 6 }}
+            {{- toYaml . | nindent 12 }}
           {{- end }}
-          {{- with .readinessProbe }}
+          {{- with $component.readinessProbe }}
           readinessProbe:
-            {{- toYaml . | nindent 6 }}
+            {{- toYaml . | nindent 12 }}
           {{- end }}
-          {{- with .startupProbe }}
+          {{- with $component.startupProbe }}
           startupProbe:
-            {{- toYaml . | nindent 6 }}
+            {{- toYaml . | nindent 12 }}
           {{- end }}
         {{ include "commons.sidecars" (dict "component" $component "Values" $.Values) | indent 8 }}
-      {{- if .volumes }}
+
+      {{- if $component.volumes }}
       volumes:
-        {{- toYaml .volumes | nindent 8 }}
+        {{- toYaml $component.volumes | nindent 8 }}
       {{- end }}
 ---
 {{- end }}
