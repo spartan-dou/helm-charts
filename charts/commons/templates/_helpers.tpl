@@ -63,8 +63,9 @@ app.kubernetes.io/instance: {{ .Release.Name }}
 {{- $enabled := .Values.addons.redis.enable }}
 {{- $hasSecret := .Values.addons.redis.existingSecret }}
 {{- $password := .Values.addons.redis.password | default "" }}
+{{- $component := .component | default "" }}
 
-{{- if and $enabled (not $hasSecret) }}
+{{- if and $enabled (not $hasSecret) (ne $component "redis") }}
 - name: wait-for-redis
   image: redis:7
   command:
@@ -88,3 +89,4 @@ app.kubernetes.io/instance: {{ .Release.Name }}
   {{- end }}
 {{- end }}
 {{- end }}
+

@@ -12,7 +12,7 @@
         "name" "REDIS_PASSWORD"
         "valueFrom" (dict
           "secretKeyRef" (dict
-            "name" (printf "%s-secret" "redis")
+            "name" "redis-secret"
             "key" "password"
           )
         )
@@ -37,8 +37,9 @@
 ) }}
 
 {{- $raw := .Values.addons.redis | default dict }}
-{{- $overrides := omit $raw "enable" }}
+{{- $overrides := omit $raw "enable" "name" }}
 {{- $redis := merge $defaults $overrides }}
+{{- $_ := set $redis "name" "redis" }}  {{/* force le nom */}}
 
 {{- $addons = append $addons $redis }}
 {{- end }}
