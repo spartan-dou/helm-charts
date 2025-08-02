@@ -1,4 +1,4 @@
-{{- if and .Values.addons.redis.enable (not (has "redis" (pluck "name" $base | flatten))) }}
+{{- if and .Values.addons.redis.enable (not (has "redis" (pluck "name" $base))) }}
 
 {{- $defaults := dict
   "name" "redis"

@@ -2,8 +2,8 @@
 {{- $enabled := .Values.addons.postgres.enable }}
 {{- if and $enabled $init.databases }}
 
-{{- $dbNames := pluck "name" $init.databases | flatten }}
-{{- $userNames := pluck "owner" $init.databases | flatten }}
+{{- $dbNames := pluck "name" $init.databases }}
+{{- $userNames := pluck "owner" $init.databases }}
 
 {{- $uniqueDbNames := uniq $dbNames }}
 {{- $uniqueUserNames := uniq $userNames }}
