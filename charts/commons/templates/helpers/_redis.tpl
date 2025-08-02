@@ -1,3 +1,4 @@
+{{- $base := .Values.components | default list }}
 {{- if and $enabled (not $hasSecret) (ne $component "redis") }}
 - name: wait-for-redis
   image: redis:7
