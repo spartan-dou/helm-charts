@@ -1,3 +1,6 @@
+{{- $addons := $addons | default list }}
+{{- $base := $addons }}
+
 {{- if and .Values.addons.redis.enable (not (has "redis" (pluck "name" $base))) }}
 
 {{- $defaults := dict
@@ -39,7 +42,7 @@
 {{- $raw := .Values.addons.redis | default dict }}
 {{- $overrides := omit $raw "enable" "name" }}
 {{- $redis := merge $defaults $overrides }}
-{{- $_ := set $redis "name" "redis" }}  {{/* force le nom */}}
+{{- $_ := set $redis "name" "redis" }}
 
 {{- $addons = append $addons $redis }}
 {{- end }}
