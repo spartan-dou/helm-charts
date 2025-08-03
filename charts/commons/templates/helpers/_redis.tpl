@@ -22,7 +22,7 @@
     - name: REDIS_PASSWORD
       valueFrom:
         secretKeyRef:
-          name: {{ include "commons.fullname" (dict "Chart" $values.Chart "Values" $values "Release" $values.Release "name" "redis") }}-secret
+          name: {{ include "commons.fullname" (dict "Chart" .Chart "Values" .Values "Release" .Release "name" "redis") }}-secret
           key: password
   {{- end }}
 {{- end }}
