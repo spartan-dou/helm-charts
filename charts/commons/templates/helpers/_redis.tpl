@@ -1,4 +1,8 @@
-{{- $base := .Values.components | default list }}
+{{- define "commons.redisInitContainer" -}}
+{{- $enabled := .Values.addons.redis.enable }}
+{{- $hasSecret := .Values.addons.redis.existingSecret }}
+{{- $password := .Values.addons.redis.password | default "" }}
+{{- $component := .component | default "" }}
 {{- if and $enabled (not $hasSecret) (ne $component "redis") }}
 - name: wait-for-redis
   image: redis:7
@@ -18,8 +22,7 @@
     - name: REDIS_PASSWORD
       valueFrom:
         secretKeyRef:
-          name: {{ include "commons.fullname" (dict "Chart" .Chart "Values" .Values "Release" .Release "name" "redis") }}-secret
+          name: {{ include "commons.fullname" (dict "Chart" $values.Chart "Values" $values "Release" $values.Release "name" "redis") }}-secret
           key: password
   {{- end }}
-{{- end }}
 {{- end }}

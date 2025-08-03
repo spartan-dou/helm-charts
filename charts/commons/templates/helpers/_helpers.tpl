@@ -58,9 +58,3 @@ app.kubernetes.io/instance: {{ .Release.Name }}
 {{- default "default" .Values.serviceAccount.name }}
 {{- end }}
 {{- end }}
-
-{{- define "commons.redisInitContainer" -}}
-{{- $enabled := .Values.addons.redis.enable }}
-{{- $hasSecret := .Values.addons.redis.existingSecret }}
-{{- $password := .Values.addons.redis.password | default "" }}
-{{- $component := .component | default "" }}
