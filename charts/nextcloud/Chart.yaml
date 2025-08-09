@@ -8,5 +8,5 @@ keywords:
   - nextcloud
 dependencies:
 - name: redis
-  version: 20.9.0
+  version: 22.0.0
   repository: https://charts.bitnami.com/bitnami
