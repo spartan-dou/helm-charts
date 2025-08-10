@@ -3,6 +3,7 @@
 {{- $hasSecret := .Values.addons.redis.existingSecret }}
 {{- $password := .Values.addons.redis.password | default "" }}
 {{- $component := .component | default "" }}
+
 {{- if and $enabled (not $hasSecret) (ne $component "redis") }}
 - name: wait-for-redis
   image: redis:7
@@ -25,4 +26,6 @@
           name: {{ include "commons.fullname" (dict "Chart" .Chart "Values" .Values "Release" .Release "name" "redis") }}-secret
           key: password
   {{- end }}
+{{- end }}
+
 {{- end }}
