@@ -25,3 +25,5 @@ To uninstall the chart:
 ```bash
 helm delete my-<chart-name>
 ```
+
+![Helm Unit Tests](https://github.com/spartan-dou/helm-charts/actions/workflows/helm-tests.yaml/badge.svg)
