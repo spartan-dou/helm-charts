@@ -72,9 +72,9 @@ components:
 
 addons:
   vscode:
-    enabled: false
+    enabled: true
   redis:
-    enabled: false
+    enabled: true
     name: redis
     image: bitnami/redis
     port: 6379
@@ -84,7 +84,7 @@ addons:
         cpu: 100m
         memory: 128Mi
   postgres:
-    enabled: false
+    enabled: true
     tag: 16
     cluster:
       owner: changeme
