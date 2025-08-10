@@ -1,11 +1,9 @@
 suite: Full values.yaml test suite
 templates:
-  - templates/deployment.yaml
-  - templates/service.yaml
-  - templates/ingress.yaml
-  - templates/pvc.yaml
-  - templates/_redis.tpl
-  - templates/postgres-init.yaml
+  - templates/_deployment.yaml
+  - templates/_service.yaml
+  - templates/_ingress.yaml
+  - templates/_pvc.yaml
 
 tests:
   ### COMPONENT: WEB DEPLOYMENT ###
