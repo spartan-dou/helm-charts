@@ -1,9 +1,6 @@
 suite: Full values.yaml test suite
 templates:
   - templates/_deployment.yaml
-  - templates/_service.yaml
-  - templates/_ingress.yaml
-  - templates/_pvc.yaml
 
 tests:
   ### COMPONENT: WEB DEPLOYMENT ###
