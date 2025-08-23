@@ -21,10 +21,10 @@ spec:
       {{- with $component.initContainers }}
       {{- if .containers }}
       initContainers:
-        {{- if $.Values.addons.redis.enable }}
+        {{- if $.Values.addons.redis.enabled }}
         {{ include "commons.redisInitContainer" (dict "Values" $.Values "Chart" $.Chart "Release" $.Release "component" $component) | indent 8 }}
         {{- end }}
-        {{- if $.Values.addons.postgres.enable }}
+        {{- if $.Values.addons.postgres.enabled }}
         {{ include "commons.waitForPostgres" dict | indent 8 }}
         {{- end }}
         {{- range $component.initContainers }}

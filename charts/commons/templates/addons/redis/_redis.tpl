@@ -9,7 +9,7 @@ Ce bloc ajoute l'addon Redis à la liste des addons si :
 {{- $names := pluck "name" $base }}
 {{- $hasRedis := has "redis" $names }}
 
-{{- if and .Values.addons.redis.enable (not $hasRedis) }}
+{{- if and .Values.addons.redis.enabled (not $hasRedis) }}
 
   {{- $defaults := dict
     "name" "redis"

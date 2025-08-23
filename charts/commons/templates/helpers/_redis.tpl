@@ -1,5 +1,5 @@
 {{- define "commons.redisInitContainer" -}}
-{{- $enabled := .Values.addons.redis.enable }}
+{{- $enabled := .Values.addons.redis.enabled }}
 {{- $hasSecret := .Values.addons.redis.existingSecret }}
 {{- $password := .Values.addons.redis.password | default "" }}
 {{- $component := .component | default "" }}

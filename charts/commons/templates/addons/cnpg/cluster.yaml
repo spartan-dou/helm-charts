@@ -1,5 +1,5 @@
 {{- with .Values.addons.postgres }}
-{{- if .enable }}
+{{- if .enabled }}
 apiVersion: postgresql.cnpg.io/v1
 kind: Cluster
 metadata:

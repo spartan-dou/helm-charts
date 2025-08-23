@@ -1,5 +1,5 @@
 {{- $init := .Values.addons.postgres.init }}
-{{- $enabled := .Values.addons.postgres.enable }}
+{{- $enabled := .Values.addons.postgres.enabled }}
 {{- if and $enabled $init.databases }}
 
 {{- $dbNames := pluck "name" $init.databases }}
