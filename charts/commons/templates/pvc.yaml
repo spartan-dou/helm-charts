@@ -1,4 +1,4 @@
-{{- $components := include "commons.withAddons" . | fromYaml }}
+{{- $components := include "commons.withAddons" . | fromYamlArray }}
 {{- range $components }}
 {{- $component := . }}
 {{- with $component.pvc }}
