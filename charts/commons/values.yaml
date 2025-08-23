@@ -87,7 +87,7 @@ addons:
     enabled: true
     tag: 16
     cluster:
-      owner: changeme
+      username: changeme
       password: changeme
     init:
       databases:

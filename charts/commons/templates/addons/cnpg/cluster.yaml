@@ -19,7 +19,7 @@ spec:
   bootstrap:
     initdb:
       database: {{ .cluster.database | default "app" }}
-      owner: {{ .cluster.owner | default "app" }}
+      owner: {{ .cluster.username | default "app" }}
       secret:
         name: {{ .Release.Name }}-postgres-secret
     {{- if .init.databases }}
