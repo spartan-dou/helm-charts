@@ -27,5 +27,5 @@
 {{- end }}
 
 {{- $all := concat $base $addons }}
-{{- "\n" }}{{ toYaml $all }}
+{{- toYaml $all }}
 {{- end }}
