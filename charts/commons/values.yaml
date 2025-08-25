@@ -72,8 +72,9 @@ components:
     postgres:
       - name: postgres
         tag: 16
-        storage: 1Gi
-        storageClassName: local-path
+        storage:
+          size: 1Gi
+          storageClass: local-path
         cluster:
           username: changeme
           password: changeme
