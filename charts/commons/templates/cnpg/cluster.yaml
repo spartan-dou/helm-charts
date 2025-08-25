@@ -27,8 +27,8 @@ spec:
   {{- end }}
   {{- with .storage }}
   storage:
-    size: {{ .storage.size | default "5Gi" }}
-    storageClass: {{ .storage.storageClass | default "standard" }}
+    size: {{ .size | default "5Gi" }}
+    storageClass: {{ .storageClass | default "standard" }}
   {{- end }}
 
   imageName: {{ .image | default "ghcr.io/cloudnative-pg/postgresql" }}:{{ .tag | default "latest" }}
@@ -49,14 +49,14 @@ spec:
   {{- with .backup }}
   backup:
     barmanObjectStore:
-      destinationPath: {{ .backup.destinationPath }}/{{ .cluster.name | default "postgres" }}
-      endpointURL: {{ .backup.endpointURL }}
+      destinationPath: {{ .destinationPath }}/{{ .name | default "postgres" }}
+      endpointURL: {{ .endpointURL }}
       s3Credentials:
         accessKeyId:
-          name: {{ printf "%s-backup-secret" (.cluster.name | default "postgres") }}
+          name: {{ printf "%s-backup-secret" (.name | default "postgres") }}
           key: ACCESS_KEY_ID
         secretAccessKey:
-          name: {{ printf "%s-backup-secret" (.cluster.name | default "postgres") }}
+          name: {{ printf "%s-backup-secret" (.name | default "postgres") }}
           key: SECRET_ACCESS_KEY
       wal:
         compression: gzip
