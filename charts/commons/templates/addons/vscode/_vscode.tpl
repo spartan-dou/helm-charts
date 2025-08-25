@@ -3,7 +3,7 @@
 {{- $addons := list }}
 
 {{/* Addon VSCode */}}
-{{- if and .Values.addons.vscode.enabled (not (has "vscode" (pluck "name" $base))) }}
+{{- if and .Values.addons.vscode.enabled }}
   {{- $defaults := dict
     "name" "vscode"
     "deployment" (dict
