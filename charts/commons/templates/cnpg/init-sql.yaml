@@ -2,21 +2,14 @@
 {{- range $components }}
 {{- $component := . }}
 {{- with $component.postgres }}
-{{- with .init }}
-{{- range . }}
+{{- range .init }}
 apiVersion: v1
 kind: ConfigMap
 metadata:
   name: {{ . }}
 data:
   init.sql: |
-    {{- range .databases }}
-    CREATE USER {{ .owner }} WITH ENCRYPTED PASSWORD '{{ .password }}';
-    CREATE DATABASE {{ .name }} OWNER {{ .owner }};
-    GRANT ALL PRIVILEGES ON DATABASE {{ .name }} TO {{ .owner }};
-    {{- end }}
 ---
-{{- end }}
 {{- end }}
 {{- end }}
 {{- end }}
