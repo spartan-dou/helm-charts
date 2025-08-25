@@ -36,10 +36,10 @@ spec:
       owner: {{ .cluster.username | default "app" }}
       secret:
         name: {{ printf "%s-postgres-secret" (.cluster.name | default "postgres") }}
-    {{- if .init.databases }}
+    {{- with .init }}
     postInitApplicationSQL:
       - configMap:
-          name: {{ printf "%s-init-sql" (.cluster.name | default "postgres") }}
+          name: {{ printf "%s-init-sql" (.name | default "postgres") }}
           key: init.sql
     {{- end }}
 

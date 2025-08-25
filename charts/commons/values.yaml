@@ -87,7 +87,7 @@ components:
 
 addons:
   vscode:
-    enabled: false
+    enabled: true
   redis:
     enabled: true
     name: redis
