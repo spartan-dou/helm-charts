@@ -15,7 +15,4 @@
 
 {{- $all := concat $base $addons }}
 {{- toYaml $all }}
-{{- (printf "DEBUG: addons = %#v" toYaml $all | fromYamlArray) }}
-{{- (printf "DEBUG: addons = %#v" "base") }}
-{{- (printf "DEBUG: addons = %#v" toYaml $base | fromYamlArray) }}
 {{- end }}
