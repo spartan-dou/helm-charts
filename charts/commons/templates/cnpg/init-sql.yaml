@@ -1,14 +1,4 @@
-{{- $init := .Values.addons.postgres.init }}
-{{- $enabled := .Values.addons.postgres.enabled }}
-{{- if and $enabled $init.databases }}
-
-{{- $dbNames := pluck "name" ($init.databases | fromYamlArray) }}
-{{- $userNames := pluck "owner" $init.databases }}
-
-{{- $uniqueDbNames := uniq $dbNames }}
-{{- $uniqueUserNames := uniq $userNames }}
-
-{{- if and (eq (len $dbNames) (len $uniqueDbNames)) (eq (len $userNames) (len $uniqueUserNames)) }}
+{{- if false }}
 
 apiVersion: v1
 kind: ConfigMap
@@ -27,5 +17,4 @@ data:
 # Bases : {{ $dbNames }}
 # Utilisateurs : {{ $userNames }}
 # Veuillez corriger les doublons dans addons.postgres.init.databases
-{{- end }}
 {{- end }}
