@@ -38,7 +38,6 @@
   {{- $raw := .Values.addons.redis | default dict }}
   {{- $overrides := omit $raw "enable" "name" }}
   {{- $redis := merge $defaults $overrides }}
-  {{- $_ := set $redis "name" "redis" }}
   {{- toYaml $redis }}
 {{- end }}
 {{- end }}

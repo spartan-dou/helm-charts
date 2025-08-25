@@ -14,5 +14,5 @@
 {{- end }}
 
 {{- $all := concat $base $addons }}
-{{- toYaml $all }}
+{{- toYaml $base }}
 {{- end }}
