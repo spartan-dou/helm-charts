@@ -1,9 +1,5 @@
-{{- define "commons.withAddons" }}
-{{- $base := .Values.components | default list }}
-{{- $addons := list }}
-
-{{/* Addon VSCode */}}
-{{- if and .Values.addons.vscode.enabled }}
+{{- define "commons.addon.vscode" }}
+{{- if .Values.addons.vscode.enabled }}
   {{- $defaults := dict
     "name" "vscode"
     "deployment" (dict
@@ -23,9 +19,6 @@
   {{- $raw := .Values.addons.vscode | default dict }}
   {{- $overrides := omit $raw "enable" }}
   {{- $vscode := merge $defaults $overrides }}
-  {{- $addons = append $addons $vscode }}
+  {{- return $vscode }}
 {{- end }}
-
-{{- $all := concat $base $addons }}
-{{- toYaml $all }}
 {{- end }}

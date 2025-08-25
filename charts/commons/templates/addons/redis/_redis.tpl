@@ -1,16 +1,5 @@
-{{- /*
-Ce bloc ajoute l'addon Redis à la liste des addons si :
-- Redis est activé dans les valeurs
-- Redis n'est pas déjà présent dans la liste des addons
-*/ -}}
-
-{{- $addons := $addons | default list }}
-{{- $base := $addons }}
-{{- $names := pluck "name" $base }}
-{{- $hasRedis := has "redis" $names }}
-
-{{- if and .Values.addons.redis.enabled (not $hasRedis) }}
-
+{{- define "commons.addon.redis" }}
+{{- if .Values.addons.redis.enabled }}
   {{- $defaults := dict
     "name" "redis"
     "deployment" (dict
@@ -46,12 +35,10 @@ Ce bloc ajoute l'addon Redis à la liste des addons si :
       "ports" (list (dict "name" "redis" "port" 6379))
     )
   }}
-
   {{- $raw := .Values.addons.redis | default dict }}
   {{- $overrides := omit $raw "enable" "name" }}
   {{- $redis := merge $defaults $overrides }}
-  {{- $_ := set $redis "name" "redis" }}  {{/* force le nom */}}
-
-  {{- $addons = append $addons $redis }}
-
+  {{- $_ := set $redis "name" "redis" }}
+  {{- return $redis }}
+{{- end }}
 {{- end }}
