@@ -19,6 +19,6 @@
   {{- $raw := .Values.addons.vscode | default dict }}
   {{- $overrides := omit $raw "enable" }}
   {{- $vscode := merge $defaults $overrides }}
-  {{- return $vscode }}
+  {{- toYaml $vscode }}
 {{- end }}
 {{- end }}

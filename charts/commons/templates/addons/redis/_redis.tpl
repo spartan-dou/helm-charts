@@ -39,6 +39,6 @@
   {{- $overrides := omit $raw "enable" "name" }}
   {{- $redis := merge $defaults $overrides }}
   {{- $_ := set $redis "name" "redis" }}
-  {{- return $redis }}
+  {{- toYaml $redis }}
 {{- end }}
 {{- end }}
