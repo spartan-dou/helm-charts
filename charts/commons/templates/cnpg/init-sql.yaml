@@ -1,20 +1,21 @@
-{{- if false }}
-
+{{- $components := include "commons.withAddons" . | fromYamlArray }}
+{{- range $components }}
+{{- $component := . }}
+{{- with $component.postgres }}
+{{- with .init }}
+{{- range . }}
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ printf "%s-init-sql" (default "postgres" $.Values.addons.postgres.cluster.name) }}
+  name: {{ . }}
 data:
   init.sql: |
-    {{- range $init.databases }}
+    {{- range .databases }}
     CREATE USER {{ .owner }} WITH ENCRYPTED PASSWORD '{{ .password }}';
     CREATE DATABASE {{ .name }} OWNER {{ .owner }};
     GRANT ALL PRIVILEGES ON DATABASE {{ .name }} TO {{ .owner }};
     {{- end }}
-
-{{- else }}
-# ⚠️ Erreur : noms de bases ou d'utilisateurs en doublon détectés
-# Bases : {{ $dbNames }}
-# Utilisateurs : {{ $userNames }}
-# Veuillez corriger les doublons dans addons.postgres.init.databases
+---
+{{- end }}
+{{- end }}
 {{- end }}
