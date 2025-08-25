@@ -14,7 +14,7 @@ spec:
   instances: {{ .instances | default 1 }}
   postgresql:
     parameters:
-      timezone: {{ $Values.timezone | default "Europe/Paris" | quote }}
+      timezone: {{ $.Values.timezone | default "Europe/Paris" | quote }}
 
   resources:
     requests:
