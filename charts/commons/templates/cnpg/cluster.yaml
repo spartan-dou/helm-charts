@@ -14,23 +14,54 @@ spec:
   instances: {{ .instances | default 1 }}
   postgresql:
     parameters:
-      timezone: {{ .Values.timezone | quote }}
+      timezone: {{ $Values.timezone | default "Europe/Paris" | quote }}
+
+  resources:
+    requests:
+      cpu: {{ .resources.requests.cpu | default "500m" }}
+      memory: {{ .resources.requests.memory | default "512Mi" }}
+    limits:
+      cpu: {{ .resources.limits.cpu | default "1" }}
+      memory: {{ .resources.limits.memory | default "1Gi" }}
+
   storage:
-    size: {{ .storage.size | default "1Gi" }}
+    size: {{ .storage.size | default "5Gi" }}
     storageClass: {{ .storage.storageClass | default "standard" }}
+
   imageName: {{ .image | default "ghcr.io/cloudnative-pg/postgresql" }}:{{ .tag | default "latest" }}
+
   bootstrap:
     initdb:
       database: {{ .cluster.database | default "app" }}
       owner: {{ .cluster.username | default "app" }}
       secret:
-        name: {{ .Release.Name }}-postgres-secret
+        name: {{ printf "%s-postgres-secret" (.cluster.name | default "postgres") }}
     {{- if .init.databases }}
     postInitApplicationSQL:
       - configMap:
           name: {{ printf "%s-init-sql" (.cluster.name | default "postgres") }}
           key: init.sql
     {{- end }}
+
+  {{- with .backup }}
+  backup:
+    barmanObjectStore:
+      destinationPath: {{ .backup.destinationPath }}/{{ .cluster.name | default "postgres" }}
+      endpointURL: {{ .backup.endpointURL }}
+      s3Credentials:
+        accessKeyId:
+          name: {{ printf "%s-backup-secret" (.cluster.name | default "postgres") }}
+          key: ACCESS_KEY_ID
+        secretAccessKey:
+          name: {{ printf "%s-backup-secret" (.cluster.name | default "postgres") }}
+          key: SECRET_ACCESS_KEY
+      wal:
+        compression: gzip
+        maxParallel: 4
+      data:
+        compression: gzip
+  {{- end }}
+
   monitoring:
     enablePodMonitor: {{ .monitoring | default false }}
 ---
