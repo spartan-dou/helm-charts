@@ -2,7 +2,8 @@
 {{- range $components }}
 {{- $component := . }}
 {{- with $component.postgres }}
-{{- range .init }}
+{{- range . }}
+{{- with .init }}
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -10,6 +11,7 @@ metadata:
 data:
   init.sql: |
 ---
+{{- end }}
 {{- end }}
 {{- end }}
 {{- end }}
