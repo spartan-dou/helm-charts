@@ -25,9 +25,11 @@ spec:
       cpu: {{ .limits.cpu | default "1" }}
       memory: {{ .limits.memory | default "1Gi" }}
   {{- end }}
+  {{- with .storage }}
   storage:
     size: {{ .storage.size | default "5Gi" }}
     storageClass: {{ .storage.storageClass | default "standard" }}
+  {{- end }}
 
   imageName: {{ .image | default "ghcr.io/cloudnative-pg/postgresql" }}:{{ .tag | default "latest" }}
 
