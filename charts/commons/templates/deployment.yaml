@@ -100,6 +100,10 @@ spec:
           startupProbe:
             {{- toYaml . | nindent 12 }}
           {{- end }}
+          {{- with .resources }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
         {{ include "commons.sidecars" (dict "component" $component "Values" $.Values) | indent 8 }}
 
       {{- if $component.volumes }}

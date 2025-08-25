@@ -18,17 +18,14 @@ spec:
 
   {{- with .resources }}
   resources:
-    requests:
-      cpu: {{ .requests.cpu | default "500m" }}
-      memory: {{ .requests.memory | default "512Mi" }}
-    limits:
-      cpu: {{ .limits.cpu | default "1" }}
-      memory: {{ .limits.memory | default "1Gi" }}
+    {{- toYaml . | nindent 4 }}
   {{- end }}
   {{- with .storage }}
   storage:
-    size: {{ .size | default "5Gi" }}
-    storageClass: {{ .storageClass | default "standard" }}
+    size: {{ .size | default "1Gi" }}
+    {{- with .storageClass }}
+    storageClass: {{ . }}
+    {{- end }}
   {{- end }}
 
   imageName: {{ .image | default "ghcr.io/cloudnative-pg/postgresql" }}:{{ .tag | default "latest" }}
