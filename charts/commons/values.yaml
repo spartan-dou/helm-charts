@@ -69,6 +69,20 @@ components:
         accessModes: [ReadWriteOnce]
         storage: 1Gi
         storageClassName: local-path
+    postgres:
+      - name: postgres
+        tag: 16
+        storage: 1Gi
+        storageClassName: local-path
+        cluster:
+          username: changeme
+          password: changeme
+        init:
+          databases:
+            - name: analytics
+              owner: analyst
+              password: securepass
+
 
 addons:
   vscode:
@@ -83,14 +97,3 @@ addons:
       limits:
         cpu: 100m
         memory: 128Mi
-  postgres:
-    enabled: true
-    tag: 16
-    cluster:
-      username: changeme
-      password: changeme
-    init:
-      databases:
-        - name: analytics
-          owner: analyst
-          password: securepass

@@ -2,7 +2,7 @@
 {{- $enabled := .Values.addons.postgres.enabled }}
 {{- if and $enabled $init.databases }}
 
-{{- $dbNames := pluck "name" $init.databases }}
+{{- $dbNames := pluck "name" ($init.databases | fromYamlArray) }}
 {{- $userNames := pluck "owner" $init.databases }}
 
 {{- $uniqueDbNames := uniq $dbNames }}

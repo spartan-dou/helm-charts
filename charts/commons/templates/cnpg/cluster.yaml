@@ -1,11 +1,14 @@
-{{- with .Values.addons.postgres }}
-{{- if .enabled }}
+{{- $components := include "commons.withAddons" . | fromYamlArray }}
+{{- range $components }}
+{{- $component := . }}
+{{- with $component.postgres }}
+{{- range . }}
 apiVersion: postgresql.cnpg.io/v1
 kind: Cluster
 metadata:
   name: {{ .name | default "postgres" }}
   labels:
-    app.kubernetes.io/name: postgres
+    app.kubernetes.io/name: {{ .name | default "postgres" }}
     app.kubernetes.io/instance: {{ .name | default "postgres" }}
 spec:
   instances: {{ .instances | default 1 }}
@@ -30,5 +33,7 @@ spec:
     {{- end }}
   monitoring:
     enablePodMonitor: {{ .monitoring | default false }}
+---
+{{- end }}
 {{- end }}
 {{- end }}
