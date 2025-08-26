@@ -14,7 +14,7 @@ spec:
   resources:
     requests:
       storage: {{ .storage }}
-  storageClassName: {{ .storageClassName | default .Values.global.pvc.storageClassName }}
+  storageClassName: {{ .storageClassName | default $.Values.global.pvc.storageClassName }}
   {{- if .volumeMode }}
   volumeMode: {{ .volumeMode }}
   {{- end }}
