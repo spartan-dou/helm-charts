@@ -4,8 +4,8 @@
     "name" "redis"
     "deployment" (dict
       "name" "redis"
-      "image" "bitnami/redis"
-      "tag" "latest"
+      "image" .Values.addons.redis.image.repository
+      "tag" .Values.addons.redis.image.tag
       "ports" (list (dict "name" "redis" "containerPort" 6379))
       "env" (list
         (dict

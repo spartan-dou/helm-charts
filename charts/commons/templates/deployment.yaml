@@ -65,7 +65,7 @@ spec:
           image: {{ $component.image }}:{{ default "latest" $component.tag }}
           env:
             - name: TZ
-              value: {{ $.Values.timezone | quote }}
+              value: {{ $.Values.global.timezone | quote }}
             {{- range $component.env }}
             - name: {{ .name }}
               value: {{ .value | quote }}

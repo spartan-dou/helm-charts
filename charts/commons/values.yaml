@@ -1,6 +1,17 @@
-nameOverride: ""
-fullname: ""
-timezone: "Europe/Paris"
+global:
+  timezone: "Europe/Paris"
+  pvc:
+    size: "1Gi"
+    storageClassName: ""
+  postgres:
+    size: "1Gi"
+    storageClass: ""
+    image:
+      repository: ghcr.io/cloudnative-pg/postgresql
+      tag: 16
+  ingress:
+    className: traefik
+
 
 components:
   - name: web
@@ -52,7 +63,7 @@ components:
           targetPort: 8080
     ingress:
       enabled: true
-      className: nginx
+      className: traefik
       annotations:
         nginx.ingress.kubernetes.io/rewrite-target: /
       hosts:
@@ -91,7 +102,9 @@ addons:
   redis:
     enabled: true
     name: redis
-    image: bitnami/redis
+    image:
+      repository: bitnami/redis
+      tag: latest
     port: 6379
     password: changeme
     resources:

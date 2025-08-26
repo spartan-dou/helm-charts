@@ -14,7 +14,7 @@ spec:
   instances: {{ .instances | default 1 }}
   postgresql:
     parameters:
-      timezone: {{ $.Values.timezone | default "Europe/Paris" | quote }}
+      timezone: {{ $.Values.global.timezone }}
 
   {{- with .resources }}
   resources:
@@ -22,13 +22,11 @@ spec:
   {{- end }}
   {{- with .storage }}
   storage:
-    size: {{ .size | default "1Gi" }}
-    {{- with .storageClass }}
-    storageClass: {{ . }}
-    {{- end }}
+    size: {{ .size | default .Values.global.postgres.size }}
+    storageClass: {{ .storageClass | default .Values.global.postgres.storageClass }}
   {{- end }}
 
-  imageName: {{ .image | default "ghcr.io/cloudnative-pg/postgresql" }}:{{ .tag | default "latest" }}
+  imageName: {{ .image | default .Values.global.postgres.image.repository }}:{{ .tag | default .Values.global.postgres.image.tag }}
 
   bootstrap:
     initdb:
