@@ -7,6 +7,10 @@
   {{- $addons = append $addons $vscode }}
 {{- end }}
 
+{{- $redis := include "commons.addon.redis" . | fromYamlArray }}
+{{- if $redis }}
+  {{- $addons = append $addons $redis }}
+{{- end }}
 
 {{- $all := concat $base $addons }}
 {{- toYaml $all }}
