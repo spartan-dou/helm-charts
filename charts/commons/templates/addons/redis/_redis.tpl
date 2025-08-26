@@ -35,9 +35,7 @@
       "ports" (list (dict "name" "redis" "port" 6379))
     )
   }}
-  {{- $raw := .Values.addons.redis | default dict }}
-  {{- $overrides := omit $raw "enable" "name" }}
-  {{- $redis := merge $defaults $overrides }}
+  {{- $redis := .Values.addons.redis | default dict }}
   {{- toYaml $redis }}
 {{- end }}
 {{- end }}

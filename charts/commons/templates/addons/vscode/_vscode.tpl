@@ -16,9 +16,7 @@
       "ports" (list (dict "name" "http" "port" 8080))
     )
   }}
-  {{- $raw := .Values.addons.vscode | default dict }}
-  {{- $overrides := omit $raw "enable" }}
-  {{- $vscode := merge $defaults $overrides }}
+  {{- $vscode := .Values.addons.vscode | default dict }}
   {{- toYaml $vscode }}
 {{- end }}
 {{- end }}
