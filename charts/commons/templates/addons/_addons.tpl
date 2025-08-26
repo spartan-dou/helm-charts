@@ -13,5 +13,5 @@
 {{- end }}
 
 {{- $all := concat $base $addons }}
-{{- toYaml .Values.components }}
+{{- toYaml $all }}
 {{- end }}
