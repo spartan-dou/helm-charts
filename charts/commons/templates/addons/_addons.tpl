@@ -8,8 +8,7 @@
 {{- end }}
 
 {{- $redis := include "commons.addon.redis" . | fromYamlArray }}
-{{- $names := pluck "name" $addons }}
-{{- if and $redis (not (has "redis" $names)) }}
+{{- if $redis }}
   {{- $addons = append $addons $redis }}
 {{- end }}
 
