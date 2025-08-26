@@ -341,7 +341,7 @@ addons:
       size: 1Gi
     image:
       repository: lscr.io/linuxserver/code-server
-      tag: "4.103.1"
+      tag: "4.103.2"
     env:
       - name: PUID
         value: "1000"
