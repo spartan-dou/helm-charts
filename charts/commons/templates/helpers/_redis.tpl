@@ -6,7 +6,7 @@
 
 {{- if and $enabled (not $hasSecret) (ne $component "redis") }}
 - name: wait-for-redis
-  image: redis:7
+  image: $.Values.addons.redis.image.repository:$.Values.addons.redis.image.tag | default "latest"
   command:
     - sh
     - -c

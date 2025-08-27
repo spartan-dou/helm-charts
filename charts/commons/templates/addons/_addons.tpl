@@ -10,7 +10,7 @@
       "name" "code-server"
       "image" (dict
         "repository" $.Values.addons.vscode.image.repository
-        "tag" $.Values.addons.vscode.image.tag
+        "tag" $.Values.addons.vscode.image.tag | default "latest"
       )
       "ports" (list (dict "name" "http" "containerPort" $.Values.addons.vscode.port))
       "volumeMounts" (list (dict "name" "vscode-data" "mountPath" "/home/coder/project"))
@@ -36,7 +36,7 @@
       "name" "redis"
       "image" (dict
         "repository" $.Values.addons.redis.image.repository
-        "tag" $.Values.addons.redis.image.tag
+        "tag" $.Values.addons.redis.image.tag | default "latest"
       )
       "ports" (list (dict "name" "redis" "containerPort" $.Values.addons.redis.port))
       "env" (list
