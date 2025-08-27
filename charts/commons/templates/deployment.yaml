@@ -29,7 +29,7 @@ spec:
         {{- end }}
         {{- range $component.initContainers }}
         - name: {{ .name }}
-          image: {{ .image }}:{{ default "latest" .tag }}
+          image: {{ .image.repository }}:{{ .image.tag | default "latest"  }}
           {{- if .command }}
           command:
             {{- range .command }}
@@ -62,7 +62,7 @@ spec:
 
       containers:
         - name: {{ $component.name }}
-          image: {{ $component.image }}:{{ default "latest" $component.tag }}
+          image: {{ $component.image.repository }}:{{ $component.image.tag | default "latest"  }}
           env:
             - name: TZ
               value: {{ $.Values.global.timezone | quote }}
