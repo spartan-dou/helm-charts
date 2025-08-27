@@ -1,7 +1,9 @@
 {{- define "commons.sidecars" }}
 {{- range .component.sidecars }}
 - name: {{ .name }}
-  image: {{ .image }}
+  image:
+    repository: {{ .repository }}
+    tag: {{ .tag | default "latest" }}
   {{- if .ports }}
   ports:
     {{- range .ports }}
