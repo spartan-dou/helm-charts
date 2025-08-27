@@ -62,7 +62,7 @@ spec:
 
       containers:
         - name: {{ $component.name }}
-          image: toto:{{ $component.image.tag | default "latest"  }}
+          image: tot:lates
           env:
             - name: TZ
               value: {{ $.Values.global.timezone | quote }}
