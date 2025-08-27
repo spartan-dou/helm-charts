@@ -2,7 +2,7 @@
 {{- range $components }}
 {{- $component := . }}
 {{- with $component.postgres }}
-{{- range . }}
+{{- if .enabled }}
 {{- with .init }}
 apiVersion: v1
 kind: ConfigMap
