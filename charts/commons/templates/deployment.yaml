@@ -27,7 +27,7 @@ spec:
         {{- if $component.postgres.enabled }}
         {{ include "commons.waitForPostgres" dict | indent 8 }}
         {{- end }}
-        {{- range $component.initContainers }}
+        {{- range .initContainers }}
         - name: {{ .name }}
           image: {{ .image.repository }}:{{ .image.tag | default "latest"  }}
           {{- with .command }}
@@ -59,7 +59,6 @@ spec:
         {{- end }}
       {{- end }}
       {{- end }}
-
       containers:
         - name: {{ $component.name }}
           image: {{ .image.repository }}:{{ .image.tag | default "latest"  }}
@@ -104,7 +103,6 @@ spec:
           resources:
             {{- toYaml . | nindent 12 }}
           {{- end }}
-        {{ include "commons.sidecars" (dict "component" $component "Values" $.Values) | indent 8 }}
 
       {{- if .volumes }}
       volumes:
