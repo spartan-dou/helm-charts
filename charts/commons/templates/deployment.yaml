@@ -18,7 +18,7 @@ spec:
       labels:
         app: {{ $component.name }}
     spec:
-      {{- with $component.initContainers }}
+      {{- with .initContainers }}
       {{- if .containers }}
       initContainers:
         {{- if $.Values.addons.redis.enabled }}
@@ -62,24 +62,24 @@ spec:
 
       containers:
         - name: {{ $component.name }}
-          image: tot:lates
+          image: {{ .image.repository }}:{{ .image.tag | default "latest"  }}
           env:
             - name: TZ
               value: {{ $.Values.global.timezone | quote }}
-            {{- range $component.env }}
+            {{- range .env }}
             - name: {{ .name }}
               value: {{ .value | quote }}
             {{- end }}
-          {{- if $component.volumeMounts }}
+          {{- if .volumeMounts }}
           volumeMounts:
-            {{- range $component.volumeMounts }}
+            {{- range .volumeMounts }}
             - name: {{ .name }}
               mountPath: {{ .mountPath }}
             {{- end }}
           {{- end }}
-          {{- if $component.ports }}
+          {{- if .ports }}
           ports:
-            {{- range $component.ports }}
+            {{- range .ports }}
             - name: {{ .name }}
               containerPort: {{ .containerPort }}
               protocol: {{ default "TCP" .protocol }}
@@ -88,15 +88,15 @@ spec:
               {{- end }}
             {{- end }}
           {{- end }}
-          {{- with $component.livenessProbe }}
+          {{- with .livenessProbe }}
           livenessProbe:
             {{- toYaml . | nindent 12 }}
           {{- end }}
-          {{- with $component.readinessProbe }}
+          {{- with .readinessProbe }}
           readinessProbe:
             {{- toYaml . | nindent 12 }}
           {{- end }}
-          {{- with $component.startupProbe }}
+          {{- with .startupProbe }}
           startupProbe:
             {{- toYaml . | nindent 12 }}
           {{- end }}
@@ -106,9 +106,9 @@ spec:
           {{- end }}
         {{ include "commons.sidecars" (dict "component" $component "Values" $.Values) | indent 8 }}
 
-      {{- if $component.volumes }}
+      {{- if .volumes }}
       volumes:
-        {{- toYaml $component.volumes | nindent 8 }}
+        {{- toYaml .volumes | nindent 8 }}
       {{- end }}
 ---
 {{- end }}
