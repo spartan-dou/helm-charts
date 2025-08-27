@@ -84,19 +84,19 @@ components:
         storage: 1Gi
         storageClassName: local-path
     postgres:
-      - name: postgres
-        tag: 16
-        storage:
-          size: 1Gi
-          storageClass: local-path
-        cluster:
-          username: changeme
-          password: changeme
-        init:
-          databases:
-            - name: analytics
-              owner: analyst
-              password: securepass
+      enabled: true
+      tag: 16
+      storage:
+        size: 1Gi
+        storageClass: local-path
+      cluster:
+        username: changeme
+        password: changeme
+      init:
+        databases:
+          - name: analytics
+            owner: analyst
+            password: securepass
 
 
 addons:
