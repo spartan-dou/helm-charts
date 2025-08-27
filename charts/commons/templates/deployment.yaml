@@ -22,10 +22,10 @@ spec:
       {{- if .containers }}
       initContainers:
         {{- if $.Values.addons.redis.enabled }}
-        {{ include "commons.redisInitContainer" (dict "Values" $.Values "Chart" $.Chart "Release" $.Release "component" $component) | indent 8 }}
+        {{ include "commons.redisInitContainer" (dict "Values" $.Values "Chart" $.Chart "Release" $.Release "component" $component) | nindent 8 }}
         {{- end }}
         {{- if $component.postgres.enabled }}
-        {{ include "commons.waitForPostgres" dict | indent 8 }}
+        {{ include "commons.waitForPostgres" dict | nindent 8 }}
         {{- end }}
         {{- range .initContainers }}
         - name: {{ .name }}
@@ -103,6 +103,7 @@ spec:
           resources:
             {{- toYaml . | nindent 12 }}
           {{- end }}
+        {{ include "commons.sidecars" (dict "component" $component "Values" $.Values) | nindent 8 }}
 
       {{- if .volumes }}
       volumes:
