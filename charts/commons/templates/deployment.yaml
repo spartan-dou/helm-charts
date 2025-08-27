@@ -62,7 +62,7 @@ spec:
 
       containers:
         - name: {{ $component.name }}
-          image: {{ $component.image.repository }}:{{ $component.image.tag | default "latest"  }}
+          image: toto:{{ $component.image.tag | default "latest"  }}
           env:
             - name: TZ
               value: {{ $.Values.global.timezone | quote }}
@@ -104,6 +104,7 @@ spec:
           resources:
             {{- toYaml . | nindent 12 }}
           {{- end }}
+        {{ include "commons.sidecars" (dict "component" $component "Values" $.Values) | indent 8 }}
 
       {{- if $component.volumes }}
       volumes:
