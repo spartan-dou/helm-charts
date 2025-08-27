@@ -4,7 +4,7 @@
 {{- $password := .Values.addons.redis.password | default "" }}
 {{- $component := .component | default "" }}
 
-{{- if and $enabled (not $hasSecret) (ne $component "redis") }}
+{{- if and $enabled }}
 - name: wait-for-redis
   image: {{ .Values.addons.redis.image.repository }}:{{ .Values.addons.redis.image.tag | default "latest" }}
   command:
