@@ -231,7 +231,7 @@ flaresolverr:
   replicaCount: 1
   image:
     repository: ghcr.io/flaresolverr/flaresolverr
-    tag: "v3.3.25"
+    tag: "v3.4.0"
   env:
     - name: TZ
       value: "Europe/Paris"
