@@ -2,7 +2,7 @@
 {{- range $components }}
 {{- $component := . }}
 {{- with $component.postgres }}
-{{- range . }}
+{{- if .enabled }}
 apiVersion: postgresql.cnpg.io/v1
 kind: Cluster
 metadata:
