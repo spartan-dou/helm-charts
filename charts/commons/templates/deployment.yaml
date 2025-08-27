@@ -30,28 +30,28 @@ spec:
         {{- range $component.initContainers }}
         - name: {{ .name }}
           image: {{ .image.repository }}:{{ .image.tag | default "latest"  }}
-          {{- if .command }}
+          {{- with .command }}
           command:
-            {{- range .command }}
+            {{- range . }}
             - {{ . }}
             {{- end }}
           {{- end }}
-          {{- if .args }}
+          {{- with .args }}
           args:
-            {{- range .args }}
+            {{- range . }}
             - {{ . }}
             {{- end }}
           {{- end }}
-          {{- if .env }}
+          {{- with .env }}
           env:
-            {{- range .env }}
+            {{- range . }}
             - name: {{ .name }}
               value: {{ .value | quote }}
             {{- end }}
           {{- end }}
-          {{- if .volumeMounts }}
+          {{- with .volumeMounts }}
           volumeMounts:
-            {{- range .volumeMounts }}
+            {{- range . }}
             - name: {{ .name }}
               mountPath: {{ .mountPath }}
             {{- end }}
