@@ -26,7 +26,7 @@ spec:
         {{ include "commons.redisInitContainer" (dict "Values" $.Values "Chart" $.Chart "Release" $.Release "component" $component) | nindent 8 }}
         {{- end }}
         {{- if $component.postgres.enabled }}
-        {{ include "commons.waitForPostgres" dict | nindent 8 }}
+        {{ include "commons.waitForPostgres" (dict "Values" $.Values "Chart" $.Chart "Release" $.Release "component" $component) | nindent 8 }}
         {{- end }}
         {{- range .initContainers }}
         - name: {{ .name }}
