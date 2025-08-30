@@ -1,6 +1,6 @@
 {{- define "commons.waitForPostgres" -}}
 {{- $component := .component | default "" }}
-{{- whit $component.postgres }}
+{{- with $component.postgres }}
 {{- if .enabled }}
 - name: wait-for-postgres
   image: {{ .image | default $.Values.global.postgres.image.repository }}:{{ .tag | default $.Values.global.postgres.image.tag }}
