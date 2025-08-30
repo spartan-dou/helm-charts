@@ -13,7 +13,7 @@ spec:
   accessModes: {{ toYaml .accessModes | nindent 4 }}
   resources:
     requests:
-      storage: {{ .storage }}
+      storage: {{ .storage | default $.Values.global.pvc.size }}
   storageClassName: {{ .storageClassName | default $.Values.global.pvc.storageClassName }}
   {{- if .volumeMode }}
   volumeMode: {{ .volumeMode }}

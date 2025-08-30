@@ -8,15 +8,18 @@ metadata:
   name: {{ include "commons.fullname" (dict "Chart" $.Chart "Values" $.Values "Release" $.Release "name" $component.name) }}
   labels:
     {{ include "commons.labels" (dict "Chart" $.Chart "Values" $.Values "Release" $.Release "name" $component.name) | nindent 4 }}
+    {{- include "commons.selectorLabels" . | nindent 4 }}
 spec:
   replicas: {{ default 1 .replicas }}
   selector:
     matchLabels:
       app: {{ $component.name }}
+      {{- include "commons.selectorLabels" . | nindent 6 }}
   template:
     metadata:
       labels:
         app: {{ $component.name }}
+        {{- include "commons.selectorLabels" . | nindent 8 }}
     spec:
       {{- with .initContainers }}
       {{- if .containers }}
