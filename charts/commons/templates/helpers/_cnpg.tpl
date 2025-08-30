@@ -1,6 +1,9 @@
 {{- define "commons.waitForPostgres" -}}
+{{- $component := .component | default "" }}
+{{- whit $component.postgres }}
+{{- if .enabled }}
 - name: wait-for-postgres
-  image: bitnami/postgresql:latest
+  image: {{ .image | default $.Values.global.postgres.image.repository }}:{{ .tag | default $.Values.global.postgres.image.tag }}
   command:
     - sh
     - -c
@@ -16,4 +19,6 @@
     limits:
       cpu: 50m
       memory: 32Mi
+{{- end }}
+{{- end }}
 {{- end }}
