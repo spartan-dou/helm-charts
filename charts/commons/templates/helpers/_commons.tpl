@@ -2,13 +2,7 @@
   Récupère le nom du chart (peut être surchargé par .Values.nameOverride)
 */}}
 {{- define "commons.name" -}}
-{{- if .Values.nameOverride }}
-  {{- .Values.nameOverride | trunc 63 | trimSuffix "-" }}
-{{- else if .Chart }}
-  {{- .Chart.Name | trunc 63 | trimSuffix "-" }}
-{{- else }}
-  unknown-chart
-{{- end }}
+{{- default .Chart.Name .Values.nameOverride | trunc 63 | trimSuffix "-" }}
 {{- end }}
 
 {{/*
@@ -16,14 +10,14 @@
 */}}
 {{- define "commons.fullname" -}}
 {{- if .Values.fullnameOverride }}
-  {{- .Values.fullnameOverride | trunc 63 | trimSuffix "-" }}
+{{- .Values.fullnameOverride | trunc 63 | trimSuffix "-" }}
 {{- else }}
-  {{- $name := (include "commons.name" .) }}
-  {{- if contains $name .Release.Name }}
-    {{- .Release.Name | trunc 63 | trimSuffix "-" }}
-  {{- else }}
-    {{- printf "%s-%s" .Release.Name $name | trunc 63 | trimSuffix "-" }}
-  {{- end }}
+{{- $name := default .Chart.Name .Values.nameOverride }}
+{{- if contains $name .Release.Name }}
+{{- .Release.Name | trunc 63 | trimSuffix "-" }}
+{{- else }}
+{{- printf "%s-%s" .Release.Name $name | trunc 63 | trimSuffix "-" }}
+{{- end }}
 {{- end }}
 {{- end }}
 
@@ -31,11 +25,7 @@
   Crée un identifiant chart "nom-version" pour les labels Helm
 */}}
 {{- define "commons.chart" -}}
-{{- if and .Chart.Name .Chart.Version }}
-  {{- printf "%s-%s" .Chart.Name .Chart.Version | replace "+" "_" | trunc 63 | trimSuffix "-" }}
-{{- else }}
-  unknown-chart-version
-{{- end }}
+{{- printf "%s-%s" .Chart.Name .Chart.Version | replace "+" "_" | trunc 63 | trimSuffix "-" }}
 {{- end }}
 
 {{/*
@@ -63,8 +53,8 @@ app.kubernetes.io/instance: {{ .Release.Name }}
 */}}
 {{- define "commons.serviceAccountName" -}}
 {{- if .Values.serviceAccount.create }}
-  {{- default (include "commons.fullname" .) .Values.serviceAccount.name }}
+{{- default (include "commons.fullname" .) .Values.serviceAccount.name }}
 {{- else }}
-  {{- default "default" .Values.serviceAccount.name }}
+{{- default "default" .Values.serviceAccount.name }}
 {{- end }}
 {{- end }}
