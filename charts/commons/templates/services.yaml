@@ -17,7 +17,7 @@ spec:
   type: {{ default "ClusterIP" .type }}
   selector:
     app: {{ $component.name }}
-    {{- include "commons.selectorLabels" (dict "Chart" $.Chart "Values" $.Values "Release" $.Release "name" $component.name)e | nindent 6 }}
+    {{- include "commons.selectorLabels" (dict "Chart" $.Chart "Values" $.Values "Release" $.Release "name" $component.name) | nindent 6 }}
   ports:
     {{- range .ports }}
     - name: {{ .name }}
