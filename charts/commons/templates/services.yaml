@@ -15,8 +15,6 @@ metadata:
   {{- end }}
 spec:
   type: {{ default "ClusterIP" .type }}
-  selector:
-    app: {{ $component.name }}
   ports:
     {{- range .ports }}
     - name: {{ .name }}
@@ -28,6 +26,8 @@ spec:
       {{- end }}
       {{- end }}
     {{- end }}
+  selector:
+    {{ include "commons.selectorLabels" (dict "Chart" $.Chart "Values" $.Values "Release" $.Release "name" $component.name) | nindent 4 }}
 ---
 {{- end }}
 {{- end }}
