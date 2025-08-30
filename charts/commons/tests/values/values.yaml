@@ -1,6 +1,17 @@
-nameOverride: ""
-fullname: ""
-timezone: "Europe/Paris"
+global:
+  timezone: "Europe/Paris"
+  pvc:
+    size: "1Gi"
+    storageClassName: ""
+  postgres:
+    size: "1Gi"
+    storageClass: ""
+    image:
+      repository: ghcr.io/cloudnative-pg/postgresql
+      tag: 16
+  ingress:
+    className: traefik
+
 
 components:
   - name: web
@@ -9,10 +20,13 @@ components:
       initContainers:
         containers:
           - name: setup-volume
-            image: alpine
+            image:
+              repository: alpine
             command: ['sh', '-c', 'mkdir -p /data/init']
       name: nginx
-      image: nginx:stable
+      image: 
+        repository: nginx
+        tag: latest
       ports:
         - name: http
           containerPort: 80
@@ -52,7 +66,7 @@ components:
           targetPort: 8080
     ingress:
       enabled: true
-      className: nginx
+      className: traefik
       annotations:
         nginx.ingress.kubernetes.io/rewrite-target: /
       hosts:
@@ -69,28 +83,38 @@ components:
         accessModes: [ReadWriteOnce]
         storage: 1Gi
         storageClassName: local-path
+    postgres:
+      enabled: true
+      tag: 16
+      storage:
+        size: 1Gi
+        storageClass: local-path
+      cluster:
+        username: changeme
+        password: changeme
+      init:
+        databases:
+          - name: analytics
+            owner: analyst
+            password: securepass
+
 
 addons:
   vscode:
     enabled: true
+    image:
+      repository: codercom/code-server
+      tag: 39
+    port: 8080
   redis:
     enabled: true
     name: redis
-    image: bitnami/redis
+    image:
+      repository: bitnami/redis
+      tag: 8.2.1
     port: 6379
     password: changeme
     resources:
       limits:
         cpu: 100m
         memory: 128Mi
-  postgres:
-    enabled: true
-    tag: 16
-    cluster:
-      owner: changeme
-      password: changeme
-    init:
-      databases:
-        - name: analytics
-          owner: analyst
-          password: securepass
