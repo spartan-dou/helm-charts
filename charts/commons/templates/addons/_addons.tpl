@@ -18,6 +18,7 @@
     )
     "service" (dict
       "enabled" true
+      "name" "vscode"
       "type" "ClusterIP"
       "ports" (list (dict "name" "http" "port" .Values.addons.vscode.port))
     )
@@ -63,6 +64,7 @@
     )
     "service" (dict
       "enabled" true
+      "name" "redis"
       "type" "ClusterIP"
       "ports" (list (dict "name" "redis" "port" .Values.addons.redis.port))
     )
