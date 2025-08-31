@@ -5,18 +5,18 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "commons.fullname" (dict "Chart" $.Chart "Values" $.Values "Release" $.Release "name" $component.name) }}
+  name: {{ include "commons.fullname" (dict "Chart" $.Chart "Values" $.Values "Release" $.Release "name" $component.deployment.name) }}
   labels:
-    {{ include "commons.labels" (dict "Chart" $.Chart "Values" $.Values "Release" $.Release "name" $component.name) | nindent 4 }}
+    {{ include "commons.labels" (dict "Chart" $.Chart "Values" $.Values "Release" $.Release "name" $component.deployment.name) | nindent 4 }}
 spec:
   replicas: {{ default 1 .replicas }}
   selector:
     matchLabels:
-      {{- include "commons.selectorLabels" (dict "Chart" $.Chart "Values" $.Values "Release" $.Release "name" $component.name) | nindent 6 }}
+      {{- include "commons.selectorLabels" (dict "Chart" $.Chart "Values" $.Values "Release" $.Release "name" $component.deployment.name) | nindent 6 }}
   template:
     metadata:
       labels:
-        {{- include "commons.selectorLabels" (dict "Chart" $.Chart "Values" $.Values "Release" $.Release "name" $component.name) | nindent 8 }}
+        {{- include "commons.selectorLabels" (dict "Chart" $.Chart "Values" $.Values "Release" $.Release "name" $component.deployment.name) | nindent 8 }}
     spec:
       {{- with .initContainers }}
       {{- if .containers }}
@@ -60,7 +60,7 @@ spec:
       {{- end }}
       {{- end }}
       containers:
-        - name: {{ $component.name }}
+        - name: {{ .name }}
           image: {{ .image.repository }}:{{ .image.tag | default "latest"  }}
           env:
             - name: TZ
