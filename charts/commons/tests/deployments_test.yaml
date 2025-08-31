@@ -30,7 +30,7 @@ tests:
           path: spec.replicas
           value: 1
       - equal:
-          path: spec.template.spec.containers[0].image
+          path: spec.template.spec.containers[1].image
           value: codercom/code-server:39
 
   - it: Vérifie le Deployment redis
@@ -43,5 +43,5 @@ tests:
           path: spec.replicas
           value: 1
       - equal:
-          path: spec.template.spec.containers[0].image
+          path: spec.template.spec.containers[2].image
           value: bitnami/redis:8.2.1
