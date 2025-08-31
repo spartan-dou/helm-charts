@@ -1,15 +1,18 @@
 suite: Tests complets du chart commons
 templates:
   - templates/deployment.yaml
-set:
-  Release.Name: test
+release:
+  name: test
 tests:
  # --- Deployments ---
   - it: Vérifie le Deployment web
     documentSelector:
       path: metadata.name
-      value: test-web
+      value: test-nginx
     asserts:
+      - equal:
+          path: metadata.name
+          value: my-deploy
       - equal:
           path: spec.replicas
           value: 2
@@ -23,7 +26,7 @@ tests:
   - it: Vérifie le Deployment vscode
     documentSelector:
       path: metadata.name
-      value: test-vscode
+      value: test-code-server
     asserts:
       - equal:
           path: spec.replicas
