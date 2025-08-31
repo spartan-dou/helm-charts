@@ -1,0 +1,34 @@
+suite: Tests complets du chart commons
+templates:
+  - templates/deployment.yaml
+
+tests:
+  # --- Deployments ---
+  - it: Vérifie le Deployment web
+    documentSelector:
+      kind: Deployment
+      metadata:
+        name: test-commons
+    asserts:
+      - equal:
+          path: spec.replicas
+          value: 2
+      - equal:
+          path: spec.template.spec.containers[0].image
+          value: nginx:latest
+      - equal:
+          path: spec.template.spec.initContainers[0].name
+          value: wait-for-redis
+
+  - it: Vérifie le Deployment vscode
+    documentSelector:
+      kind: Deployment
+      metadata:
+        name: test-commons
+    asserts:
+      - equal:
+          path: spec.replicas
+          value: 1
+      - equal:
+          path: spec.template.spec.containers[0].image
+          value: codercom/code-server:39

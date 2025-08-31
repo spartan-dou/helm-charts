@@ -1,0 +1,21 @@
+suite: Tests complets du chart commons
+templates:
+  - templates/pvc.yaml
+
+tests:
+  # --- PVC ---
+  - it: Vérifie le PVC web-data
+    documentSelector:
+      kind: PersistentVolumeClaim
+      metadata:
+        name: web-data
+    asserts:
+      - equal:
+          path: spec.accessModes[0]
+          value: ReadWriteOnce
+      - equal:
+          path: spec.resources.requests.storage
+          value: 1Gi
+      - equal:
+          path: spec.storageClassName
+          value: local-path

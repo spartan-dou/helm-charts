@@ -1,0 +1,34 @@
+suite: Tests complets du chart commons
+templates:
+  - templates/services.yaml
+
+tests:
+  # --- Services ---
+  - it: Vérifie le Service web
+    documentSelector:
+      kind: Service
+      metadata:
+        name: test-commons
+    asserts:
+      - equal:
+          path: spec.ports[0].port
+          value: 80
+      - equal:
+          path: spec.ports[0].targetPort
+          value: 8080
+      - equal:
+          path: spec.selector.app
+          value: web
+
+  - it: Vérifie le Service vscode
+    documentSelector:
+      kind: Service
+      metadata:
+        name: test-commons-vscode
+    asserts:
+      - equal:
+          path: spec.ports[0].port
+          value: 8080
+      - equal:
+          path: spec.selector.app
+          value: vscode
