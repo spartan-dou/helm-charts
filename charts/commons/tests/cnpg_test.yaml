@@ -2,9 +2,8 @@ suite: Tests complets du chart commons
 templates:
   - templates/cnpg/cluster.yaml
   - templates/cnpg/init-sql.yaml
-values:
+set:
   Release.Name: test
-
 tests:
   # --- Cluster CNPG ---
   - it: Vérifie le Cluster Postgres

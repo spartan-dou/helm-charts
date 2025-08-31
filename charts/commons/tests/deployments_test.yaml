@@ -1,9 +1,8 @@
 suite: Tests complets du chart commons
 templates:
   - templates/deployment.yaml
-values:
+set:
   Release.Name: test
-
 tests:
  # --- Deployments ---
   - it: Vérifie le Deployment web
