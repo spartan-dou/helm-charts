@@ -29,4 +29,4 @@ jobs:
         run: helm lint charts/commons
 
       - name: Run Helm unit tests
-        run: helm unittest charts/commons --test test
+        run: helm unittest charts/commons --release-name test
