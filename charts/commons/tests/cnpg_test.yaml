@@ -23,7 +23,7 @@ tests:
     documentSelector:
       kind: ConfigMap
       metadata:
-        name: RELEASE-NAME-postgres
+        name: test-postgres
     asserts:
       - matchRegex:
           path: data.init.sql

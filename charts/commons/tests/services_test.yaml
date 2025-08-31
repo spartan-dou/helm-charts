@@ -8,7 +8,7 @@ tests:
     documentSelector:
       kind: Service
       metadata:
-        name: RELEASE-NAME-web
+        name: test-web
     asserts:
       - equal:
           path: spec.ports[0].port
@@ -24,7 +24,7 @@ tests:
     documentSelector:
       kind: Service
       metadata:
-        name: RELEASE-NAME-vscode
+        name: test-vscode
     asserts:
       - equal:
           path: spec.ports[0].port
@@ -37,7 +37,7 @@ tests:
     documentSelector:
       kind: Service
       metadata:
-        name: RELEASE-NAME-redis
+        name: test-redis
     asserts:
       - equal:
           path: spec.ports[0].port
