@@ -3,7 +3,7 @@ templates:
   - templates/deployment.yaml
 
 tests:
-  # --- Deployments ---
+ # --- Deployments ---
   - it: Vérifie le Deployment web
     documentSelector:
       kind: Deployment
@@ -32,3 +32,16 @@ tests:
       - equal:
           path: spec.template.spec.containers[0].image
           value: codercom/code-server:39
+
+  - it: Vérifie le Deployment redis
+    documentSelector:
+      kind: Deployment
+      metadata:
+        name: test-commons
+    asserts:
+      - equal:
+          path: spec.replicas
+          value: 1
+      - equal:
+          path: spec.template.spec.containers[0].image
+          value: bitnami/redis:8.2.1

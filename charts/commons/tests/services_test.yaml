@@ -32,3 +32,16 @@ tests:
       - equal:
           path: spec.selector.app
           value: vscode
+
+  - it: Vérifie le Service redis
+    documentSelector:
+      kind: Service
+      metadata:
+        name: test-commons-redis
+    asserts:
+      - equal:
+          path: spec.ports[0].port
+          value: 6379
+      - equal:
+          path: spec.selector.app
+          value: redis
