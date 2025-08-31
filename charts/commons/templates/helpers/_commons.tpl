@@ -11,6 +11,7 @@
   - Ajoute .Values.name en suffixe si défini
 */}}
 {{- define "commons.fullname" -}}
+{{- $component := .component | default "" }}
 {{- if .Values.fullnameOverride }}
   {{- .Values.fullnameOverride | trunc 63 | trimSuffix "-" }}
 {{- else }}
@@ -30,9 +31,9 @@
     {{- $full = .Release.Name }}
   {{- end }}
 
-  {{- /* Ajoute le suffixe .name si défini */ -}}
+  {{- /* Ajoute le suffixe name si défini */ -}}
   {{- if .name }}
-    {{- $full = printf "%s-%s" $full .Values.name }}
+    {{- $full = printf "%s-%s" $full .name }}
   {{- end }}
 
   {{- $full | trunc 63 | trimSuffix "-" }}
