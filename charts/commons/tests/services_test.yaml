@@ -27,7 +27,7 @@ tests:
         name: test-commons-vscode
     asserts:
       - equal:
-          path: spec.ports[1].port
+          path: spec.ports[0].port
           value: 8080
       - equal:
           path: spec.selector.app
@@ -40,7 +40,7 @@ tests:
         name: test-commons-redis
     asserts:
       - equal:
-          path: spec.ports[2].port
+          path: spec.ports[0].port
           value: 6379
       - equal:
           path: spec.selector.app

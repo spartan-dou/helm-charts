@@ -7,19 +7,38 @@
 
 {{/*
   Génère un nom complet (fullname) pour les ressources déployées
+  - Ignore .Chart.Name si c'est "commons"
+  - Ajoute .Values.name en suffixe si défini
 */}}
 {{- define "commons.fullname" -}}
 {{- if .Values.fullnameOverride }}
-{{- .Values.fullnameOverride | trunc 63 | trimSuffix "-" }}
+  {{- .Values.fullnameOverride | trunc 63 | trimSuffix "-" }}
 {{- else }}
-{{- $name := default .Chart.Name .Values.nameOverride }}
-{{- if contains $name .Release.Name }}
-{{- .Release.Name | trunc 63 | trimSuffix "-" }}
-{{- else }}
-{{- printf "%s-%s" .Release.Name $name | trunc 63 | trimSuffix "-" }}
+  {{- /* Détermine le nom de base : nameOverride ou Chart.Name */ -}}
+  {{- $baseName := default .Chart.Name .Values.nameOverride }}
+
+  {{- /* Si le chart s'appelle "commons", on ignore ce nom */ -}}
+  {{- if eq $baseName "commons" }}
+    {{- $baseName = "" }}
+  {{- end }}
+
+  {{- /* Construit le nom complet */ -}}
+  {{- $full := "" }}
+  {{- if and $baseName (not (contains $baseName .Release.Name)) }}
+    {{- $full = printf "%s-%s" .Release.Name $baseName }}
+  {{- else }}
+    {{- $full = .Release.Name }}
+  {{- end }}
+
+  {{- /* Ajoute le suffixe .name si défini */ -}}
+  {{- if .name }}
+    {{- $full = printf "%s-%s" $full .Values.name }}
+  {{- end }}
+
+  {{- $full | trunc 63 | trimSuffix "-" }}
 {{- end }}
 {{- end }}
-{{- end }}
+
 
 {{/*
   Crée un identifiant chart "nom-version" pour les labels Helm
