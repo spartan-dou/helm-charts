@@ -31,6 +31,10 @@
     {{- $full = .Release.Name }}
   {{- end }}
 
+  {{- /* Ajoute le suffixe componentName si défini */ -}}
+  {{- $name := .component.deployment.name | default .component.name }}
+  {{- $full = printf "%s-%s" $full $name }}
+
   {{- /* Ajoute le suffixe name si défini */ -}}
   {{- if .name }}
     {{- $full = printf "%s-%s" $full .name }}
