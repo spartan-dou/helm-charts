@@ -32,8 +32,12 @@
   {{- end }}
 
   {{- /* Ajoute le suffixe componentName si défini */ -}}
+  {{- if .name }}
+  {{- $full = printf "%s-%s" $full .name }}
+  {{- else }}
   {{- $name := .component.deployment.name | default .component.name }}
   {{- $full = printf "%s-%s" $full $name }}
+  {{- end }}
 
   {{- /* Ajoute le suffixe name si défini */ -}}
   {{- if .name }}
