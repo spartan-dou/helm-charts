@@ -2,6 +2,8 @@ suite: Tests complets du chart commons
 templates:
   - templates/cnpg/cluster.yaml
   - templates/cnpg/init-sql.yaml
+values:
+  Release.Name: test
 
 tests:
   # --- Cluster CNPG ---
