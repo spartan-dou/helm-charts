@@ -8,7 +8,7 @@ tests:
     documentSelector:
       kind: Deployment
       metadata:
-        name: test-web
+        name: release-name-web
     asserts:
       - equal:
           path: spec.replicas
@@ -24,7 +24,7 @@ tests:
     documentSelector:
       kind: Deployment
       metadata:
-        name: test-vscode
+        name: release-name-vscode
     asserts:
       - equal:
           path: spec.replicas
@@ -37,7 +37,7 @@ tests:
     documentSelector:
       kind: Deployment
       metadata:
-        name: test-redis
+        name: release-name-redis
     asserts:
       - equal:
           path: spec.replicas

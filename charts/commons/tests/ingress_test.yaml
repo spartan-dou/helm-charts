@@ -8,7 +8,7 @@ tests:
     documentSelector:
       kind: Ingress
       metadata:
-        name: test-commons
+        name: release-name
     asserts:
       - equal:
           path: spec.rules[0].host
