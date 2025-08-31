@@ -7,9 +7,8 @@ tests:
  # --- Deployments ---
   - it: Vérifie le Deployment web
     documentSelector:
-      kind: Deployment
-      metadata:
-        name: test-web
+      path: metadata.name
+      value: test-web
     asserts:
       - equal:
           path: spec.replicas
@@ -23,9 +22,8 @@ tests:
 
   - it: Vérifie le Deployment vscode
     documentSelector:
-      kind: Deployment
-      metadata:
-        name: test-vscode
+      path: metadata.name
+      value: test-vscode
     asserts:
       - equal:
           path: spec.replicas
@@ -36,9 +34,8 @@ tests:
 
   - it: Vérifie le Deployment redis
     documentSelector:
-      kind: Deployment
-      metadata:
-        name: test-redis
+      path: metadata.name
+      value: test-redis
     asserts:
       - equal:
           path: spec.replicas

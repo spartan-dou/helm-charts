@@ -1,3 +1,4 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/helm-unittest/helm-unittest/main/schema/helm-testsuite.json
 suite: Tests complets du chart commons
 templates:
   - templates/services.yaml
@@ -7,9 +8,8 @@ tests:
   # --- Services ---
   - it: Vérifie le Service web
     documentSelector:
-      kind: Service
-      metadata:
-        name: test-web
+      path: metadata.name
+      value: test-nginx
     asserts:
       - equal:
           path: spec.ports[0].port
@@ -23,9 +23,8 @@ tests:
 
   - it: Vérifie le Service vscode
     documentSelector:
-      kind: Service
-      metadata:
-        name: test-vscode
+      path: metadata.name
+      value: test-vscode
     asserts:
       - equal:
           path: spec.ports[0].port
@@ -36,9 +35,8 @@ tests:
 
   - it: Vérifie le Service redis
     documentSelector:
-      kind: Service
-      metadata:
-        name: test-redis
+      path: metadata.name
+      value: test-redis
     asserts:
       - equal:
           path: spec.ports[0].port
