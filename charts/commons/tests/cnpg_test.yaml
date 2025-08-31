@@ -8,9 +8,8 @@ tests:
   # --- Cluster CNPG ---
   - it: Vérifie le Cluster Postgres
     documentSelector:
-      kind: Cluster
-      metadata:
-        name: postgres
+      path: metadata.name
+      value: postgres
     asserts:
       - equal:
           path: spec.instances
@@ -22,9 +21,8 @@ tests:
   # --- ConfigMap ---
   - it: Vérifie le ConfigMap init-sql
     documentSelector:
-      kind: ConfigMap
-      metadata:
-        name: test-postgres
+      path: metadata.name
+      value: test-postgres
     asserts:
       - matchRegex:
           path: data.init.sql

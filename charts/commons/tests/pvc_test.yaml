@@ -7,9 +7,8 @@ tests:
   # --- PVC ---
   - it: Vérifie le PVC web-data
     documentSelector:
-      kind: PersistentVolumeClaim
-      metadata:
-        name: web-data
+      path: metadata.name
+      value: test-nginx
     asserts:
       - equal:
           path: spec.accessModes[0]

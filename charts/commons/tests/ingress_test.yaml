@@ -7,9 +7,8 @@ tests:
   # --- Ingress ---
   - it: Vérifie l'Ingress web
     documentSelector:
-      kind: Ingress
-      metadata:
-        name: test
+      path: metadata.name
+      value: test-nginx
     asserts:
       - equal:
           path: spec.rules[0].host
