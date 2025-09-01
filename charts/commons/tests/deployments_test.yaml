@@ -8,7 +8,7 @@ tests:
   - it: Vérifie le Deployment web
     documentSelector:
       path: metadata.name
-      value: test-nginx
+      value: test-web-nginx
     asserts:
       - equal:
           path: spec.replicas
@@ -23,7 +23,7 @@ tests:
   - it: Vérifie le Deployment vscode
     documentSelector:
       path: metadata.name
-      value: test-code-server
+      value: test-vscode-code-server
     asserts:
       - equal:
           path: spec.replicas

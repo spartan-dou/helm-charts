@@ -13,8 +13,7 @@ global:
     className: traefik
 
 components:
-  - name: web
-    deployment:
+  - deployment:
       replicas: 2
       initContainers:
         containers:

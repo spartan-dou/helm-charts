@@ -5,7 +5,6 @@
 {{/* === Addon VSCode === */}}
 {{- if .Values.addons.vscode.enabled }}
   {{- $defaults := dict
-    "name" "vscode"
     "deployment" (dict
       "name" "code-server"
       "image" (dict
@@ -48,7 +47,6 @@
 {{/* === Addon Redis === */}}
 {{- if .Values.addons.redis.enabled }}
   {{- $defaults := dict
-    "name" "redis"
     "deployment" (dict
       "name" "redis"
       "image" (dict

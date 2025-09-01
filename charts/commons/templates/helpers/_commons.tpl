@@ -30,7 +30,7 @@
 
   
   {{- if $suffix }}
-    {{- $full = printf "%s-%s" $full $suffix }}
+    {{- $full = printf "%s%s" $full $suffix }}
   {{- end }}
   {{- $full | trunc 63 | trimSuffix "-" }}
 {{- end }}
