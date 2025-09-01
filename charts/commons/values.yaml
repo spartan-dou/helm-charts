@@ -32,3 +32,10 @@ addons:
       repository: bitnami/redis
       tag: 8.2.1
     port: 6379
+  postgres:
+    enabled: false
+    size: "1Gi"
+    storageClass: ""
+    image:
+      repository: ghcr.io/cloudnative-pg/postgresql
+      tag: 16
