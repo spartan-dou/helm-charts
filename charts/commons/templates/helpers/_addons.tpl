@@ -23,6 +23,22 @@
       "ports" (list (dict "name" "http" "port" .Values.addons.vscode.port))
     )
   }}
+  {{- if .Values.addons.vscode.ingress.enabled }}
+  {{- /* dictionnaire ingress par défaut */ -}}
+  {{- $ingressDefaults := dict
+      "enabled" true
+      "name" "vscode"
+  }}
+
+  {{- /* valeurs utilisateur depuis values.yaml */ -}}
+  {{- $ingressOverrides := default dict .Values.addons.vscode.ingress }}
+
+  {{- /* on enlève la clé enabled pour ne pas écraser la condition */ -}}
+  {{- $ingressOverrides := omit $ingressOverrides "enabled" }}
+
+  {{- /* fusion defaults + overrides */ -}}
+  {{- $_ := set $defaults "ingress" (merge $ingressDefaults $ingressOverrides) }}
+  {{- end }}
   {{- $raw := .Values.addons.vscode | default dict }}
   {{- $overrides := omit $raw "enabled" }}
   {{- $vscode := merge $defaults $overrides }}

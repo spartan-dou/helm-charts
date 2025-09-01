@@ -12,7 +12,6 @@ global:
   ingress:
     className: traefik
 
-
 components:
   - name: web
     deployment:
@@ -106,6 +105,8 @@ addons:
       repository: codercom/code-server
       tag: 39
     port: 8080
+    ingress:
+      enabled: false
   redis:
     enabled: true
     name: redis
