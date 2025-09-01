@@ -21,10 +21,11 @@
     {{- $full = .Release.Name }}
   {{- end }}
   {{- $suffix := "" }}
+  {{- if and $component (kindIs "map" $component) ($component.name) }}
+    {{- $suffix = printf "%s-%s" $suffix $component.name}}
+  {{- end }}
   {{- if .name }}
-    {{- $suffix = .name }}
-  {{- else if and $component (kindIs "map" $component) ($component.name) }}
-    {{- $suffix = $component.name }}
+    {{- $suffix = printf "%s-%s" $suffix .name}}
   {{- end }}
 
   

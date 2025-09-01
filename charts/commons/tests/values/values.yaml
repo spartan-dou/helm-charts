@@ -98,7 +98,6 @@ components:
             owner: analyst
             password: securepass
 
-
 addons:
   vscode:
     enabled: true
