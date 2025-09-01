@@ -1,5 +1,9 @@
 global:
   timezone: "Europe/Paris"
+  securityContext:
+    runAsUser: 1000
+    runAsGroup: 1000
+    fsGroup: 1000
   pvc:
     size: "1Gi"
     storageClassName: ""
@@ -118,3 +122,10 @@ addons:
       repository: bitnami/redis
       tag: 8.2.1
     port: 6379
+  postgres:
+    enabled: true
+    size: "1Gi"
+    storageClass: ""
+    image:
+      repository: ghcr.io/cloudnative-pg/postgresql
+      tag: 16
