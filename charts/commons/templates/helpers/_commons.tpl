@@ -5,44 +5,29 @@
 {{- default .Chart.Name .Values.nameOverride | trunc 63 | trimSuffix "-" }}
 {{- end }}
 
-{{/*
-  Génère un nom complet (fullname) pour les ressources déployées
-  - Ignore .Chart.Name si c'est "commons"
-  - Ajoute .Values.name en suffixe si défini
-*/}}
 {{- define "commons.fullname" -}}
-{{- $component := .component | default "" }}
+{{- $component := default "" .component }}
 {{- if .Values.fullnameOverride }}
   {{- .Values.fullnameOverride | trunc 63 | trimSuffix "-" }}
 {{- else }}
-  {{- /* Détermine le nom de base : nameOverride ou Chart.Name */ -}}
   {{- $baseName := default .Chart.Name .Values.nameOverride }}
-
-  {{- /* Si le chart s'appelle "commons", on ignore ce nom */ -}}
   {{- if eq $baseName "commons" }}
     {{- $baseName = "" }}
   {{- end }}
-
-  {{- /* Construit le nom complet */ -}}
   {{- $full := "" }}
   {{- if and $baseName (not (contains $baseName .Release.Name)) }}
     {{- $full = printf "%s-%s" .Release.Name $baseName }}
   {{- else }}
     {{- $full = .Release.Name }}
   {{- end }}
-
-  {{- /* Ajoute le suffixe componentName si défini */ -}}
-  {{- $name := .name | default .component.name }}
-  {{- $full = printf "%s-%s" $full $name }}
-
-  {{- /* Ajoute le suffixe name si défini */ -}}
-  {{- if .name }}
-    {{- $full = printf "%s-%s" $full .name }}
+  {{- $suffix := default "" (default "" .name | default (default "" $component.name)) }}
+  {{- if $suffix }}
+    {{- $full = printf "%s-%s" $full $suffix }}
   {{- end }}
-
   {{- $full | trunc 63 | trimSuffix "-" }}
 {{- end }}
 {{- end }}
+
 
 
 {{/*
