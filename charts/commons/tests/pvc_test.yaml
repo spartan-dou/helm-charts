@@ -8,7 +8,7 @@ tests:
   - it: Vérifie le PVC web-data
     documentSelector:
       path: metadata.name
-      value: test-nginx
+      value: test-data-data
     asserts:
       - equal:
           path: spec.accessModes[0]

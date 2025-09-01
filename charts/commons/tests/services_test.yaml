@@ -24,7 +24,7 @@ tests:
   - it: Vérifie le Service vscode
     documentSelector:
       path: metadata.name
-      value: test-vscode
+      value: test-code-server
     asserts:
       - equal:
           path: spec.ports[0].port
