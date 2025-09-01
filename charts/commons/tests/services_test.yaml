@@ -9,7 +9,7 @@ tests:
   - it: Vérifie le Service web
     documentSelector:
       path: metadata.name
-      value: test-ngnix
+      value: test-nginx
     asserts:
       - equal:
           path: kind
@@ -95,3 +95,21 @@ tests:
       - equal:
           path: metadata.labels.app
           value: redis
+
+  - it: ne doit pas créer le Service Redis si désactivé
+    set:
+      addons:
+        redis:
+          enabled: false
+    asserts:
+      - hasDocuments:
+          count: 2
+
+  - it: ne doit pas créer le Service Vscode si désactivé
+    set:
+      addons:
+        vscode:
+          enabled: false
+    asserts:
+      - hasDocuments:
+          count: 2

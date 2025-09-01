@@ -43,3 +43,21 @@ tests:
       - equal:
           path: spec.template.spec.containers[0].image
           value: bitnami/redis:8.2.1
+
+  - it: ne doit pas créer le Service Redis si désactivé
+    set:
+      addons:
+        redis:
+          enabled: false
+    asserts:
+      - hasDocuments:
+          count: 2
+
+  - it: ne doit pas créer le Service Vscode si désactivé
+    set:
+      addons:
+        vscode:
+          enabled: false
+    asserts:
+      - hasDocuments:
+          count: 2
