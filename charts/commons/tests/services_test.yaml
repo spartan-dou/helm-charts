@@ -1,7 +1,7 @@
 # yaml-language-server: $schema=https://raw.githubusercontent.com/helm-unittest/helm-unittest/main/schema/helm-testsuite.json
 suite: Tests complets du chart commons
 templates:
-  - templates/services.yaml
+  - templates/service.yaml
 release:
   name: test
 tests:
@@ -9,7 +9,7 @@ tests:
   - it: Vérifie le Service web
     documentSelector:
       path: metadata.name
-      value: test-nginx
+      value: test-web
     asserts:
       - equal:
           path: spec.ports[0].port
