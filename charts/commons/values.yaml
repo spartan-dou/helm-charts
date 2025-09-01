@@ -1,5 +1,9 @@
 global:
   timezone: "Europe/Paris"
+  securityContext:
+    runAsUser: 1000
+    runAsGroup: 1000
+    fsGroup: 1000
   pvc:
     size: "1Gi"
     storageClassName: ""

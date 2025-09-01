@@ -10,6 +10,10 @@ metadata:
     {{ include "commons.labels" (dict "Chart" $.Chart "Values" $.Values "Release" $.Release "name" .name "component" $component) | nindent 4 }}
 spec:
   replicas: {{ default 1 .replicas }}
+  securityContext:
+    runAsUser: {{ default $.Values.global.securityContext.runAsUser .securityContext.runAsUser }}
+    runAsGroup: {{ default $.Values.global.securityContext.runAsGroup .securityContext.runAsGroup }}
+    fsGroup: {{ default $.Values.global.securityContext.fsGroup .securityContext.fsGroup }}
   selector:
     matchLabels:
       {{- include "commons.selectorLabels" (dict "Chart" $.Chart "Values" $.Values "Release" $.Release "name" .name "component" $component) | nindent 6 }}
@@ -29,6 +33,9 @@ spec:
         {{- end }}
         {{- range .initContainers }}
         - name: {{ .name }}
+          {{- with .securityContext }}
+          {{- toYaml . | nindent 10 }}
+          {{- end }}
           image: {{ .image.repository }}:{{ .image.tag | default "latest"  }}
           {{- with .command }}
           command:
@@ -61,6 +68,9 @@ spec:
       {{- end }}
       containers:
         - name: {{ .name }}
+          {{- with .securityContext }}
+          {{- toYaml . | nindent 10 }}
+          {{- end }}
           image: {{ .image.repository }}:{{ .image.tag | default "latest"  }}
           env:
             - name: TZ
