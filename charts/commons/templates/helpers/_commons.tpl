@@ -23,8 +23,8 @@
   {{- $suffix := "" }}
   {{- if .name }}
     {{- $suffix = .name }}
-  {{- else if and .component (kindIs "map" .component) (.component.name) }}
-    {{- $suffix = .component.name }}
+  {{- else if and $component (kindIs "map" $component) ($component.name) }}
+    {{- $suffix = $component.name }}
   {{- end }}
 
   

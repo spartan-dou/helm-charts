@@ -23,7 +23,7 @@
       "ports" (list (dict "name" "http" "port" .Values.addons.vscode.port))
     )
   }}
-  {{- if .Values.addons.vscode.ingress.enabled }}
+  {{- if (default dict (default dict .Values.addons.vscode).ingress).enabled }}
   {{- /* dictionnaire ingress par défaut */ -}}
   {{- $ingressDefaults := dict
       "enabled" true
