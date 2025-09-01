@@ -71,12 +71,6 @@ app.kubernetes.io/instance: {{ .Release.Name }}
   app: {{ .Release.Name }}
 {{- end }}
 
-
-{{- if $suffix }}
-  {{- $full = printf "%s%s" $full $suffix }}
-{{- end }}
-{{- $full | trunc 63 | trimSuffix "-" }}
-
 {{- end }}
 
 {{/*
