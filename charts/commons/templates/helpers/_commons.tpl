@@ -64,11 +64,11 @@ app.kubernetes.io/managed-by: {{ .Release.Service }}
 app.kubernetes.io/name: {{ include "commons.name" . }}
 app.kubernetes.io/instance: {{ .Release.Name }}
 {{- if and .component (kindIs "map" .component) (.component.name) }}
-  app: {{ .component.name }}
+app: {{ .component.name }}
 {{- else if .name }}
-  app: {{ .name }}
+app: {{ .name }}
 {{- else }}
-  app: {{ .Release.Name }}
+app: {{ .Release.Name }}
 {{- end }}
 
 {{- end }}
