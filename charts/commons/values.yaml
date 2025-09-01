@@ -1,0 +1,39 @@
+global:
+  timezone: "Europe/Paris"
+  securityContext:
+    runAsUser: 1000
+    runAsGroup: 1000
+    fsGroup: 1000
+  pvc:
+    size: "1Gi"
+    storageClassName: ""
+  postgres:
+    size: "1Gi"
+    storageClass: ""
+    image:
+      repository: ghcr.io/cloudnative-pg/postgresql
+      tag: 16
+  ingress:
+    className: traefik
+
+addons:
+  vscode:
+    enabled: false
+    image:
+      repository: codercom/code-server
+      tag: 39
+    port: 8080
+    ingress:
+      enabled: false
+  redis:
+    enabled: false
+    name: redis
+    image:
+      repository: bitnami/redis
+      tag: 8.2.1
+    port: 6379
+    password: changeme
+    resources:
+      limits:
+        cpu: 100m
+        memory: 128Mi

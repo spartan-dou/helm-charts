@@ -1,0 +1,32 @@
+name: Helm Chart Tests
+
+on:
+  pull_request:
+    paths:
+      - 'charts/**'
+  push:
+    branches:
+      - main
+      - commons
+
+jobs:
+  helm-tests:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Helm
+        uses: azure/setup-helm@v3
+        with:
+          version: v3.12.0
+
+      - name: Install helm-unittest plugin
+        run: helm plugin install https://github.com/helm-unittest/helm-unittest
+
+      - name: Run Helm lint
+        run: helm lint charts/commons
+
+      - name: Run Helm unit tests
+        run: helm unittest charts/commons

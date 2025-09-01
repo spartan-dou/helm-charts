@@ -1,0 +1,111 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/helm-unittest/helm-unittest/main/schema/helm-testsuite.json
+suite: Tests complets du chart commons
+values:
+  - ./values/values.yaml
+templates:
+  - templates/service.yaml
+release:
+  name: test
+tests:
+  # --- Services ---
+  - it: Vérifie le Service web
+    documentSelector:
+      path: metadata.name
+      value: test-nginx
+    asserts:
+      - equal:
+          path: kind
+          value: Service
+      - equal:
+          path: metadata.name
+          value: test-nginx
+      - equal:
+          path: spec.type
+          value: ClusterIP
+      - equal:
+          path: spec.ports[0].name
+          value: http
+      - equal:
+          path: spec.ports[0].port
+          value: 80
+      - equal:
+          path: spec.ports[0].targetPort
+          value: 8080
+      - equal:
+          path: metadata.labels.app
+          value: nginx
+
+  - it: Vérifie le Service vscode
+    documentSelector:
+      path: metadata.name
+      value: test-vscode
+    asserts:
+      - equal:
+          path: kind
+          value: Service
+      - equal:
+          path: metadata.name
+          value: test-vscode
+      - equal:
+          path: spec.type
+          value: ClusterIP
+      - equal:
+          path: spec.ports[0].name
+          value: http
+      - equal:
+          path: spec.ports[0].port
+          value: 8080
+      - equal:
+          path: spec.ports[0].targetPort
+          value: 8080
+      - equal:
+          path: metadata.labels.app
+          value: vscode
+      - equal:
+          path: spec.selector.app
+          value: vscode
+
+  - it: Vérifie le Service redis
+    documentSelector:
+      path: metadata.name
+      value: test-redis
+    asserts:
+      - equal:
+          path: kind
+          value: Service
+      - equal:
+          path: metadata.name
+          value: test-redis
+      - equal:
+          path: spec.type
+          value: ClusterIP
+      - equal:
+          path: spec.ports[0].name
+          value: redis
+      - equal:
+          path: spec.ports[0].port
+          value: 6379
+      - equal:
+          path: spec.ports[0].targetPort
+          value: 6379
+      - equal:
+          path: metadata.labels.app
+          value: redis
+
+  - it: ne doit pas créer le Service Redis si désactivé
+    set:
+      addons:
+        redis:
+          enabled: false
+    asserts:
+      - hasDocuments:
+          count: 2
+
+  - it: ne doit pas créer le Service Vscode si désactivé
+    set:
+      addons:
+        vscode:
+          enabled: false
+    asserts:
+      - hasDocuments:
+          count: 2

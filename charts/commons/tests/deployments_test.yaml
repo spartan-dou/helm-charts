@@ -1,0 +1,66 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/helm-unittest/helm-unittest/main/schema/helm-testsuite.json
+suite: Tests complets du chart commons
+values:
+  - ./values/values.yaml
+templates:
+  - templates/deployment.yaml
+release:
+  name: test
+tests:
+ # --- Deployments ---
+  - it: Vérifie le Deployment web
+    documentSelector:
+      path: metadata.name
+      value: test-nginx
+    asserts:
+      - equal:
+          path: spec.replicas
+          value: 2
+      - equal:
+          path: spec.template.spec.containers[0].image
+          value: nginx:latest
+      - equal:
+          path: spec.template.spec.initContainers[0].name
+          value: wait-for-redis
+
+  - it: Vérifie le Deployment vscode
+    documentSelector:
+      path: metadata.name
+      value: test-code-server
+    asserts:
+      - equal:
+          path: spec.replicas
+          value: 1
+      - equal:
+          path: spec.template.spec.containers[0].image
+          value: codercom/code-server:39
+
+  - it: Vérifie le Deployment redis
+    documentSelector:
+      path: metadata.name
+      value: test-redis
+    asserts:
+      - equal:
+          path: spec.replicas
+          value: 1
+      - equal:
+          path: spec.template.spec.containers[0].image
+          value: bitnami/redis:8.2.1
+
+  - it: ne doit pas créer le Service Redis si désactivé
+    set:
+      addons:
+        redis:
+          enabled: false
+    asserts:
+      - hasDocuments:
+          count: 2
+
+  - it: ne doit pas créer le Service Vscode si désactivé
+    set:
+      addons:
+        vscode:
+          enabled: false
+    asserts:
+      - hasDocuments:
+          count: 2

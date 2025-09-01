@@ -1,0 +1,21 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/helm-unittest/helm-unittest/main/schema/helm-testsuite.json
+suite: Tests complets du chart commons
+values:
+  - ./values/values.yaml
+templates:
+  - templates/ingress.yaml
+release:
+  name: test
+tests:
+  # --- Ingress ---
+  - it: Vérifie l'Ingress web
+    documentSelector:
+      path: metadata.name
+      value: test
+    asserts:
+      - equal:
+          path: spec.rules[0].host
+          value: web.mondomaine.local
+      - equal:
+          path: spec.tls[0].secretName
+          value: web-cert

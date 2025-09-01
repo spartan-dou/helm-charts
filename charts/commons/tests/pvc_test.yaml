@@ -1,0 +1,39 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/helm-unittest/helm-unittest/main/schema/helm-testsuite.json
+suite: Tests complets du chart commons
+values:
+  - ./values/values.yaml
+templates:
+  - templates/pvc.yaml
+release:
+  name: test
+tests:
+  # --- PVC ---
+  - it: Vérifie le PVC web-data
+    documentSelector:
+      path: metadata.name
+      value: test-data
+    asserts:
+      - equal:
+          path: spec.accessModes[0]
+          value: ReadWriteOnce
+      - equal:
+          path: spec.resources.requests.storage
+          value: 1Gi
+      - equal:
+          path: spec.storageClassName
+          value: local-path
+  # --- PVC ---
+  - it: Vérifie le PVC web-data-2
+    documentSelector:
+      path: metadata.name
+      value: test-data-2
+    asserts:
+      - equal:
+          path: spec.accessModes[0]
+          value: ReadWriteOnce
+      - equal:
+          path: spec.resources.requests.storage
+          value: 2Gi
+      - equal:
+          path: spec.storageClassName
+          value: local-path
