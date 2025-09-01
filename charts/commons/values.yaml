@@ -82,10 +82,6 @@ components:
         accessModes: [ReadWriteOnce]
         storage: 1Gi
         storageClassName: local-path
-      - name: data-2
-        accessModes: [ReadWriteOnce]
-        storage: 2Gi
-        storageClassName: local-path
     postgres:
       enabled: true
       tag: 16

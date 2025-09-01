@@ -39,8 +39,23 @@ tests:
       value: test-redis
     asserts:
       - equal:
+          path: kind
+          value: Service
+      - equal:
+          path: metadata.name
+          value: test-redis
+      - equal:
+          path: spec.type
+          value: ClusterIP
+      - equal:
+          path: spec.ports[0].name
+          value: redis
+      - equal:
           path: spec.ports[0].port
           value: 6379
       - equal:
-          path: spec.selector.app
+          path: spec.ports[0].targetPort
+          value: 6379
+      - equal:
+          path: metadata.labels.app
           value: redis
