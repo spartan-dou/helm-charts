@@ -5,8 +5,8 @@
 {{/* === Addon VSCode === */}}
 {{- if .Values.addons.vscode.enabled }}
   {{- $defaults := dict
+    "name" "code-server"
     "deployment" (dict
-      "name" "code-server"
       "image" (dict
         "repository" .Values.addons.vscode.image.repository
         "tag" .Values.addons.vscode.image.tag | default "latest"
@@ -17,7 +17,6 @@
     )
     "service" (dict
       "enabled" true
-      "name" "vscode"
       "type" "ClusterIP"
       "ports" (list (dict "name" "http" "port" .Values.addons.vscode.port))
     )
@@ -26,7 +25,6 @@
   {{- /* dictionnaire ingress par défaut */ -}}
   {{- $ingressDefaults := dict
       "enabled" true
-      "name" "vscode"
   }}
 
   {{- /* valeurs utilisateur depuis values.yaml */ -}}
@@ -47,8 +45,8 @@
 {{/* === Addon Redis === */}}
 {{- if .Values.addons.redis.enabled }}
   {{- $defaults := dict
+    "name" "redis"
     "deployment" (dict
-      "name" "redis"
       "image" (dict
         "repository" .Values.addons.redis.image.repository
         "tag" .Values.addons.redis.image.tag | default "latest"
@@ -75,7 +73,20 @@
         "initialDelaySeconds" 5
         "periodSeconds" 10
       )
+      "volumeMounts" (dict
+        "mountPath" "/bitnami/redis/data"
+        "name" "data"
+      )
+      "volume" (dict
+        "name" "data"
+        "persistentVolumeClaim" (dict "claimName" "redis-data")
+      )
     )
+    "pvc" (list (dict
+      "name": "data"
+      "storage": "1Gi"
+      "storageClassName": .Values.addons.redis.storageClassName | default .Values.global.pvc.storageClassName
+    ))
     "service" (dict
       "enabled" true
       "name" "redis"
