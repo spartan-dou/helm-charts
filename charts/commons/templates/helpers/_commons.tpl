@@ -63,7 +63,20 @@ app.kubernetes.io/managed-by: {{ .Release.Service }}
 {{- define "commons.selectorLabels" -}}
 app.kubernetes.io/name: {{ include "commons.name" . }}
 app.kubernetes.io/instance: {{ .Release.Name }}
-app: {{ .component.name }}
+{{- if and .component (kindIs "map" .component) (.component.name) }}
+  app: {{ .component.name }}
+{{- else if .name }}
+  app: {{ .name }}
+{{- else }}
+  app: {{ .Release.Name }}
+{{- end }}
+
+
+{{- if $suffix }}
+  {{- $full = printf "%s%s" $full $suffix }}
+{{- end }}
+{{- $full | trunc 63 | trimSuffix "-" }}
+
 {{- end }}
 
 {{/*

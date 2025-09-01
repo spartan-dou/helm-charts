@@ -8,7 +8,7 @@ kind: PersistentVolumeClaim
 metadata:
   name: {{ include "commons.fullname" (dict "Chart" $.Chart "Values" $.Values "Release" $.Release "name" .name "component" $component) }}
   labels:
-    {{ include "commons.labels" (dict "Chart" $.Chart "Values" $.Values "Release" $.Release "name" $component.name) | nindent 4 }}
+    {{ include "commons.labels" (dict "Chart" $.Chart "Values" $.Values "Release" $.Release "name" .name "component" $component) | nindent 4 }}
 spec:
   accessModes: {{ toYaml .accessModes | nindent 4 }}
   resources:
