@@ -83,9 +83,9 @@
       )
     )
     "pvc" (list (dict
-      "name": "data"
-      "storage": "1Gi"
-      "storageClassName": .Values.addons.redis.storageClassName | default .Values.global.pvc.storageClassName
+      "name" "data"
+      "storage" "1Gi"
+      "storageClassName" (default .Values.global.pvc.storageClassName .Values.addons.redis.storageClassName)
     ))
     "service" (dict
       "enabled" true
