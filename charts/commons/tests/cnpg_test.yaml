@@ -22,7 +22,7 @@ tests:
   - it: Vérifie le ConfigMap init-sql
     documentSelector:
       path: metadata.name
-      value: test-postgres
+      value: test-web-postgres-configmap
     asserts:
       - matchRegex:
           path: data.init.sql
