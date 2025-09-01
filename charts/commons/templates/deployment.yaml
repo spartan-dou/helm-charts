@@ -11,9 +11,9 @@ metadata:
 spec:
   replicas: {{ default 1 .replicas }}
   securityContext:
-    runAsUser: {{ default $.Values.global.securityContext.runAsUser .securityContext.runAsUser }}
-    runAsGroup: {{ default $.Values.global.securityContext.runAsGroup .securityContext.runAsGroup }}
-    fsGroup: {{ default $.Values.global.securityContext.fsGroup .securityContext.fsGroup }}
+    runAsUser: {{ default $.Values.global.securityContext.runAsUser (get .securityContext "runAsUser")}}
+    runAsGroup: {{ default $.Values.global.securityContext.runAsGroup (get .securityContext "runAsGroup") }}
+    fsGroup: {{ default $.Values.global.securityContext.fsGroup (get .securityContext "fsGroup") }}
   selector:
     matchLabels:
       {{- include "commons.selectorLabels" (dict "Chart" $.Chart "Values" $.Values "Release" $.Release "name" .name "component" $component) | nindent 6 }}
