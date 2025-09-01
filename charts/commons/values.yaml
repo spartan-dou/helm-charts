@@ -13,8 +13,7 @@ global:
     className: traefik
 
 components:
-  - name: web
-    deployment:
+  - deployment:
       replicas: 2
       initContainers:
         containers:
@@ -55,6 +54,7 @@ components:
           mountPath: /etc/config
     service:
       enabled: true
+      name: nginx
       type: ClusterIP
       annotations:
         metallb.universe.tf/address-pool: "default"
@@ -96,7 +96,6 @@ components:
           - name: analytics
             owner: analyst
             password: securepass
-
 
 addons:
   vscode:
