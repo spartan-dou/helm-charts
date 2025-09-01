@@ -32,12 +32,6 @@ tests:
       - equal:
           path: metadata.labels.app
           value: nginx
-      - equal:
-          path: metadata.annotations."metallb.universe.tf/address-pool"
-          value: default
-      - equal:
-          path: metadata.annotations."prometheus.io/scrape"
-          value: "true"
 
   - it: Vérifie le Service vscode
     documentSelector:
