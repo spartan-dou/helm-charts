@@ -20,7 +20,7 @@
   {{- else }}
     {{- $full = .Release.Name }}
   {{- end }}
-  {{- $suffix := default "" (default "" .name | default (default "" $component.name)) }}
+  {{- $suffix := coalesce .name .component.name "" }}
   {{- if $suffix }}
     {{- $full = printf "%s-%s" $full $suffix }}
   {{- end }}
