@@ -19,3 +19,18 @@ tests:
       - equal:
           path: spec.storageClassName
           value: local-path
+  # --- PVC ---
+  - it: Vérifie le PVC web-data-2
+    documentSelector:
+      path: metadata.name
+      value: test-data-2
+    asserts:
+      - equal:
+          path: spec.accessModes[0]
+          value: ReadWriteOnce
+      - equal:
+          path: spec.resources.requests.storage
+          value: 2Gi
+      - equal:
+          path: spec.storageClassName
+          value: local-path

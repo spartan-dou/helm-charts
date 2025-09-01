@@ -1,15 +1,14 @@
 suite: Tests complets du chart commons
-templates:
-  - templates/cnpg/cluster.yaml
-  - templates/cnpg/init-sql.yaml
 release:
   name: test
 tests:
   # --- Cluster CNPG ---
   - it: Vérifie le Cluster Postgres
+    templates:
+      - templates/cnpg/cluster.yaml
     documentSelector:
       path: metadata.name
-      value: postgres
+      value: test
     asserts:
       - equal:
           path: spec.instances
@@ -20,9 +19,11 @@ tests:
 
   # --- ConfigMap ---
   - it: Vérifie le ConfigMap init-sql
+    templates:
+      - templates/cnpg/init-sql.yaml
     documentSelector:
       path: metadata.name
-      value: test-web-postgres-configmap
+      value: test-postgres-configmap
     asserts:
       - matchRegex:
           path: data.init.sql
