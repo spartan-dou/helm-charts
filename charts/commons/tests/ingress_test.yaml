@@ -1,8 +1,8 @@
 suite: Tests complets du chart commons
 templates:
   - templates/ingress.yaml
-set:
-  Release.Name: test
+release:
+  name: test
 tests:
   # --- Ingress ---
   - it: Vérifie l'Ingress web
