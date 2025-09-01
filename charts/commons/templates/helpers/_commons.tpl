@@ -63,7 +63,7 @@ app.kubernetes.io/managed-by: {{ .Release.Service }}
 {{- define "commons.selectorLabels" -}}
 app.kubernetes.io/name: {{ include "commons.name" . }}
 app.kubernetes.io/instance: {{ .Release.Name }}
-app: {{ .name }}
+app: {{ .component.name }}
 {{- end }}
 
 {{/*

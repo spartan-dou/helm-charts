@@ -8,7 +8,7 @@ kind: Service
 metadata:
   name: {{ include "commons.fullname" (dict "Chart" $.Chart "Values" $.Values "Release" $.Release "name" .name "component" $component) }}
   labels:
-    {{ include "commons.labels" (dict "Chart" $.Chart "Values" $.Values "Release" $.Release "name" $component.service.name) | nindent 4 }}
+    {{ include "commons.labels" (dict "Chart" $.Chart "Values" $.Values "Release" $.Release "component" $component.name) | nindent 4 }}
   {{- with .annotations }}
   annotations:
     {{- toYaml . | nindent 4 }}
