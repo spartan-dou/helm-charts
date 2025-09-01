@@ -16,9 +16,99 @@ global:
   ingress:
     className: traefik
 
+components:
+  - deployment:
+      replicas: 2
+      initContainers:
+        containers:
+          - name: setup-volume
+            image:
+              repository: alpine
+            command: ['sh', '-c', 'mkdir -p /data/init']
+      name: nginx
+      image: 
+        repository: nginx
+        tag: latest
+      ports:
+        - name: http
+          containerPort: 80
+      env:
+        - name: ENV
+          value: prod
+      livenessProbe:
+        httpGet:
+          path: /health
+          port: 8080
+        initialDelaySeconds: 10
+        periodSeconds: 5
+      readinessProbe:
+        httpGet:
+          path: /ready
+          port: 8080
+        initialDelaySeconds: 5
+        periodSeconds: 3
+      startupProbe:
+        httpGet:
+          path: /startup
+          port: 8080
+        failureThreshold: 30
+        periodSeconds: 10
+      volumeMounts:
+        - name: config
+          mountPath: /etc/config
+    service:
+      enabled: true
+      name: nginx
+      type: ClusterIP
+      annotations:
+        metallb.universe.tf/address-pool: "default"
+        prometheus.io/scrape: "true"
+      ports:
+        - name: http
+          port: 80
+          targetPort: 8080
+    ingress:
+      enabled: true
+      className: traefik
+      annotations:
+        nginx.ingress.kubernetes.io/rewrite-target: /
+      hosts:
+        - host: web.mondomaine.local
+          paths:
+            - path: /
+              pathType: Prefix
+      tls:
+        - hosts:
+            - web.mondomaine.local
+          secretName: web-cert
+    pvc:
+      - name: data
+        accessModes: [ReadWriteOnce]
+        storage: 1Gi
+        storageClassName: local-path
+      - name: data-2
+        accessModes: [ReadWriteOnce]
+        storage: 2Gi
+        storageClassName: local-path
+    postgres:
+      enabled: true
+      image:
+        tag: 16
+      storage:
+        size: 1Gi
+        storageClass: local-path
+      cluster:
+        username: changeme
+        password: changeme
+      init:
+        databases:
+          - name: analytics
+            owner: analyst
+            password: securepass
+
 addons:
   vscode:
-    enabled: false
+    enabled: true
     image:
       repository: codercom/code-server
       tag: 39
@@ -26,14 +116,14 @@ addons:
     ingress:
       enabled: false
   redis:
-    enabled: false
+    enabled: true
     name: redis
     image:
       repository: bitnami/redis
       tag: 8.2.1
     port: 6379
   postgres:
-    enabled: false
+    enabled: true
     size: "1Gi"
     storageClass: ""
     image:
