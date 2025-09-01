@@ -6,7 +6,7 @@
 apiVersion: postgresql.cnpg.io/v1
 kind: Cluster
 metadata:
-  name: {{ .name | default "postgres" }}
+  name: {{ include "commons.fullname" (dict "Chart" $.Chart "Values" $.Values "Release" $.Release "name" .name "component" $component) }}
   labels:
     app.kubernetes.io/name: {{ .name | default "postgres" }}
     app.kubernetes.io/instance: {{ .name | default "postgres" }}
@@ -33,11 +33,11 @@ spec:
       database: {{ .cluster.database | default "app" }}
       owner: {{ .cluster.username | default "app" }}
       secret:
-        name: {{ printf "%s-postgres-secret" (.cluster.name | default "postgres") }}
+        name: {{ include "commons.fullname" (dict "Chart" $.Chart "Values" $.Values "Release" $.Release "name" .name "component" $component) }}-postgres-secret
     {{- with .init }}
     postInitApplicationSQL:
       - configMap:
-          name: {{ printf "%s-init-sql" (.name | default "postgres") }}
+          name: {{ include "commons.fullname" (dict "Chart" $.Chart "Values" $.Values "Release" $.Release "name" .name "component" $component) }}-postgres-configmap
           key: init.sql
     {{- end }}
 
