@@ -1,5 +1,7 @@
 # yaml-language-server: $schema=https://raw.githubusercontent.com/helm-unittest/helm-unittest/main/schema/helm-testsuite.json
 suite: Tests complets du chart commons
+values:
+  - ./values/values.yaml
 templates:
   - templates/service.yaml
 release:
