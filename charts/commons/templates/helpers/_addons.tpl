@@ -82,7 +82,7 @@
         "periodSeconds" 10
       )
       "volumeMounts" (list (dict
-        "mountPath" "/bitnami/redis/data"
+        "mountPath" (default "/data" .Values.global.addons.redis.storage.mountPath)
         "name" "data"
       ))
       "volumes" (list (dict

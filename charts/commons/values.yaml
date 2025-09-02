@@ -31,8 +31,8 @@ addons:
     enabled: false
     name: redis
     image:
-      repository: bitnami/redis
-      tag: 8.2.1
+      repository: redis
+      tag: 8.2.1-alpine
     port: 6379
   postgres:
     enabled: false
