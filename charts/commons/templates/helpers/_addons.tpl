@@ -5,19 +5,26 @@
 {{/* === Addon VSCode === */}}
 {{- if .Values.addons.vscode.enabled }}
   {{- $defaults := dict
+    "name" "code-server"
     "deployment" (dict
-      "name" "code-server"
       "image" (dict
         "repository" .Values.addons.vscode.image.repository
         "tag" .Values.addons.vscode.image.tag | default "latest"
       )
       "ports" (list (dict "name" "http" "containerPort" .Values.addons.vscode.port))
       "volumeMounts" (list (dict "name" "vscode-data" "mountPath" "/home/coder/project"))
-      "volumes" (list (dict "name" "vscode-data" "emptyDir" (dict)))
+      "volumes" (list (dict
+        "name" "vscode-data"
+        "persistentVolumeClaim" (dict "claimName" "vscode-data")
+      ))
     )
+    "pvc" (list (dict
+      "name" "vscode-data"
+      "storage" "1Gi"
+      "storageClassName" (default .Values.global.pvc.storageClassName .Values.addons.vscode.storageClassName)
+    ))
     "service" (dict
       "enabled" true
-      "name" "vscode"
       "type" "ClusterIP"
       "ports" (list (dict "name" "http" "port" .Values.addons.vscode.port))
     )
@@ -26,7 +33,6 @@
   {{- /* dictionnaire ingress par défaut */ -}}
   {{- $ingressDefaults := dict
       "enabled" true
-      "name" "vscode"
   }}
 
   {{- /* valeurs utilisateur depuis values.yaml */ -}}
@@ -47,8 +53,8 @@
 {{/* === Addon Redis === */}}
 {{- if .Values.addons.redis.enabled }}
   {{- $defaults := dict
+    "name" "redis"
     "deployment" (dict
-      "name" "redis"
       "image" (dict
         "repository" .Values.addons.redis.image.repository
         "tag" .Values.addons.redis.image.tag | default "latest"
@@ -75,10 +81,22 @@
         "initialDelaySeconds" 5
         "periodSeconds" 10
       )
+      "volumeMounts" (list (dict
+        "mountPath" "/bitnami/redis/data"
+        "name" "data"
+      ))
+      "volume" (list (dict
+        "name" "data"
+        "persistentVolumeClaim" (dict "claimName" "redis-data")
+      ))
     )
+    "pvc" (list (dict
+      "name" "data"
+      "storage" "1Gi"
+      "storageClassName" (default .Values.global.pvc.storageClassName .Values.addons.redis.storageClassName)
+    ))
     "service" (dict
       "enabled" true
-      "name" "redis"
       "type" "ClusterIP"
       "ports" (list (dict "name" "redis" "port" .Values.addons.redis.port))
     )

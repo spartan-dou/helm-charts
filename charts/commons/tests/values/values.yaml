@@ -1,11 +1,15 @@
 global:
   timezone: "Europe/Paris"
+  securityContext:
+    runAsUser: 1000
+    runAsGroup: 1000
+    fsGroup: 1000
   pvc:
     size: "1Gi"
-    storageClassName: ""
+    storageClassName: "test"
   postgres:
     size: "1Gi"
-    storageClass: ""
+    storageClass: "test"
     image:
       repository: ghcr.io/cloudnative-pg/postgresql
       tag: 16
@@ -13,7 +17,8 @@ global:
     className: traefik
 
 components:
-  - deployment:
+  - name: nginx
+    deployment:
       replicas: 2
       initContainers:
         containers:
@@ -21,7 +26,6 @@ components:
             image:
               repository: alpine
             command: ['sh', '-c', 'mkdir -p /data/init']
-      name: nginx
       image: 
         repository: nginx
         tag: latest
@@ -54,7 +58,6 @@ components:
           mountPath: /etc/config
     service:
       enabled: true
-      name: nginx
       type: ClusterIP
       annotations:
         metallb.universe.tf/address-pool: "default"
@@ -88,7 +91,8 @@ components:
         storageClassName: local-path
     postgres:
       enabled: true
-      tag: 16
+      image:
+        tag: 16
       storage:
         size: 1Gi
         storageClass: local-path
@@ -118,7 +122,10 @@ addons:
       tag: 8.2.1
     port: 6379
     password: changeme
-    resources:
-      limits:
-        cpu: 100m
-        memory: 128Mi
+  postgres:
+    enabled: true
+    size: "1Gi"
+    storageClass: "test"
+    cluster:
+      username: changeme
+      password: changeme

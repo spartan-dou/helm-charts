@@ -11,7 +11,7 @@ tests:
   - it: Vérifie le PVC web-data
     documentSelector:
       path: metadata.name
-      value: test-data
+      value: test-nginx-data
     asserts:
       - equal:
           path: spec.accessModes[0]
@@ -26,7 +26,7 @@ tests:
   - it: Vérifie le PVC web-data-2
     documentSelector:
       path: metadata.name
-      value: test-data-2
+      value: test-nginx-data-2
     asserts:
       - equal:
           path: spec.accessModes[0]
@@ -37,3 +37,18 @@ tests:
       - equal:
           path: spec.storageClassName
           value: local-path
+  # --- PVC ---
+  - it: Vérifie le PVC redis-data
+    documentSelector:
+      path: metadata.name
+      value: test-redis-data
+    asserts:
+      - equal:
+          path: metadata.name
+          value: test-redis-data
+      - equal:
+          path: spec.resources.requests.storage
+          value: 1Gi
+      - equal:
+          path: spec.storageClassName
+          value: test
