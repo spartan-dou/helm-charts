@@ -18,7 +18,7 @@ global:
 
 addons:
   vscode:
-    enabled: true
+    enabled: false
     image:
       repository: codercom/code-server
       tag: 39
@@ -26,14 +26,14 @@ addons:
     ingress:
       enabled: false
   redis:
-    enabled: true
+    enabled: false
     name: redis
     image:
       repository: bitnami/redis
       tag: 8.2.1
     port: 6379
   postgres:
-    enabled: true
+    enabled: false
     size: "1Gi"
     cluster:
       username: changeme
