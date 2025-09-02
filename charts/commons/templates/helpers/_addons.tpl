@@ -21,7 +21,7 @@
     "pvc" (list (dict
       "name" "vscode-data"
       "storage" "1Gi"
-      "storageClassName" (default .Values.global.pvc.storageClassName .Values.addons.vscode.storageClassName)
+      "storageClassName" (default .Values.global.pvc.storage.storageClassName .Values.addons.vscode.storageClassName)
     ))
     "service" (dict
       "enabled" true
@@ -93,7 +93,7 @@
     "pvc" (list (dict
       "name" "data"
       "storage" "1Gi"
-      "storageClassName" (default .Values.global.pvc.storageClassName .Values.addons.redis.storageClassName)
+      "storageClassName" (default .Values.global.pvc.storage.storageClassName .Values.addons.redis.storageClassName)
     ))
     "service" (dict
       "enabled" true

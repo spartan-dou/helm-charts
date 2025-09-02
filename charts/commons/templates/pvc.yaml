@@ -10,11 +10,12 @@ metadata:
   labels:
     {{ include "commons.labels" (dict "Chart" $.Chart "Values" $.Values "Release" $.Release "name" .name "component" $component) | nindent 4 }}
 spec:
-  accessModes: {{ toYaml .accessModes | nindent 4 }}
+  accessModes:
+    - {{ .accessModes | default "ReadWriteOnce" }}
   resources:
     requests:
-      storage: {{ .storage | default $.Values.global.pvc.size }}
-  storageClassName: {{ .storageClassName | default $.Values.global.pvc.storageClassName }}
+      storage: {{ .storage | default $.Values.global.pvc.storage.size }}
+  storageClassName: {{ .storageClassName | default $.Values.global.pvc.storage.storageClassName }}
   {{- if .volumeMode }}
   volumeMode: {{ .volumeMode }}
   {{- end }}

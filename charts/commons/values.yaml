@@ -5,11 +5,13 @@ global:
     runAsGroup: 1000
     fsGroup: 1000
   pvc:
-    size: "1Gi"
-    storageClassName: ""
+    storage:
+      size: "1Gi"
+      storageClassName: ""
   postgres:
-    size: "1Gi"
-    storageClass: ""
+    storage:
+      size: "1Gi"
+      storageClass: ""
     image:
       repository: ghcr.io/cloudnative-pg/postgresql
       tag: 16
@@ -34,7 +36,8 @@ addons:
     port: 6379
   postgres:
     enabled: false
-    size: "1Gi"
+    storage:
+      size: "1Gi"
     cluster:
       username: changeme
       password: changeme

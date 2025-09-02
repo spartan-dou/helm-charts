@@ -23,8 +23,8 @@ spec:
   {{- end }}
   {{- with .storage }}
   storage:
-    size: {{ .size | default $.Values.global.postgres.size }}
-    storageClass: {{ .storageClass | default $.Values.global.postgres.storageClass }}
+    size: {{ .size | default $.Values.global.postgres.storage.size }}
+    storageClass: {{ .storageClass | default $.Values.global.postgres.storage.storageClass }}
   {{- end }}
 
   {{- if .repository}}
