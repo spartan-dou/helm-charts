@@ -5,7 +5,7 @@ values:
 templates:
   - templates/ingress.yaml
 release:
-  name: test-nginx
+  name: test
 tests:
   # --- Ingress ---
   - it: Vérifie l'Ingress web
