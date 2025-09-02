@@ -130,3 +130,6 @@ addons:
     image:
       repository: ghcr.io/cloudnative-pg/postgresql
       tag: 16
+    cluster:
+      username: changeme
+      password: changeme
