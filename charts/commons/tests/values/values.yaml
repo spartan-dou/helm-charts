@@ -127,9 +127,6 @@ addons:
     enabled: true
     size: "1Gi"
     storageClass: "test"
-    image:
-      repository: ghcr.io/cloudnative-pg/postgresql
-      tag: 16
     cluster:
       username: changeme
       password: changeme

@@ -35,7 +35,6 @@ addons:
   postgres:
     enabled: false
     size: "1Gi"
-    storageClass: ""
-    image:
-      repository: ghcr.io/cloudnative-pg/postgresql
-      tag: 16
+    cluster:
+      username: changeme
+      password: changeme
