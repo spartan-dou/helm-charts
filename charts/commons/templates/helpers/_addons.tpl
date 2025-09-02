@@ -85,7 +85,7 @@
         "mountPath" "/bitnami/redis/data"
         "name" "data"
       ))
-      "volume" (list (dict
+      "volumes" (list (dict
         "name" "data"
         "persistentVolumeClaim" (dict "claimName" "redis-data")
       ))

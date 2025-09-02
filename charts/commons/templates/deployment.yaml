@@ -117,9 +117,7 @@ spec:
 
       {{- with .volumes }}
       volumes:
-        {{- range . }}
         {{- toYaml . | nindent 8 }}
-        {{- end }}
       {{- end }}
 ---
 {{- end }}
