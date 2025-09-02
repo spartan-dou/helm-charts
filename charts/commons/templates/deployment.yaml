@@ -32,7 +32,7 @@ spec:
         {{ include "commons.waitForPostgres" (dict "Values" $.Values "Chart" $.Chart "Release" $.Release "component" $component) | nindent 8 }}
         {{- end }}
         {{- range .initContainers }}
-        - name: {{ .name }}
+        - name: {{ .name | default $component.name }}
           {{- with .securityContext }}
           {{- toYaml . | nindent 10 }}
           {{- end }}
@@ -115,9 +115,9 @@ spec:
           {{- end }}
         {{ include "commons.sidecars" (dict "component" $component "Values" $.Values) | nindent 8 }}
 
-      {{- if .volumes }}
+      {{- with .volumes }}
       volumes:
-        {{- toYaml .volumes | nindent 8 }}
+        {{- toYaml . | nindent 8 }}
       {{- end }}
 ---
 {{- end }}
