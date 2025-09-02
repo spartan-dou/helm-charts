@@ -38,14 +38,14 @@ tests:
   - it: Vérifie le Service vscode
     documentSelector:
       path: metadata.name
-      value: test-vscode
+      value: test-code-server
     asserts:
       - equal:
           path: kind
           value: Service
       - equal:
           path: metadata.name
-          value: test-vscode
+          value: test-code-server
       - equal:
           path: spec.type
           value: ClusterIP

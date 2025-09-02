@@ -89,7 +89,6 @@
     ))
     "service" (dict
       "enabled" true
-      "name" "redis"
       "type" "ClusterIP"
       "ports" (list (dict "name" "redis" "port" .Values.addons.redis.port))
     )
