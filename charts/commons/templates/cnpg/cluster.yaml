@@ -1,4 +1,5 @@
 {{- $components := include "commons.withAddons" . | fromYamlArray }}
+{{- $components := append $components .Values.addons.postgres }}
 {{- range $components }}
 {{- $component := . }}
 {{- with $component.postgres }}
@@ -26,7 +27,11 @@ spec:
     storageClass: {{ .storageClass | default $.Values.global.postgres.storageClass }}
   {{- end }}
 
-  imageName: {{ .image | default $.Values.global.postgres.image.repository }}:{{ .tag | default $.Values.global.postgres.image.tag }}
+  {{- if .repository}}
+  imageName: {{ .repository.image | default $.Values.global.postgres.image.repository }}:{{ .repository.tag | default $.Values.global.postgres.image.tag }}
+  {{- else }}
+  imageName: {{ $.Values.global.postgres.image.repository }}:{{ $.Values.global.postgres.image.tag }}
+  {{- end }}
 
   bootstrap:
     initdb:

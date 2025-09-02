@@ -60,10 +60,10 @@ tests:
           value: 8080
       - equal:
           path: metadata.labels.app
-          value: vscode
+          value: code-server
       - equal:
           path: spec.selector.app
-          value: vscode
+          value: code-server
 
   - it: Vérifie le Service redis
     documentSelector:

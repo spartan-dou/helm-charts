@@ -6,10 +6,10 @@ global:
     fsGroup: 1000
   pvc:
     size: "1Gi"
-    storageClassName: ""
+    storageClassName: "test"
   postgres:
     size: "1Gi"
-    storageClass: ""
+    storageClass: "test"
     image:
       repository: ghcr.io/cloudnative-pg/postgresql
       tag: 16
@@ -122,10 +122,11 @@ addons:
       repository: bitnami/redis
       tag: 8.2.1
     port: 6379
+    password: changeme
   postgres:
     enabled: true
     size: "1Gi"
-    storageClass: ""
+    storageClass: "test"
     image:
       repository: ghcr.io/cloudnative-pg/postgresql
       tag: 16
