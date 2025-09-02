@@ -84,11 +84,11 @@ components:
           secretName: web-cert
     pvc:
       - name: data
-        accessModes: [ReadWriteOnce]
+        accessMode: ReadWriteOnce
         storage: 1Gi
         storageClassName: local-path
       - name: data-2
-        accessModes: [ReadWriteOnce]
+        accessMode: ReadWriteOnce
         storage: 2Gi
         storageClassName: local-path
     postgres:

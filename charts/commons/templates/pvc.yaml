@@ -11,7 +11,7 @@ metadata:
     {{ include "commons.labels" (dict "Chart" $.Chart "Values" $.Values "Release" $.Release "name" .name "component" $component) | nindent 4 }}
 spec:
   accessModes:
-    - {{ .accessModes | default "ReadWriteOnce" }}
+    - {{ .accessMode | default "ReadWriteOnce" }}
   resources:
     requests:
       storage: {{ .storage | default $.Values.global.pvc.storage.size }}
