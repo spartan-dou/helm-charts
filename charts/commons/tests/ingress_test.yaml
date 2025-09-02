@@ -5,13 +5,13 @@ values:
 templates:
   - templates/ingress.yaml
 release:
-  name: test
+  name: test-nginx
 tests:
   # --- Ingress ---
   - it: Vérifie l'Ingress web
     documentSelector:
       path: metadata.name
-      value: test
+      value: test-nginx
     asserts:
       - equal:
           path: spec.rules[0].host

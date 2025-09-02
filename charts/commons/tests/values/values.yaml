@@ -58,7 +58,6 @@ components:
           mountPath: /etc/config
     service:
       enabled: true
-      name: nginx
       type: ClusterIP
       annotations:
         metallb.universe.tf/address-pool: "default"
