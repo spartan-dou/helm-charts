@@ -87,7 +87,7 @@
       ))
       "volumes" (list (dict
         "name" "data"
-        "persistentVolumeClaim" (dict "claimName" "redis-data")
+        "persistentVolumeClaim" (dict "claimName" (printf "%s-redis-data" $.Release.name)))
       ))
     )
     "pvc" (list (dict
