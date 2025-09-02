@@ -13,8 +13,16 @@
       )
       "ports" (list (dict "name" "http" "containerPort" .Values.addons.vscode.port))
       "volumeMounts" (list (dict "name" "vscode-data" "mountPath" "/home/coder/project"))
-      "volumes" (list (dict "name" "vscode-data" "emptyDir" (dict)))
+      "volumes" (list (dict
+        "name" "vscode-data"
+        "persistentVolumeClaim" (dict "claimName" "vscode-data")
+      ))
     )
+    "pvc" (list (dict
+      "name" "vscode-data"
+      "storage" "1Gi"
+      "storageClassName" (default .Values.global.pvc.storageClassName .Values.addons.vscode.storageClassName)
+    ))
     "service" (dict
       "enabled" true
       "type" "ClusterIP"
