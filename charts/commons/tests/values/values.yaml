@@ -17,7 +17,8 @@ global:
     className: traefik
 
 components:
-  - deployment:
+  - name: nginx
+    deployment:
       replicas: 2
       initContainers:
         containers:
@@ -25,7 +26,6 @@ components:
             image:
               repository: alpine
             command: ['sh', '-c', 'mkdir -p /data/init']
-      name: nginx
       image: 
         repository: nginx
         tag: latest
