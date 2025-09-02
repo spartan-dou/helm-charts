@@ -67,7 +67,7 @@ spec:
       {{- end }}
       {{- end }}
       containers:
-        - name: {{ .name }}
+        - name: {{ .name [ default $component.name]}}
           {{- with .securityContext }}
           {{- toYaml . | nindent 10 }}
           {{- end }}
@@ -117,7 +117,9 @@ spec:
 
       {{- with .volumes }}
       volumes:
+        {{- range . }}
         {{- toYaml . | nindent 8 }}
+        {{- end }}
       {{- end }}
 ---
 {{- end }}
