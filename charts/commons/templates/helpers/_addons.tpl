@@ -73,14 +73,14 @@
         "initialDelaySeconds" 5
         "periodSeconds" 10
       )
-      "volumeMounts" (dict
+      "volumeMounts" (list (dict
         "mountPath" "/bitnami/redis/data"
         "name" "data"
-      )
-      "volume" (dict
+      ))
+      "volume" (list (dict
         "name" "data"
         "persistentVolumeClaim" (dict "claimName" "redis-data")
-      )
+      ))
     )
     "pvc" (list (dict
       "name" "data"
