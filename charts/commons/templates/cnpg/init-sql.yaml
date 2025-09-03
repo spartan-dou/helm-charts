@@ -1,3 +1,4 @@
+{{- $components := include "commons.withAddons" . | fromYamlArray }}
 {{- $raw := .Values.addons | default dict }}
 {{- $_ := set $raw "name" "postgres" }}
 {{- $components = append $components $raw }}
