@@ -80,7 +80,7 @@ spec:
               {{- if .value }}
               value: {{ .value | quote }}
               {{- else }}
-              {{ toYaml .valueFrom | nindent 14}}
+              {{- toYaml (dict "valueFrom" .valueFrom) | nindent 14 }}
               {{- end }}
             {{- end }}
           {{- if .volumeMounts }}
