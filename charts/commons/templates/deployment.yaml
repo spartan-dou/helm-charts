@@ -10,10 +10,6 @@ metadata:
     {{ include "commons.labels" (dict "Chart" $.Chart "Values" $.Values "Release" $.Release "name" .name "component" $component) | nindent 4 }}
 spec:
   replicas: {{ default 1 .replicas }}
-  securityContext:
-    runAsUser: {{- if and .securityContext .securityContext.runAsUser }} {{ .securityContext.runAsUser }} {{- else }} {{ $.Values.global.securityContext.runAsUser }} {{- end }}
-    runAsGroup: {{- if and .securityContext .securityContext.runAsGroup }} {{ .securityContext.runAsGroup }} {{- else }} {{ $.Values.global.securityContext.runAsGroup }} {{- end }}
-    fsGroup: {{- if and .securityContext .securityContext.fsGroup }} {{ .securityContext.fsGroup }} {{- else }} {{ $.Values.global.securityContext.fsGroup }} {{- end }}
   selector:
     matchLabels:
       {{- include "commons.selectorLabels" (dict "Chart" $.Chart "Values" $.Values "Release" $.Release "name" .name "component" $component) | nindent 6 }}
@@ -22,6 +18,10 @@ spec:
       labels:
         {{- include "commons.selectorLabels" (dict "Chart" $.Chart "Values" $.Values "Release" $.Release "name" .name "component" $component) | nindent 8 }}
     spec:
+      securityContext:
+        runAsUser: {{- if and .securityContext .securityContext.runAsUser }} {{ .securityContext.runAsUser }} {{- else }} {{ $.Values.global.securityContext.runAsUser }} {{- end }}
+        runAsGroup: {{- if and .securityContext .securityContext.runAsGroup }} {{ .securityContext.runAsGroup }} {{- else }} {{ $.Values.global.securityContext.runAsGroup }} {{- end }}
+        fsGroup: {{- if and .securityContext .securityContext.fsGroup }} {{ .securityContext.fsGroup }} {{- else }} {{ $.Values.global.securityContext.fsGroup }} {{- end }}
       {{- with .initContainers }}
       {{- if .containers }}
       initContainers:
