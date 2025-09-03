@@ -18,10 +18,19 @@ spec:
       labels:
         {{- include "commons.selectorLabels" (dict "Chart" $.Chart "Values" $.Values "Release" $.Release "name" .name "component" $component) | nindent 8 }}
     spec:
+      {{- $sc := default dict .securityContext }}
+      {{- if or $sc.runAsUser $sc.runAsGroup $sc.fsGroup $.Values.global.securityContext }}
       securityContext:
-        runAsUser: {{- if and .securityContext .securityContext.runAsUser }} {{ .securityContext.runAsUser }} {{- else }} {{ $.Values.global.securityContext.runAsUser }} {{- end }}
-        runAsGroup: {{- if and .securityContext .securityContext.runAsGroup }} {{ .securityContext.runAsGroup }} {{- else }} {{ $.Values.global.securityContext.runAsGroup }} {{- end }}
-        fsGroup: {{- if and .securityContext .securityContext.fsGroup }} {{ .securityContext.fsGroup }} {{- else }} {{ $.Values.global.securityContext.fsGroup }} {{- end }}
+        {{- if or $sc.runAsUser $.Values.global.securityContext.runAsUser}}
+        runAsUser: {{ default $.Values.global.securityContext.runAsUser $sc.runAsUser }}
+        {{- end }}
+        {{- if or $sc.runAsUser $.Values.global.securityContext.runAsGroup}}
+        runAsGroup: {{ default $.Values.global.securityContext.runAsGroup $sc.runAsGroup }}
+        {{- end }}
+        {{- if or $sc.runAsUser $.Values.global.securityContext.fsGroup}}
+        fsGroup: {{ default $.Values.global.securityContext.fsGroup $sc.fsGroup }}
+        {{- end }}
+      {{- end }}
       {{- with .initContainers }}
       {{- if .containers }}
       initContainers:

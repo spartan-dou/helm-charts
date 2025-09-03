@@ -1,9 +1,5 @@
 global:
   timezone: "Europe/Paris"
-  securityContext:
-    runAsUser: 1000
-    runAsGroup: 1000
-    fsGroup: 1000
   pvc:
     storage:
       size: "1Gi"
@@ -17,6 +13,10 @@ global:
       tag: 17
   ingress:
     className: traefik
+#  securityContext:
+#    runAsUser: 1000
+#    runAsGroup: 1000
+#    fsGroup: 1000
 
 addons:
   vscode:
