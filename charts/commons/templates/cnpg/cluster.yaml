@@ -23,12 +23,9 @@ spec:
   resources:
     {{- toYaml . | nindent 4 }}
   {{- end }}
-  {{- with .storage }}
   storage:
-    size: {{ .size | default $.Values.global.postgres.storage.size }}
-    storageClass: {{ .storageClass | default $.Values.global.postgres.storage.storageClass }}
-  {{- end }}
-
+    size: {{ default $.Values.global.postgres.storage.size (default dict .storage).size }}
+    storageClass: {{ default $.Values.global.postgres.storage.storageClass (default dict .storage).storageClass }}
   {{- if .repository}}
   imageName: {{ .repository.image | default $.Values.global.postgres.image.repository }}:{{ .repository.tag | default $.Values.global.postgres.image.tag }}
   {{- else }}

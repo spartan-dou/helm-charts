@@ -77,7 +77,11 @@ spec:
               value: {{ $.Values.global.timezone | quote }}
             {{- range .env }}
             - name: {{ .name }}
+              {{- if .value }}
               value: {{ .value | quote }}
+              {{- else }}
+              {{ toYaml .valueFrom | nindent 14}}
+              {{- end }}
             {{- end }}
           {{- if .volumeMounts }}
           volumeMounts:
