@@ -1,5 +1,7 @@
 {{- $components := include "commons.withAddons" . | fromYamlArray }}
-{{- $components = append $components .Values.addons }}
+{{- $raw := .Values.addons | default dict }}
+{{- $_ := set $raw "name" "postgres" }}
+{{- $components = append $components $raw }}
 {{- range $components }}
 {{- $component := . }}
 {{- with $component.postgres }}
@@ -38,11 +40,11 @@ spec:
       database: {{ .cluster.database | default "app" }}
       owner: {{ .cluster.username | default "app" }}
       secret:
-        name: {{ include "commons.fullname" (dict "Chart" $.Chart "Values" $.Values "Release" $.Release "name" .name "component" $component) }}-postgres-secret
+        name: {{ include "commons.fullname" (dict "Chart" $.Chart "Values" $.Values "Release" $.Release "name" .name "component" $component) }}-secret
     {{- with .init }}
     postInitApplicationSQL:
       - configMap:
-          name: {{ include "commons.fullname" (dict "Chart" $.Chart "Values" $.Values "Release" $.Release "name" .name "component" $component) }}-postgres-configmap
+          name: {{ include "commons.fullname" (dict "Chart" $.Chart "Values" $.Values "Release" $.Release "name" .name "component" $component) }}-configmap
           key: init.sql
     {{- end }}
 
