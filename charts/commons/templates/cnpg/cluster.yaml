@@ -38,12 +38,12 @@ spec:
       owner: {{ .cluster.username | default "app" }}
       secret:
         name: {{ include "commons.fullname" (dict "Chart" $.Chart "Values" $.Values "Release" $.Release "name" .name "component" $component) }}-secret
-    {{- with .init }}
-    postInitTemplateSQL:
-      {{- range . }}
-      - {{ . }}
+      {{- with .init }}
+      postInitTemplateSQL:
+        {{- range . }}
+        - {{ . }}
+        {{- end }}
       {{- end }}
-    {{- end }}
 
   {{- with .backup }}
   backup:
