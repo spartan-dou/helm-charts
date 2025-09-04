@@ -39,10 +39,10 @@ spec:
       secret:
         name: {{ include "commons.fullname" (dict "Chart" $.Chart "Values" $.Values "Release" $.Release "name" .name "component" $component) }}-secret
     {{- with .init }}
-    postInitApplicationSQL:
-      - configMap:
-          name: {{ include "commons.fullname" (dict "Chart" $.Chart "Values" $.Values "Release" $.Release "name" .name "component" $component) }}-configmap
-          key: init.sql
+    postInitTemplateSQL:
+      {{- range . }}
+      - {{ . }}
+      {{- end }}
     {{- end }}
 
   {{- with .backup }}

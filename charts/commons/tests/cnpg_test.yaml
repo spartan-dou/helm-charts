@@ -33,18 +33,3 @@ tests:
       - equal:
           path: spec.imageName
           value: ghcr.io/cloudnative-pg/postgresql:16
-
-  # --- ConfigMap ---
-  - it: Vérifie le ConfigMap init-sql
-    templates:
-      - templates/cnpg/init-sql.yaml
-    documentSelector:
-      path: metadata.name
-      value: test-nginx-configmap
-    asserts:
-      - equal:
-          path: kind
-          value: ConfigMap
-      - equal:
-          path: metadata.name
-          value: test-nginx-configmap
