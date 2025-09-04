@@ -27,9 +27,9 @@ spec:
             pathType: {{ default "Prefix" .pathType }}
             backend:
               service:
-                name: {{ include "commons.fullname" (dict "Chart" $.Chart "Values" $.Values "Release" $.Release "name" $component.name) }}
+                name: {{ .name | default (include "commons.fullname" (dict "Chart" $.Chart "Values" $.Values "Release" $.Release "name" $component.name)) }}
                 port:
-                  number: {{ .port | default 80 }}
+                  name: {{ .port | default 80 }}
           {{- end }}
     {{- end }}
   {{- with .tls }}
