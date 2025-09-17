@@ -101,7 +101,7 @@ components:
       cluster:
         username: changeme
         password: changeme
-      init:
+      postInitTemplateSQL:
         - CREATE EXTENSION postgis;
         - CREATE EXTENSION postgis_topology;
         - CREATE EXTENSION fuzzystrmatch;
