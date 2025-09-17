@@ -40,15 +40,21 @@ spec:
         name: {{ include "commons.fullname" (dict "Chart" $.Chart "Values" $.Values "Release" $.Release "name" .name "component" $component) }}-secret
       {{- with .postInitTemplateSQL }}
       postInitTemplateSQL:
-        {{ toYaml . | indent 8 }}
+        {{- range . }}
+        - {{ . }}
+        {{- end }}
       {{- end }}
       {{- with .postInitSQL }}
       postInitSQL:
-        {{ toYaml . | indent 8 }}
+        {{- range . }}
+        - {{ . }}
+        {{- end }}
       {{- end }}
       {{- with .postInitApplicationSQL }}
       postInitApplicationSQL:
-        {{ toYaml . | indent 8 }}
+        {{- range . }}
+        - {{ . }}
+        {{- end }}
       {{- end }}
 
   {{- with .backup }}
