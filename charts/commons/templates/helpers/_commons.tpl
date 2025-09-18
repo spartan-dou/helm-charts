@@ -83,3 +83,53 @@ app: {{ .Release.Name }}
 {{- default "default" .Values.serviceAccount.name }}
 {{- end }}
 {{- end }}
+
+{{/*
+  Fonction dinamique pour utiliser des variables dans le fichier de values
+*/}}
+{{- define "commons.getValue" -}}
+{{- $component := default "" .component }}
+{{- $value := default "" .value }}
+{{- $values := split "__" $value }}
+{{- if eq (len $values) 0 }}
+  {{- $value }}
+{{- else }}
+  {{- if eq (index $values 2) "postgres" }}
+    {{- if eq (index $values 3) "host" }}
+      {{- if eq (index $values 1) "addons" }}
+        {{ include "commons.fullname" (dict "Chart" $.Chart "Values" $.Values "Release" $.Release "name" .name) }}-rw
+      {{- else if eq (index $values 1) "components" }}
+        {{ include "commons.fullname" (dict "Chart" $.Chart "Values" $.Values "Release" $.Release "name" .name "component" $component) }}-rw
+      {{- else }}
+        {{- $value }}
+      {{- end }}
+    {{- else if eq (index $values 3) "username" }}
+      {{- if eq (index $values 1) "addons" }}
+        {{- .Values.addons.postgres.cluster.username }}
+      {{- else if eq (index $values 1) "components" }}
+        {{- $component.postgres.cluster.username }}
+      {{- else }}
+        {{- $value }}
+      {{- end }}
+    {{- else if eq (index $values 3) "password" }}
+      {{- if eq (index $values 1) "addons" }}
+        {{ include "commons.fullname" (dict "Chart" $.Chart "Values" $.Values "Release" $.Release "name" .name) }}-secret
+      {{- else if eq (index $values 1) "components" }}
+        {{ include "commons.fullname" (dict "Chart" $.Chart "Values" $.Values "Release" $.Release "name" .name "component" $component) }}-secret
+      {{- else }}
+        {{- $value }}
+      {{- end }}
+    {{- else }}
+      {{- $value }}
+    {{- end }}
+  {{- else if eq (index $values 2) "pvc" }}
+    {{- if eq (index $values 1) "components" }}
+      {{ include "commons.fullname" (dict "Chart" $.Chart "Values" $.Values "Release" $.Release "name" (index $values 3) "component" $component) }}
+    {{- else }}
+      {{- $value }}
+    {{- end }}
+  {{- else }}
+    {{- $value }}
+  {{- end }}
+{{- end }}
+{{- end }}
