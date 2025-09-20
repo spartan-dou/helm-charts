@@ -113,6 +113,7 @@ spec:
                 {{- toYaml . | nindent 16 }}
                 {{- end }}
               {{- end }}
+            {{- end }}
           {{- if .volumeMounts }}
           volumeMounts:
             {{- range .volumeMounts }}
@@ -165,7 +166,6 @@ spec:
         {{- end }}
       {{- end }}
       {{- end }}
-
 ---
 {{- end }}
 {{- end }}
