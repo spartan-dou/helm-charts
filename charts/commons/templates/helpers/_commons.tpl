@@ -85,52 +85,52 @@ app: {{ .Release.Name }}
 {{- end }}
 
 {{/*
-  Fonction dinamique pour utiliser des variables dans le fichier de values
+  Fonction dinamique pour utiliser des variables dans le fichier de valueKeys
 */}}
 {{- define "commons.getValue" -}}
 {{- $component := default "" .component }}
 {{- $value := default "" .value }}
-{{- $values := split "__" $value }}
-{{- if eq (len $values) 0 }}
+{{- $valueKeys := split "__" $value }}
+{{- if eq (len $valueKeys) 0 }}
   {{- $value }}
 {{- else }}
-  {{- if eq (index $values 2) "postgres" }}
-    {{- if eq (index $values 3) "host" }}
-      {{- if eq (index $values 1) "addons" }}
+  {{- if eq (index $valueKeys 2) "postgres" }}
+    {{- if eq (index $valueKeys 3) "host" }}
+      {{- if eq (index $valueKeys 1) "addons" }}
         {{ include "commons.fullname" (dict "Chart" $.Chart "Values" $.Values "Release" $.Release "name" .name) }}-rw
-      {{- else if eq (index $values 1) "components" }}
+      {{- else if eq (index $valueKeys 1) "components" }}
         {{ include "commons.fullname" (dict "Chart" $.Chart "Values" $.Values "Release" $.Release "name" .name "component" $component) }}-rw
       {{- else }}
         {{- $value }}
       {{- end }}
-    {{- else if eq (index $values 3) "username" }}
-      {{- if eq (index $values 1) "addons" }}
+    {{- else if eq (index $valueKeys 3) "username" }}
+      {{- if eq (index $valueKeys 1) "addons" }}
         {{- .Values.addons.postgres.cluster.username }}
-      {{- else if eq (index $values 1) "components" }}
+      {{- else if eq (index $valueKeys 1) "components" }}
         {{- $component.postgres.cluster.username }}
       {{- else }}
         {{- $value }}
       {{- end }}
-    {{- else if eq (index $values 3) "password_secret" }}
-      {{- if eq (index $values 1) "addons" }}
+    {{- else if eq (index $valueKeys 3) "password_secret" }}
+      {{- if eq (index $valueKeys 1) "addons" }}
         {{ include "commons.fullname" (dict "Chart" $.Chart "Values" $.Values "Release" $.Release "name" .name) }}-secret
-      {{- else if eq (index $values 1) "components" }}
+      {{- else if eq (index $valueKeys 1) "components" }}
         {{ include "commons.fullname" (dict "Chart" $.Chart "Values" $.Values "Release" $.Release "name" .name "component" $component) }}-secret
       {{- else }}
         {{- $value }}
       {{- end }}
-    {{- else if eq (index $values 3) "password" }}
-      {{- if eq (index $values 1) "addons" }}
+    {{- else if eq (index $valueKeys 3) "password" }}
+      {{- if eq (index $valueKeys 1) "addons" }}
         {{- .Values.addons.postgres.cluster.password }}
-      {{- else if eq (index $values 1) "components" }}
+      {{- else if eq (index $valueKeys 1) "components" }}
         {{- $component.postgres.cluster.password }}
       {{- else }}
         {{- $value }}
       {{- end }}
-    {{- else if eq (index $values 3) "database" }}
-      {{- if eq (index $values 1) "addons" }}
+    {{- else if eq (index $valueKeys 3) "database" }}
+      {{- if eq (index $valueKeys 1) "addons" }}
         {{- .Values.addons.postgres.cluster.database | default "app" }}
-      {{- else if eq (index $values 1) "components" }}
+      {{- else if eq (index $valueKeys 1) "components" }}
         {{- $component.postgres.cluster.database | default "app" }}
       {{- else }}
         {{- $value }}
@@ -138,19 +138,19 @@ app: {{ .Release.Name }}
     {{- else }}
       {{- $value }}
     {{- end }}
-  {{- else if and eq (index $values 1) "addons" eq (index $values 2) "redis" }}
-    {{- if eq (index $values 3) "host" }}
+  {{- else if and eq (index $valueKeys 1) "addons" eq (index $valueKeys 2) "redis" }}
+    {{- if eq (index $valueKeys 3) "host" }}
       {{ include "commons.fullname" (dict "Chart" $.Chart "Values" $.Values "Release" $.Release "name" .Values.addons.redis.name "component" $component) }}
-    {{- else if eq (index $values 3) "port" }}
+    {{- else if eq (index $valueKeys 3) "port" }}
       {{ .Values.addons.redis.port }}
     {{- else }}
       {{- $value }}
     {{- end }}
   {{- else }}
     {{- $value }}
-  {{- else if eq (index $values 2) "pvc" }}
-    {{- if eq (index $values 1) "components" }}
-      {{ include "commons.fullname" (dict "Chart" $.Chart "Values" $.Values "Release" $.Release "name" (index $values 3) "component" $component) }}
+  {{- else if eq (index $valueKeys 2) "pvc" }}
+    {{- if eq (index $valueKeys 1) "components" }}
+      {{ include "commons.fullname" (dict "Chart" $.Chart "Values" $.Values "Release" $.Release "name" (index $valueKeys 3) "component" $component) }}
     {{- else }}
       {{- $value }}
     {{- end }}

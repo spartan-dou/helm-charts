@@ -62,7 +62,19 @@ spec:
           env:
             {{- range . }}
             - name: {{ .name }}
-              value: {{ .value | quote }}
+              {{- with .value }}
+              value: {{ include "commons.getValue" (dict "Values" $.Values "Chart" $.Chart "Release" $.Release "component" $component "value" .) }}
+              {{- end }}
+              {{- with .valueFrom }}
+              valueFrom:
+                {{- if .secreKtKeyRef }}
+                secretKeyRef:
+                  name: {{ include "commons.getValue" (dict "Values" $.Values "Chart" $.Chart "Release" $.Release "component" $component "value" .secretKeyRef.name) }}
+                  key: {{ secretKeyRef.key }}
+                {{- else }}
+                {{- toYaml . | nindent 16 }}
+                {{- end }}
+              {{- end }}
             {{- end }}
           {{- end }}
           {{- with .volumeMounts }}
@@ -130,8 +142,20 @@ spec:
 
       {{- with .volumes }}
       volumes:
-        {{- toYaml . | nindent 8 }}
+      {{- range . }}
+        - name: {{ .name }}
+          {{- if .configMap }}
+          configMap:
+            name: {{ include "commons.getValue" .configMap.name }}
+          {{- else if .persistentVolumeClaim }}
+          persistentVolumeClaim:
+            claimName: {{ include "commons.getValue" .persistentVolumeClaim.claimName }}
+          {{- else }}
+          {{- toYaml . | nindent 10 }}
+          {{- end }}
       {{- end }}
+      {{- end }}
+
 ---
 {{- end }}
 {{- end }}
