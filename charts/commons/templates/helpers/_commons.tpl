@@ -91,6 +91,9 @@ app: {{ .Release.Name }}
 {{- $component := default "" .component }}
 {{- $value := toString .value }}
 {{- $valueKeys := split "__" $value }}
+{{- if eq (len $valueKeys) 0}}
+{{ $value }}
+{{- else }}
 {{- $source := index $valueKeys 1 | default "" }}
 {{- $type := index $valueKeys 2 | default "" }}
 {{- $field := index $valueKeys 3 | default "" }}
@@ -151,5 +154,6 @@ app: {{ .Release.Name }}
   {{ include "commons.fullname" (dict "Chart" $.Chart "Values" $.Values "Release" $.Release "name" $field "component" $component) }}
 {{- else }}
   {{- $value }}
+{{- end }}
 {{- end }}
 {{- end }}
