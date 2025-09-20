@@ -37,6 +37,13 @@ components:
       env:
         - name: ENV
           value: prod
+        - name: postgres_username
+          value: __components__postgres__username
+        - name: postgres_username
+          valueFrom:
+            secretKeyRef:
+              name: __components__postgres__password-secret
+              key: password
       livenessProbe:
         httpGet:
           path: /health
