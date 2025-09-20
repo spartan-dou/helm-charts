@@ -69,7 +69,7 @@ spec:
               {{- end }}
               {{- with .valueFrom }}
               valueFrom:
-                {{- if .secreKtKeyRef }}
+                {{- if .secretKeyRef }}
                 secretKeyRef:
                   name: {{ include "commons.getValue" (dict "Values" $.Values "Chart" $.Chart "Release" $.Release "component" $component "value" .secretKeyRef.name) }}
                   key: {{ secretKeyRef.key }}
@@ -98,14 +98,14 @@ spec:
           env:
             - name: TZ
               value: {{ $.Values.global.timezone | quote }}
-            {{- range . }}
+            {{- range .env }}
             - name: {{ .name }}
               {{- with .value }}
               value: {{ include "commons.getValue" (dict "Values" $.Values "Chart" $.Chart "Release" $.Release "component" $component "value" .) }}
               {{- end }}
               {{- with .valueFrom }}
               valueFrom:
-                {{- if .secreKtKeyRef }}
+                {{- if .secretKeyRef }}
                 secretKeyRef:
                   name: {{ include "commons.getValue" (dict "Values" $.Values "Chart" $.Chart "Release" $.Release "component" $component "value" .secretKeyRef.name) }}
                   key: {{ secretKeyRef.key }}
@@ -152,16 +152,17 @@ spec:
       {{- with .volumes }}
       volumes:
       {{- range . }}
+        {{- if .configMap }}
         - name: {{ .name }}
-          {{- if .configMap }}
           configMap:
             name: {{ include "commons.getValue" (dict "Values" $.Values "Chart" $.Chart "Release" $.Release "component" $component "value" .configMap.name) }}
-          {{- else if .persistentVolumeClaim }}
+        {{- else if .persistentVolumeClaim }
+        - name: {{ .name }}
           persistentVolumeClaim:
             claimName: {{ include "commons.getValue" (dict "Values" $.Values "Chart" $.Chart "Release" $.Release "component" $component "value" .persistentVolumeClaim.claimName) }}
-          {{- else }}
-          {{- toYaml . | nindent 10 }}
-          {{- end }}
+        {{- else }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
       {{- end }}
       {{- end }}
 
