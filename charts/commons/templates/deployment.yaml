@@ -156,7 +156,7 @@ spec:
         - name: {{ .name }}
           configMap:
             name: {{ include "commons.getValue" (dict "Values" $.Values "Chart" $.Chart "Release" $.Release "component" $component "value" .configMap.name) }}
-        {{- else if .persistentVolumeClaim }
+        {{- else if .persistentVolumeClaim }}
         - name: {{ .name }}
           persistentVolumeClaim:
             claimName: {{ include "commons.getValue" (dict "Values" $.Values "Chart" $.Chart "Release" $.Release "component" $component "value" .persistentVolumeClaim.claimName) }}
