@@ -111,7 +111,7 @@ app: {{ .Release.Name }}
       {{- else }}
         {{- $value }}
       {{- end }}
-    {{- else if eq (index $values 3) "password" }}
+    {{- else if eq (index $values 3) "password_secret" }}
       {{- if eq (index $values 1) "addons" }}
         {{ include "commons.fullname" (dict "Chart" $.Chart "Values" $.Values "Release" $.Release "name" .name) }}-secret
       {{- else if eq (index $values 1) "components" }}
@@ -119,9 +119,35 @@ app: {{ .Release.Name }}
       {{- else }}
         {{- $value }}
       {{- end }}
+    {{- else if eq (index $values 3) "password" }}
+      {{- if eq (index $values 1) "addons" }}
+        {{- .Values.addons.postgres.cluster.password }}
+      {{- else if eq (index $values 1) "components" }}
+        {{- $component.postgres.cluster.password }}
+      {{- else }}
+        {{- $value }}
+      {{- end }}
+    {{- else if eq (index $values 3) "database" }}
+      {{- if eq (index $values 1) "addons" }}
+        {{- .Values.addons.postgres.cluster.database | default "app" }}
+      {{- else if eq (index $values 1) "components" }}
+        {{- $component.postgres.cluster.database | default "app" }}
+      {{- else }}
+        {{- $value }}
+      {{- end }}
     {{- else }}
       {{- $value }}
     {{- end }}
+  {{- else if and eq (index $values 1) "addons" eq (index $values 2) "redis" }}
+    {{- if eq (index $values 3) "host" }}
+      {{ include "commons.fullname" (dict "Chart" $.Chart "Values" $.Values "Release" $.Release "name" .Values.addons.redis.name "component" $component) }}
+    {{- else if eq (index $values 3) "port" }}
+      {{ .Values.addons.redis.port }}
+    {{- else }}
+      {{- $value }}
+    {{- end }}
+  {{- else }}
+    {{- $value }}
   {{- else if eq (index $values 2) "pvc" }}
     {{- if eq (index $values 1) "components" }}
       {{ include "commons.fullname" (dict "Chart" $.Chart "Values" $.Values "Release" $.Release "name" (index $values 3) "component" $component) }}
