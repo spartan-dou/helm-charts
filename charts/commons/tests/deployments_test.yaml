@@ -23,6 +23,21 @@ tests:
           path: spec.template.spec.initContainers[0].name
           value: wait-for-redis
 
+  - it: Vérifie les variables d'env
+    documentSelector:
+      path: metadata.name
+      value: test-nginx
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[0].env[0].value
+          value: prod
+      - equal:
+          path: spec.template.spec.containers[0].env[1].value
+          value: changeme
+      - equal:
+          path: spec.template.spec.containers[0].env[2].valueFrom.secretKeyRef.name
+          value: test-nginx-postgres-secret
+
   - it: Vérifie le Deployment vscode
     documentSelector:
       path: metadata.name
