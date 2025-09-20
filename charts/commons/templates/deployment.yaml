@@ -60,6 +60,8 @@ spec:
           {{- end }}
           {{- with .env }}
           env:
+            - name: TZ
+              value: {{ $.Values.global.timezone | quote }}
             {{- range . }}
             - name: {{ .name }}
               {{- with .value }}
@@ -96,14 +98,21 @@ spec:
           env:
             - name: TZ
               value: {{ $.Values.global.timezone | quote }}
-            {{- range .env }}
+            {{- range . }}
             - name: {{ .name }}
-              {{- if .value }}
-              value: {{ .value | quote }}
-              {{- else }}
-              {{- toYaml (dict "valueFrom" .valueFrom) | nindent 14 }}
+              {{- with .value }}
+              value: {{ include "commons.getValue" (dict "Values" $.Values "Chart" $.Chart "Release" $.Release "component" $component "value" .) }}
               {{- end }}
-            {{- end }}
+              {{- with .valueFrom }}
+              valueFrom:
+                {{- if .secreKtKeyRef }}
+                secretKeyRef:
+                  name: {{ include "commons.getValue" (dict "Values" $.Values "Chart" $.Chart "Release" $.Release "component" $component "value" .secretKeyRef.name) }}
+                  key: {{ secretKeyRef.key }}
+                {{- else }}
+                {{- toYaml . | nindent 16 }}
+                {{- end }}
+              {{- end }}
           {{- if .volumeMounts }}
           volumeMounts:
             {{- range .volumeMounts }}
@@ -146,10 +155,10 @@ spec:
         - name: {{ .name }}
           {{- if .configMap }}
           configMap:
-            name: {{ include "commons.getValue" .configMap.name }}
+            name: {{ include "commons.getValue" (dict "Values" $.Values "Chart" $.Chart "Release" $.Release "component" $component "value" .configMap.name) }}
           {{- else if .persistentVolumeClaim }}
           persistentVolumeClaim:
-            claimName: {{ include "commons.getValue" .persistentVolumeClaim.claimName }}
+            claimName: {{ include "commons.getValue" (dict "Values" $.Values "Chart" $.Chart "Release" $.Release "component" $component "value" .persistentVolumeClaim.claimName) }}
           {{- else }}
           {{- toYaml . | nindent 10 }}
           {{- end }}
