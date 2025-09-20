@@ -108,7 +108,7 @@ spec:
                 {{- if .secretKeyRef }}
                 secretKeyRef:
                   name: {{ include "commons.getValue" (dict "Values" $.Values "Chart" $.Chart "Release" $.Release "component" $component "value" .secretKeyRef.name) }}
-                  key: {{ secretKeyRef.key }}
+                  key: {{ .secretKeyRef.key }}
                 {{- else }}
                 {{- toYaml . | nindent 16 }}
                 {{- end }}
