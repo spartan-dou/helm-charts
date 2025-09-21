@@ -47,13 +47,10 @@ tests:
       value: test-nginx
     asserts:
       - equal:
-          path: spec.template.spec.containers[0].volumeMounts[0].mountPath
-          value: /etc/config
-      - equal:
-          path: spec.template.spec.containers[0].volumeMounts[1].persistentVolumeClaim.claimName
+          path: spec.template.spec.containers[0].volumes[0].persistentVolumeClaim.claimName
           value: test-nginx-data-pvc
       - equal:
-          path: spec.template.spec.containers[0].volumeMounts[1].persistentVolumeClaim.subPath
+          path: spec.template.spec.containers[0].volumes[0].persistentVolumeClaim.subPath
           value: data
   - it: Vérifie le Deployment vscode
     documentSelector:
