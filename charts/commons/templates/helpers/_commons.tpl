@@ -92,7 +92,7 @@ app: {{ .Release.Name }}
 {{- $value := toString .value }}
 {{- $valueKeys := split "__" $value }}
 
-{{- if and (eq 0 1) (gt (len $valueKeys) 3) (eq (index $valueKeys 0) "") }}
+{{- if and (gt (len $valueKeys) 3) (eq (index $valueKeys 0) "") }}
 
   {{- $source := default "" (index $valueKeys 1) }}
   {{- $type := default "" (index $valueKeys 2) }}
