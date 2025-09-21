@@ -23,7 +23,7 @@ spec:
       http:
         paths:
           {{- range .paths }}
-          - path: {{ .path }}
+          - path: {{ default "/" .path }}
             pathType: {{ default "Prefix" .pathType }}
             backend:
               service:
