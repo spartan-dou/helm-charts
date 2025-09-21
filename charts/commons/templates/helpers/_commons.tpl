@@ -91,9 +91,7 @@ app: {{ .Release.Name }}
 {{- $component := default "" .component }}
 {{- $value := toString .value }}
 {{- $valueKeys := split "__" $value }}
-{{- if eq (len $valueKeys) 0}}
-{{ $value }}
-{{- else }}
+{{- if gt (len $valueKeys) 0}}
 {{- $source := index $valueKeys 1 | default "" }}
 {{- $type := index $valueKeys 2 | default "" }}
 {{- $field := index $valueKeys 3 | default "" }}
@@ -155,5 +153,7 @@ app: {{ .Release.Name }}
 {{- else }}
   {{- $value }}
 {{- end }}
+{{- else }}
+{{ $value }}
 {{- end }}
 {{- end }}
