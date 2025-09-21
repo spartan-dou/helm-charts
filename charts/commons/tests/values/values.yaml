@@ -65,6 +65,7 @@ components:
       volumeMounts:
         - name: config
           mountPath: /etc/config
+      volumes:
         - name: data
           persistentVolumeClaim:
             claimName: __components__pvc__data-pvc

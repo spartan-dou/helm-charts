@@ -37,7 +37,7 @@ spec:
       database: {{ .cluster.database | default "app" }}
       owner: {{ .cluster.username | default "app" }}
       secret:
-        name: {{ include "commons.fullname" (dict "Chart" $.Chart "Values" $.Values "Release" $.Release "name" .name "component" $component) }}-secret
+        name: {{ include "commons.fullname" (dict "Chart" $.Chart "Values" $.Values "Release" $.Release "name" .name "component" $component) }}-postgres-secret
       {{- with .postInitTemplateSQL }}
       postInitTemplateSQL:
         {{- range . }}
