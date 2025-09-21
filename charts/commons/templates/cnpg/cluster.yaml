@@ -8,7 +8,7 @@
 apiVersion: postgresql.cnpg.io/v1
 kind: Cluster
 metadata:
-  name: {{ include "commons.fullname" (dict "Chart" $.Chart "Values" $.Values "Release" $.Release "name" .name "component" $component) }}
+  name: {{ include "commons.fullname" (dict "Chart" $.Chart "Values" $.Values "Release" $.Release "name" .name "component" $component) }}-postgres
   labels:
     app.kubernetes.io/name: {{ .name | default "postgres" }}
     app.kubernetes.io/instance: {{ .name | default "postgres" }}
