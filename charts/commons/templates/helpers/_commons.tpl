@@ -113,9 +113,9 @@ app: {{ .Release.Name }}
       {{- end }}
     {{- else if eq $field "password_secret" }}
       {{- if eq $source "addons" }}
-        {{- $value = printf "%s-secret" (include "commons.fullname" (dict "Chart" $.Chart "Values" $.Values "Release" $.Release "name" .name)) }}
+        {{- $value = printf "%s-postgres-secret" (include "commons.fullname" (dict "Chart" $.Chart "Values" $.Values "Release" $.Release "name" .name)) }}
       {{- else if eq $source "components" }}
-        {{- $value = printf "%s-secret" (include "commons.fullname" (dict "Chart" $.Chart "Values" $.Values "Release" $.Release "name" .name "component" $component)) }}
+        {{- $value = printf "%s-postgres-secret" (include "commons.fullname" (dict "Chart" $.Chart "Values" $.Values "Release" $.Release "name" .name "component" $component)) }}
       {{- end }}
     {{- else if eq $field "password" }}
       {{- if eq $source "addons" }}
