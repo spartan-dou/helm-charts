@@ -30,12 +30,15 @@ tests:
     asserts:
       - equal:
           path: spec.template.spec.containers[0].env[0].value
-          value: prod
+          value: Europe/Paris
       - equal:
           path: spec.template.spec.containers[0].env[1].value
+          value: prod
+      - equal:
+          path: spec.template.spec.containers[0].env[2].value
           value: changeme
       - equal:
-          path: spec.template.spec.containers[0].env[2].valueFrom.secretKeyRef.name
+          path: spec.template.spec.containers[0].env[3].valueFrom.secretKeyRef.name
           value: test-nginx-postgres-secret
 
   - it: Vérifie le Deployment vscode
