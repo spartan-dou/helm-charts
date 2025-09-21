@@ -157,10 +157,19 @@ spec:
         - name: {{ .name }}
           configMap:
             name: {{ include "commons.getValue" (dict "Values" $.Values "Chart" $.Chart "Release" $.Release "component" $component "value" .configMap.name) }}
+            {{- with .readOnly }}
+            readOnly: {{ . }}
+            {{- end }}
         {{- else if .persistentVolumeClaim }}
         - name: {{ .name }}
           persistentVolumeClaim:
             claimName: {{ include "commons.getValue" (dict "Values" $.Values "Chart" $.Chart "Release" $.Release "component" $component "value" .persistentVolumeClaim.claimName) }}
+            {{- with .subPath }}
+            subPath: {{ . }}
+            {{- end }}
+            {{- with .readOnly }}
+            readOnly: {{ . }}
+            {{- end }}
         {{- else }}
         {{- toYaml . | nindent 8 }}
         {{- end }}
