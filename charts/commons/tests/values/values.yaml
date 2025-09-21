@@ -42,7 +42,7 @@ components:
         - name: postgres_username
           valueFrom:
             secretKeyRef:
-              name: __components__postgres__password-secret
+              name: __components__postgres__password_secret
               key: password
       livenessProbe:
         httpGet:
@@ -65,6 +65,10 @@ components:
       volumeMounts:
         - name: config
           mountPath: /etc/config
+        - name: data
+          persistentVolumeClaim:
+            claimName: __components__pvc__data-pvc
+            subPath: data
     service:
       enabled: true
       type: ClusterIP
@@ -90,7 +94,7 @@ components:
             - web.mondomaine.local
           secretName: web-cert
     pvc:
-      - name: data
+      - name: data-pvc
         accessMode: ReadWriteOnce
         storage: 1Gi
         storageClassName: local-path

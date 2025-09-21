@@ -41,6 +41,20 @@ tests:
           path: spec.template.spec.containers[0].env[3].valueFrom.secretKeyRef.name
           value: test-nginx-postgres-secret
 
+  - it: Vérifie les volumes
+    documentSelector:
+      path: metadata.name
+      value: test-nginx
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[0].volumeMounts[0].mountPath
+          value: /etc/config
+      - equal:
+          path: spec.template.spec.containers[0].volumeMounts[1].persistentVolumeClaim.claimName
+          value: test-nginx-data-pvc
+      - equal:
+          path: spec.template.spec.containers[0].volumeMounts[1].persistentVolumeClaim.subPath
+          value: data
   - it: Vérifie le Deployment vscode
     documentSelector:
       path: metadata.name
