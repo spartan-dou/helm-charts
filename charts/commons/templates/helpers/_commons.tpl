@@ -92,56 +92,56 @@ app: {{ .Release.Name }}
 {{- $value := toString .value }}
 {{- $valueKeys := split "__" $value }}
 
-{{- if and (eq 0 1) (gt (len $valueKeys) 0) (eq index $valueKeys 0 "")}}
+{{- if and (eq 0 1) (gt (len $valueKeys) 3) (eq (index $valueKeys 0) "") }}
 
-  {{- $source := index $valueKeys 1 | default "" }}
-  {{- $type := index $valueKeys 2 | default "" }}
-  {{- $field := index $valueKeys 3 | default "" }}
+  {{- $source := default "" (index $valueKeys 1) }}
+  {{- $type := default "" (index $valueKeys 2) }}
+  {{- $field := default "" (index $valueKeys 3) }}
 
-  {{- if (eq $type "postgres") }}
+  {{- if eq $type "postgres" }}
     {{- if eq $field "host" }}
       {{- if eq $source "addons" }}
-        {{- $value := include "commons.fullname" (dict "Chart" $.Chart "Values" $.Values "Release" $.Release "name" .name) }}-rw
+        {{- $value = printf "%s-rw" (include "commons.fullname" (dict "Chart" $.Chart "Values" $.Values "Release" $.Release "name" .name)) }}
       {{- else if eq $source "components" }}
-        {{- $value := include "commons.fullname" (dict "Chart" $.Chart "Values" $.Values "Release" $.Release "name" .name "component" $component) }}-rw
+        {{- $value = printf "%s-rw" (include "commons.fullname" (dict "Chart" $.Chart "Values" $.Values "Release" $.Release "name" .name "component" $component)) }}
       {{- end }}
     {{- else if eq $field "username" }}
       {{- if eq $source "addons" }}
-        {{- $value := .Values.addons.postgres.cluster.username }}
+        {{- $value = .Values.addons.postgres.cluster.username }}
       {{- else if eq $source "components" }}
-        {{- $value := $component.postgres.cluster.username }}
+        {{- $value = $component.postgres.cluster.username }}
       {{- end }}
     {{- else if eq $field "password_secret" }}
       {{- if eq $source "addons" }}
-        {{- $value := include "commons.fullname" (dict "Chart" $.Chart "Values" $.Values "Release" $.Release "name" .name) }}-secret
+        {{- $value = printf "%s-secret" (include "commons.fullname" (dict "Chart" $.Chart "Values" $.Values "Release" $.Release "name" .name)) }}
       {{- else if eq $source "components" }}
-        {{- $value := include "commons.fullname" (dict "Chart" $.Chart "Values" $.Values "Release" $.Release "name" .name "component" $component) }}-secret
+        {{- $value = printf "%s-secret" (include "commons.fullname" (dict "Chart" $.Chart "Values" $.Values "Release" $.Release "name" .name "component" $component)) }}
       {{- end }}
     {{- else if eq $field "password" }}
       {{- if eq $source "addons" }}
-        {{- $value := .Values.addons.postgres.cluster.password }}
+        {{- $value = .Values.addons.postgres.cluster.password }}
       {{- else if eq $source "components" }}
-        {{- $value := $component.postgres.cluster.password }}
+        {{- $value = $component.postgres.cluster.password }}
       {{- end }}
     {{- else if eq $field "database" }}
       {{- if eq $source "addons" }}
-        {{- $value := .Values.addons.postgres.cluster.database | default "app" }}
+        {{- $value = default "app" .Values.addons.postgres.cluster.database }}
       {{- else if eq $source "components" }}
-        {{- $value := $component.postgres.cluster.database | default "app" }}
+        {{- $value = default "app" $component.postgres.cluster.database }}
       {{- end }}
     {{- end }}
   {{- else if and (eq $source "addons") (eq $type "redis") }}
     {{- if eq $field "host" }}
-      {{- $value := include "commons.fullname" (dict "Chart" $.Chart "Values" $.Values "Release" $.Release "name" .Values.addons.redis.name "component" $component) }}
+      {{- $value = include "commons.fullname" (dict "Chart" $.Chart "Values" $.Values "Release" $.Release "name" .Values.addons.redis.name "component" $component) }}
     {{- else if eq $field "port" }}
-      {{- $value := .Values.addons.redis.port }}
+      {{- $value = .Values.addons.redis.port }}
     {{- end }}
   {{- else if and (eq $type "pvc") (eq $source "components") }}
-    {{- $value := include "commons.fullname" (dict "Chart" $.Chart "Values" $.Values "Release" $.Release "name" $field "component" $component) }}
+    {{- $value = include "commons.fullname" (dict "Chart" $.Chart "Values" $.Values "Release" $.Release "name" $field "component" $component) }}
   {{- end }}
 
 {{- end }}
 
-{{ $value }}
+{{- $value }}
 
 {{- end }}
