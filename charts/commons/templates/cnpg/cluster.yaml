@@ -1,6 +1,5 @@
 {{- $components := include "commons.withAddons" . | fromYamlArray }}
 {{- $raw := .Values.addons | default dict }}
-{{- $_ := set $raw "name" "global" }}
 {{- $components = append $components $raw }}
 {{- range $components }}
 {{- $component := . }}

@@ -11,7 +11,7 @@ tests:
       - templates/cnpg/cluster.yaml
     documentSelector:
       path: metadata.name
-      value: test-nginx
+      value: test-nginx-postgres
     asserts:
       - equal:
           path: spec.instances
