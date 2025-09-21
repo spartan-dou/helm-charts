@@ -11,7 +11,7 @@ tests:
   - it: Vérifie le PVC web-data
     documentSelector:
       path: metadata.name
-      value: test-nginx-data
+      value: test-nginx-data-pvc
     asserts:
       - equal:
           path: spec.accessModes[0]
@@ -23,10 +23,10 @@ tests:
           path: spec.storageClassName
           value: local-path
   # --- PVC ---
-  - it: Vérifie le PVC web-data-2
+  - it: Vérifie le PVC web-data-2-pvc
     documentSelector:
       path: metadata.name
-      value: test-nginx-data-2
+      value: test-nginx-data-2-pvc
     asserts:
       - equal:
           path: spec.accessModes[0]
