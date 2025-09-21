@@ -94,7 +94,7 @@ app: {{ .Release.Name }}
 
 {{- if and (gt (len $valueKeys) 3) }} {{/* (eq (index $valueKeys 0) "")  */}}
 
-  {{- fail (printf "valueKeys = %#v" $valueKeys) }}
+  {{- fail (printf "value = %#v" $value) }}
 
   {{- $source := default "" (index $valueKeys 1) }}
   {{- $type := default "" (index $valueKeys 2) }}
