@@ -92,9 +92,7 @@ app: {{ .Release.Name }}
 {{- $value := default "" .value }}
 {{- $valueKeys := splitList "__" $value }}
 
-{{- if and (gt (len $valueKeys) 3) }} {{/* (eq (index $valueKeys 0) "")  */}}
-
-  {{- fail (printf "valueKeys = %#v" $valueKeys) }}
+{{- if and (gt (len $valueKeys) 3) (eq (index $valueKeys 0) "") }}
 
   {{- $source := default "" (index $valueKeys 1) }}
   {{- $type := default "" (index $valueKeys 2) }}
