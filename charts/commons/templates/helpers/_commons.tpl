@@ -90,11 +90,11 @@ app: {{ .Release.Name }}
 {{- define "commons.getValue" -}}
 {{- $component := default "" .component }}
 {{- $value := default "" .value }}
-{{- $valueKeys := split "__" $value }}
+{{- $valueKeys := splitList "__" $value }}
 
 {{- if and (gt (len $valueKeys) 3) }} {{/* (eq (index $valueKeys 0) "")  */}}
 
-  {{- fail (printf "value = %#v" $value) }}
+  {{- fail (printf "valueKeys = %#v" $valueKeys) }}
 
   {{- $source := default "" (index $valueKeys 1) }}
   {{- $type := default "" (index $valueKeys 2) }}
