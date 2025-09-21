@@ -92,7 +92,7 @@ app: {{ .Release.Name }}
 {{- $value := default "" .value }}
 {{- $valueKeys := splitList "__" $value }}
 
-{{- if and (gt (len $valueKeys) 3) (eq (index $valueKeys 0) "") }}
+{{- if and (gt (len $valueKeys) 2) (eq (index $valueKeys 0) "") }}
 
   {{- $source := default "" (index $valueKeys 1) }}
   {{- $type := default "" (index $valueKeys 2) }}
@@ -137,6 +137,8 @@ app: {{ .Release.Name }}
       {{- $value = .Values.addons.redis.port }}
     {{- end }}
   {{- else if and (eq $type "pvc") (eq $source "components") }}
+    {{- $value = include "commons.fullname" (dict "Chart" $.Chart "Values" $.Values "Release" $.Release "name" $field "component" $component) }}
+  {{- else if and (eq $type "service") (eq $source "components") }}
     {{- $value = include "commons.fullname" (dict "Chart" $.Chart "Values" $.Values "Release" $.Release "name" $field "component" $component) }}
   {{- end }}
 
