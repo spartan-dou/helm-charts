@@ -1,0 +1,17 @@
+{{- $components := include "commons.withAddons" . | fromYamlArray }}
+{{- range $components }}
+{{- $component := . }}
+{{- with $component.configMap }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "commons.fullname" (dict "Chart" $.Chart "Values" $.Values "Release" $.Release "name" .name "component" $component) }}
+  labels:
+    {{ include "commons.labels" (dict "Chart" $.Chart "Values" $.Values "Release" $.Release "name" .name "component" $component) | nindent 4 }}
+data:
+  {{- range $filename, $content := .data }}
+  {{ $filename }}: |-
+  {{ $content | indent 4 }}
+  {{- end }}
+{{- end }}
+{{- end }}

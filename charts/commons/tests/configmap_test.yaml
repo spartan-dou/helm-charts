@@ -1,0 +1,24 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/helm-unittest/helm-unittest/main/schema/helm-testsuite.json
+suite: Tests complets du chart commons
+values:
+  - ./values/values.yaml
+templates:
+  - templates/configmap.yaml
+release:
+  name: test
+tests:
+  # --- Configmap ---
+  - it: Vérifie le configmap
+    documentSelector:
+      path: metadata.name
+      value: test-nginx-config
+    asserts:
+      - matchRegex:
+          path: data.config.yaml
+          pattern: "key: value"
+      - matchRegex:
+          path: data.toto.yaml
+          pattern: "user: titi"
+      - matchRegex:
+          path: data.toto.yaml
+          pattern: "foo: bar"

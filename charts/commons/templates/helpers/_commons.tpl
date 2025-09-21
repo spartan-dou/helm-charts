@@ -138,6 +138,8 @@ app: {{ .Release.Name }}
     {{- end }}
   {{- else if and (eq $type "pvc") (eq $source "components") }}
     {{- $value = include "commons.fullname" (dict "Chart" $.Chart "Values" $.Values "Release" $.Release "name" $field "component" $component) }}
+  {{- else if and (eq $type "configmap") (eq $source "components") }}
+    {{- $value = include "commons.fullname" (dict "Chart" $.Chart "Values" $.Values "Release" $.Release "name" $field "component" $component) }}
   {{- else if and (eq $type "service") (eq $source "components") }}
     {{- $value = include "commons.fullname" (dict "Chart" $.Chart "Values" $.Values "Release" $.Release "name" $field "component" $component) }}
   {{- end }}
