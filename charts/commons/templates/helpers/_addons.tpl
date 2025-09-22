@@ -148,8 +148,8 @@
     "configMap" (list (dict
       "name" "pg-config"
       "data" (dict
-        "server.json" (indent 4 (.Files.Get "files/pgadmin/servers.json"))
-        "pgpass" (indent 4 (.Files.Get "files/pgadmin/pgpass"))
+        "server.json" (indent 4 (tpl (.Files.Get "files/pgadmin/servers.json") .))
+        "pgpass" (indent 4 (tpl (.Files.Get "files/pgadmin/pgpass") .))
       )
     ))
     "service" (dict
