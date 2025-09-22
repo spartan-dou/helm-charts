@@ -60,17 +60,6 @@
         "tag" .Values.addons.redis.image.tag | default "latest"
       )
       "ports" (list (dict "name" "redis" "containerPort" .Values.addons.redis.port))
-      "env" (list
-        (dict
-          "name" "REDIS_PASSWORD"
-          "valueFrom" (dict
-            "secretKeyRef" (dict
-              "name" "redis-secret"
-              "key" "password"
-            )
-          )
-        )
-      )
       "livenessProbe" (dict
         "tcpSocket" (dict "port" .Values.addons.redis.port)
         "initialDelaySeconds" 5
