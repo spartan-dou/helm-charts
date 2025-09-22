@@ -149,7 +149,7 @@
   {{- $overrides := omit $raw "enabled" "name" }}
   {{- $pgAdmin := merge $defaults $overrides }}
   {{- $addons = append $addons $pgAdmin }}
-{{- end 
+{{- end }}
 
 {{/* === Fusion finale === */}}
 {{- $all := concat $base $addons }}
