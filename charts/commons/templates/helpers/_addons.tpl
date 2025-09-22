@@ -148,8 +148,8 @@
     "configMap" (list (dict
       "name" "pg-config"
       "data" (dict
-        "server.json" (indent 2 (include "pgadmin.servers" (dict "Values" $.Values "Chart" $.Chart "Release" $.Release)))
-        "pgpass" (indent 2 (include "pgadmin.pgpass" (dict "Values" $.Values "Chart" $.Chart "Release" $.Release)))
+        "server.json" (trim (indent 1 (include "pgadmin.servers" (dict "Values" $.Values "Chart" $.Chart "Release" $.Release))))
+        "pgpass" (indent 1 (include "pgadmin.pgpass" (dict "Values" $.Values "Chart" $.Chart "Release" $.Release)))
       )
     ))
     "service" (dict
