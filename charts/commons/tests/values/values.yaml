@@ -58,10 +58,7 @@ components:
         - name: ENV
           value: prod
         - name: POSTGRES_USERNAME
-          valueFrom:
-            secretKeyRef:
-              name: __components__postgres__username
-              key: username
+          value: __components__postgres__username
         - name: POSTGRES_PASSWORD
           valueFrom:
             secretKeyRef:

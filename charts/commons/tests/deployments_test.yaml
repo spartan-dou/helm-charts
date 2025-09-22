@@ -74,7 +74,7 @@ tests:
           value: 1
       - equal:
           path: spec.template.spec.containers[0].image
-          value: bitnami/redis:8.2.1
+          value: redis:8.2.1
 
   - it: ne doit pas créer le Service Redis si désactivé
     set:
