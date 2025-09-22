@@ -103,18 +103,13 @@
     "deployment" (dict
       "image" (dict
         "repository" .Values.addons.pgAdmin.image.repository
-        "tag" .Values.addons.pgAdmin.image.tag | default "latest"
+        "tag" (default "latest" .Values.addons.pgAdmin.image.tag)
       )
-      "env" (list (dict
-        "name" "PGADMIN_CONFIG_MASTER_PASSWORD_REQUIRED"
-        "value" "False"
-      ) (dict
-        "name" "PGPASS_FILE"
-        "value" "/pgpass"
-      ) (dict
-        "name" "PGADMIN_CONFIG_SERVER_MODE"
-        "value" "False"
-      ))
+      "env" (list
+        (dict "name" "PGADMIN_CONFIG_MASTER_PASSWORD_REQUIRED" "value" "False")
+        (dict "name" "PGPASS_FILE" "value" "/pgpass")
+        (dict "name" "PGADMIN_CONFIG_SERVER_MODE" "value" "False")
+      )
       "ports" (list (dict "name" "pgAdmin" "containerPort" .Values.addons.pgAdmin.port))
       "livenessProbe" (dict
         "tcpSocket" (dict "port" .Values.addons.pgAdmin.port)
@@ -127,25 +122,13 @@
         "periodSeconds" 10
       )
       "volumeMounts" (list
-        (dict
-          "mountPath" "/pgadmin4/servers.json"
-          "subPath" "servers.json"
-          "name" "config"
-        )
-        (dict
-          "mountPath" "/pgpass"
-          "subPath" "pgpass"
-          "name" "config"
-        )
+        (dict "mountPath" "/pgadmin4/servers.json" "subPath" "servers.json" "name" "config")
+        (dict "mountPath" "/pgpass" "subPath" "pgpass" "name" "config")
       )
       "volumes" (list
-        (dict
-          "name" "config"
-          "configMap" (dict
-            "name" "pg-config"
-          )
-        )
+        (dict "name" "config" "configMap" (dict "name" "pg-config"))
       )
+    )
     "configMap" (list (dict
       "name" "pg-config"
       "data" (dict
@@ -155,19 +138,18 @@
     ))
     "service" (dict
       "enabled" true
-      "type" ".Values.addons.pgAdmin.service.type"
+      "type" .Values.addons.pgAdmin.service.type
       "ports" (list (dict "name" "pgAdmin" "port" .Values.addons.pgAdmin.port))
     )
   }}
   {{- $ingressOverrides := default dict .Values.addons.pgAdmin.ingress }}
   {{- $ingressOverrides := omit $ingressOverrides "enabled" }}
-  {{- $_ := set $defaults "ingress" (merge $ingressDefaults $ingressOverrides) }}
-  {{- end }}
-  {{- $raw := .Values.addons.vscode | default dict }}
+  {{- $_ := set $defaults "ingress" (merge (dict "enabled" true) $ingressOverrides) }}
+  {{- $raw := .Values.addons.pgAdmin | default dict }}
   {{- $overrides := omit $raw "enabled" "name" }}
   {{- $pgAdmin := merge $defaults $overrides }}
   {{- $addons = append $addons $pgAdmin }}
-{{- end }}
+{{- end 
 
 {{/* === Fusion finale === */}}
 {{- $all := concat $base $addons }}
