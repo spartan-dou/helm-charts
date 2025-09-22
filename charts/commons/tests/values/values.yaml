@@ -123,6 +123,14 @@ components:
         accessMode: ReadWriteOnce
         storage: 2Gi
         storageClassName: local-path
+    configMap:
+      - name: config
+        data:
+          config.yaml: |-
+            key: value
+          toto.yaml: |-
+            foo: bar
+            user: titi
     postgres:
       enabled: true
       image:
