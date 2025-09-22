@@ -12,7 +12,7 @@ metadata:
 data:
   {{- range $filename, $content := $configmap.data }}
   {{ $filename }}: |-
-  {{ $content | indent 4 }}
+  {{ $content | indent 2 }}
   {{- end }}
 {{- end }}
 {{- end }}
