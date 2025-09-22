@@ -99,7 +99,7 @@ tests:
           enabled: false
     asserts:
       - hasDocuments:
-          count: 2
+          count: 3
 
   - it: ne doit pas créer le Service Vscode si désactivé
     set:
@@ -108,4 +108,4 @@ tests:
           enabled: false
     asserts:
       - hasDocuments:
-          count: 2
+          count: 3
