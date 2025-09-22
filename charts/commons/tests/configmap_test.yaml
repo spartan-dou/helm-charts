@@ -18,6 +18,6 @@ tests:
           value: |
             key: value
       - equal:
-          path: data.toto.yaml
+          path: data.toto
           value: |
             key: value

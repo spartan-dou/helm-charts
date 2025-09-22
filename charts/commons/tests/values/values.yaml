@@ -128,8 +128,11 @@ components:
         data:
           config.yaml: |-
             key: value
-          toto.yaml: |-
-            key: value
+          toto: |-
+            #!/bin/sh
+
+            echo "titi"
+
     postgres:
       enabled: true
       image:
