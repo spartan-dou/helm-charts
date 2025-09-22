@@ -4,7 +4,6 @@ values:
   - ./values/values.yaml
 templates:
   - templates/configmap.yaml
-  - templates/deployment.yaml
 release:
   name: test
 tests:
