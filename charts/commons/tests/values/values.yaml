@@ -57,9 +57,12 @@ components:
       env:
         - name: ENV
           value: prod
-        - name: postgres_username
-          value: __components__postgres__username
-        - name: postgres_username
+        - name: POSTGRES_USERNAME
+          valueFrom:
+            secretKeyRef:
+              name: __components__postgres__username
+              key: username
+        - name: POSTGRES_PASSWORD
           valueFrom:
             secretKeyRef:
               name: __components__postgres__password_secret
@@ -160,7 +163,7 @@ addons:
     enabled: true
     name: redis
     image:
-      repository: bitnami/redis
+      repository: redis
       tag: 8.2.1
     port: 6379
     password: changeme
