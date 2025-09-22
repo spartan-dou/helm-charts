@@ -128,9 +128,6 @@ components:
         data:
           config.yaml: |-
             key: value
-          toto.yaml: |-
-            foo: bar
-            user: titi
     postgres:
       enabled: true
       image:
