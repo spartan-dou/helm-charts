@@ -129,8 +129,7 @@ components:
           config.yaml: |
             key: value
           toto.sh: |
-            #!/bin/sh
-            echo "titi"
+            key: value
 
     postgres:
       enabled: true
