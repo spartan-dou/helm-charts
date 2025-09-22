@@ -10,7 +10,7 @@
     {{- with $component.postgres }}
     {{- if .enabled }}
     "{{ $i }}": {
-      "Name": "{{ $component.name }}",
+      "Name": "{{ $component.name | default "postgres" }}",
       "Group": "{{ $.Release.Name }}",
       "Port": 5432,
       "Username": "{{ include "commons.getValue" (dict "Values" $.Values "Chart" $.Chart "Release" $.Release "component" $component "value" "__components__postgres__username") }}",
