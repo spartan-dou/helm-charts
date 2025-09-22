@@ -15,9 +15,9 @@ tests:
     asserts:
       - equal:
           path: data["config.yaml"]
-          value: |
-            key: value
+          value: "key: value"
       - equal:
           path: data["toto.sh"]
-          value: |
-            key: value
+          value: |-
+            #!/bin/sh
+            echo "toto"
