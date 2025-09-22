@@ -149,7 +149,7 @@
       "name" "pg-config"
       "data" (dict
         "server.json" (trim (indent 1 (include "pgadmin.servers" (dict "Values" $.Values "Chart" $.Chart "Release" $.Release))))
-        "pgpass" (indent 1 (include "pgadmin.pgpass" (dict "Values" $.Values "Chart" $.Chart "Release" $.Release)))
+        "pgpass" (trim (indent 1 (include "pgadmin.pgpass" (dict "Values" $.Values "Chart" $.Chart "Release" $.Release))))
       )
     ))
     "service" (dict
