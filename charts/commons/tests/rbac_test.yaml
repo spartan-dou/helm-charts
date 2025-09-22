@@ -1,0 +1,56 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/helm-unittest/helm-unittest/main/schema/helm-testsuite.json
+suite: Tests complets du chart commons
+values:
+  - ./values/values.yaml
+release:
+  name: test
+tests:
+  # --- Secret ---
+  - it: Vérifie le Secret rbac
+    templates:
+      - templates/rbac/secret.yaml
+    documentSelector:
+      path: metadata.name
+      value: homepage-secret
+    asserts:
+      - equal:
+          path: type
+          value: kubernetes.io/service-account-token
+      - equal:
+          path: annotations.kubernetes.io/service-account.name
+          value: homepage
+          
+  - it: Vérifie le service account rbac
+    templates:
+      - templates/rbac/serviceaccount.yaml
+    documentSelector:
+      path: metadata.name
+      value: homepage
+    asserts:
+      - equal:
+          path: kind
+          value: ServiceAccount
+      - equal:
+          path: secrets[0].name
+          value: homepage-secret
+          
+          
+  - it: Vérifie le culsterrole rbac
+    templates:
+      - templates/rbac/clusterrole.yaml
+    documentSelector:
+      path: metadata.name
+      value: homepage
+    asserts:
+      - equal:
+          path: kind
+          value: ClusterRole
+      - equal:
+          path: rules[0].resources[1]
+          value: pods
+      - equal:
+          path: rules[1].apiGroups[0]
+          value: extensions 
+      - equal:
+          path: rules[3].verbs[1]
+          value: list
