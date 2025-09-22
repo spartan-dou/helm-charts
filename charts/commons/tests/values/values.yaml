@@ -130,7 +130,6 @@ components:
             key: value
           toto.sh: |
             key: value
-
     postgres:
       enabled: true
       image:
