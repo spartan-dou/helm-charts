@@ -190,6 +190,8 @@ addons:
       tag: 8.2.1
     port: 6379
     password: changeme
+  pgAdmin:
+    enabled: true
   postgres:
     enabled: true
     storage:

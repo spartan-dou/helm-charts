@@ -36,6 +36,16 @@ addons:
       repository: redis
       tag: 8.2.1-alpine
     port: 6379
+  pgAdmin:
+    enabled: false
+    image:
+      repository: dpage/pgadmin4
+      tag: 9.8.0
+    port: 80
+    ingress:
+      enabled: false
+    service:
+      type: ClusterIP
   postgres:
     enabled: false
     storage:

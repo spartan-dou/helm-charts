@@ -96,6 +96,79 @@
   {{- $addons = append $addons $redis }}
 {{- end }}
 
+{{/* === Addon PGadmin === */}}
+{{- if .Values.addons.pgAdmin.enabled }}
+  {{- $defaults := dict
+    "name" "pgAdmin"
+    "deployment" (dict
+      "image" (dict
+        "repository" .Values.addons.pgAdmin.image.repository
+        "tag" .Values.addons.pgAdmin.image.tag | default "latest"
+      )
+      "env" (list (dict
+        "name" "PGADMIN_CONFIG_MASTER_PASSWORD_REQUIRED"
+        "value" "False"
+      ) (dict
+        "name" "PGPASS_FILE"
+        "value" "/pgpass"
+      ) (dict
+        "name" "PGADMIN_CONFIG_SERVER_MODE"
+        "value" "False"
+      ))
+      "ports" (list (dict "name" "pgAdmin" "containerPort" .Values.addons.pgAdmin.port))
+      "livenessProbe" (dict
+        "tcpSocket" (dict "port" .Values.addons.pgAdmin.port)
+        "initialDelaySeconds" 5
+        "periodSeconds" 10
+      )
+      "readinessProbe" (dict
+        "tcpSocket" (dict "port" .Values.addons.pgAdmin.port)
+        "initialDelaySeconds" 5
+        "periodSeconds" 10
+      )
+      "volumeMounts" (list
+        (dict
+          "mountPath" "/pgadmin4/servers.json"
+          "subPath" "servers.json"
+          "name" "config"
+        )
+        (dict
+          "mountPath" "/pgpass"
+          "subPath" "pgpass"
+          "name" "config"
+        )
+      )
+      "volumes" (list
+        (dict
+          "name" "config"
+          "configMap" (dict
+            "name" "pg-config"
+          )
+        )
+      )
+    "configMap" (list (dict
+      "name" "pg-config"
+      "data" (dict
+        "server.json" (indent 4 (.Files.Get "files/servers.json"))
+        "pgpass" (indent 4 (.Files.Get "files/pgpass"))
+      )
+    ))
+    "service" (dict
+      "enabled" true
+      "type" ".Values.addons.pgAdmin.service.type"
+      "ports" (list (dict "name" "pgAdmin" "port" .Values.addons.pgAdmin.port))
+    )
+  }}
+  {{- $ingressOverrides := default dict .Values.addons.pgAdmin.ingress }}
+  {{- $ingressOverrides := omit $ingressOverrides "enabled" }}
+  {{- $_ := set $defaults "ingress" (merge $ingressDefaults $ingressOverrides) }}
+  {{- end }}
+  {{- $raw := .Values.addons.vscode | default dict }}
+  {{- $overrides := omit $raw "enabled" "name" }}
+  {{- $pgAdmin := merge $defaults $overrides }}
+  {{- $addons = append $addons $pgAdmin }}
+{{- end }}
+
 {{/* === Fusion finale === */}}
 {{- $all := concat $base $addons }}
 {{- toYaml $all }}
