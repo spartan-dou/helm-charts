@@ -14,10 +14,10 @@ tests:
       value: test-nginx-config
     asserts:
       - equal:
-          path: data.config.yaml
+          path: data[config.yaml]
           value: |
             key: value
       - equal:
-          path: data.toto
+          path: data[toto.sh]
           value: |
             key: value
