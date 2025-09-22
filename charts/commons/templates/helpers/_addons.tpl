@@ -133,7 +133,12 @@
               "Values" $.Values
               "Chart" $.Chart
               "Release" $.Release
-              "component" $component
+              "component" (dict
+                "configMap" (list (dict
+                  "name" "pg-config"
+                ))
+                "name" "pgAdmin"
+              )
               "value" "__components__config__pg-config"
             ))
           )
