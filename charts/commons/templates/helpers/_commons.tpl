@@ -73,16 +73,6 @@ app: {{ .Release.Name }}
 
 {{- end }}
 
-{{/*
-  Détermine le nom du service account à utiliser
-*/}}
-{{- define "commons.serviceAccountName" -}}
-{{- if .Values.serviceAccount.create }}
-{{- default (include "commons.fullname" .) .Values.serviceAccount.name }}
-{{- else }}
-{{- default "default" .Values.serviceAccount.name }}
-{{- end }}
-{{- end }}
 
 {{/*
   Fonction dinamique pour utiliser des variables dans le fichier de valueKeys
