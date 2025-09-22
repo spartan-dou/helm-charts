@@ -153,9 +153,9 @@ components:
     configMap:
       - name: config
         data:
-          config.yaml: |
+          config.yaml: |-
             key: value
-          toto.sh: |
+          toto.sh: |-
             #!/bin/sh
             echo "toto"
     postgres:
