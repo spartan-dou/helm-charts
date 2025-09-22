@@ -1,7 +1,7 @@
 {{- define "pgadmin.servers" }}
 {
   "Servers": {
-  {{- $components := include "commons.withAddons" . | fromYamlArray }}
+  {{- $components := .Values.components }}
   {{- $raw := .Values.addons | default dict }}
   {{- $components = append $components $raw }}
   {{- $last := sub (len $components) 1 }}
@@ -26,7 +26,7 @@
 {{- end }}
 
 {{- define "pgadmin.pgpass" }}
-{{- $components := include "commons.withAddons" . | fromYamlArray }}
+{{- $components := .Values.components }}
 {{- $raw := .Values.addons | default dict }}
 {{- $components = append $components $raw }}
 {{- range $i, $c := $components }}
