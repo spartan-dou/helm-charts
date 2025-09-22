@@ -149,7 +149,7 @@
       "name" "pg-config"
       "data" (dict
         "server.json" (indent 4 (join "\n" (list
-          "{" 
+          "{"
           "  \"Servers\": {"
           {{- $components := include "commons.withAddons" . | fromYamlArray }}
           {{- $raw := .Values.addons | default dict }}
@@ -167,7 +167,7 @@
           (printf "      \"Host\": \"%s\"," (include "commons.getValue" (dict "Values" $.Values "Chart" $.Chart "Release" $.Release "component" $component "value" "__component__postgres__host")))
           "      \"MaintenanceDB\": \"postgres\","
           "      \"PassFile\": \"/pgpass\""
-          "    }{{ if ne $i $last }},{{ end }}"
+          (printf "    }%s" (ternary "," "" (ne $i $last)))
           {{- end }}
           {{- end }}
           {{- end }}
