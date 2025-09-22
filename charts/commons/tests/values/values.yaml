@@ -1,17 +1,17 @@
 global:
-  timezone: "Europe/Paris"
+  timezone: Europe/Paris
   securityContext:
     runAsUser: 1000
     runAsGroup: 1000
     fsGroup: 1000
   pvc:
     storage:
-      size: "1Gi"
-      storageClassName: "test"
+      size: 1Gi
+      storageClassName: test
   postgres:
     storage:
-      size: "1Gi"
-      storageClass: "test"
+      size: 1Gi
+      storageClass: test
     image:
       repository: ghcr.io/cloudnative-pg/postgresql
       tag: 16
@@ -22,22 +22,46 @@ global:
     clusterRoleName: homepage
     serviceAccountName: homepage
     rules:
-      - apiGroups: [""]
-        resources: ["namespaces", "pods", "nodes"]
-        verbs: ["get", "list"]
-      - apiGroups: ["extensions", "networking.k8s.io"]
-        resources: ["ingresses"]
-        verbs: ["get", "list"]
-      - apiGroups: ["traefik.io"]
-        resources: ["ingressroutes"]
-        verbs: ["get", "list"]
-      - apiGroups: ["gateway.networking.k8s.io"]
-        resources: ["httproutes", "gateways"]
-        verbs: ["get", "list"]
-      - apiGroups: ["metrics.k8s.io"]
-        resources: ["nodes", "pods"]
-        verbs: ["get", "list"]
-
+      - apiGroups:
+          - ""
+        resources:
+          - namespaces
+          - pods
+          - nodes
+        verbs:
+          - get
+          - list
+      - apiGroups:
+          - extensions
+          - networking.k8s.io
+        resources:
+          - ingresses
+        verbs:
+          - get
+          - list
+      - apiGroups:
+          - traefik.io
+        resources:
+          - ingressroutes
+        verbs:
+          - get
+          - list
+      - apiGroups:
+          - gateway.networking.k8s.io
+        resources:
+          - httproutes
+          - gateways
+        verbs:
+          - get
+          - list
+      - apiGroups:
+          - metrics.k8s.io
+        resources:
+          - nodes
+          - pods
+        verbs:
+          - get
+          - list
 components:
   - name: nginx
     deployment:
@@ -47,8 +71,11 @@ components:
           - name: setup-volume
             image:
               repository: alpine
-            command: ['sh', '-c', 'mkdir -p /data/init']
-      image: 
+            command:
+              - sh
+              - -c
+              - mkdir -p /data/init
+      image:
         repository: nginx
         tag: latest
       ports:
@@ -94,7 +121,7 @@ components:
       enabled: true
       type: ClusterIP
       annotations:
-        metallb.universe.tf/address-pool: "default"
+        metallb.universe.tf/address-pool: default
         prometheus.io/scrape: "true"
       ports:
         - name: http
@@ -129,7 +156,8 @@ components:
           config.yaml: |
             key: value
           toto.sh: |
-            key: value
+            #!/bin/sh
+            echo "toto"
     postgres:
       enabled: true
       image:
@@ -145,7 +173,6 @@ components:
         - CREATE EXTENSION postgis_topology;
         - CREATE EXTENSION fuzzystrmatch;
         - CREATE EXTENSION postgis_tiger_geocoder;
-
 addons:
   vscode:
     enabled: true
@@ -166,8 +193,8 @@ addons:
   postgres:
     enabled: true
     storage:
-      size: "1Gi"
-      storageClass: "test"
+      size: 1Gi
+      storageClass: test
     cluster:
       username: changeme
       password: changeme
