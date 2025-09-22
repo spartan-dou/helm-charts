@@ -9,15 +9,15 @@
     {{- $component := $c }}
     {{- with $component.postgres }}
     {{- if .enabled }}
-        "{{ $i }}": {
-        "Name": "{{ $component.name }}",
-        "Group": "{{ $.Release.Name }}",
-        "Port": 5432,
-        "Username": "{{ include "commons.getValue" (dict "Values" $.Values "Chart" $.Chart "Release" $.Release "component" $component "value" "__components__postgres__username") }}",
-        "Host": "{{ include "commons.getValue" (dict "Values" $.Values "Chart" $.Chart "Release" $.Release "component" $component "value" "__components__postgres__host") }}",
-        "MaintenanceDB": "postgres",
-        "PassFile": "/pgpass"
-        }{{ if ne $i $last }},{{ end }}
+    "{{ $i }}": {
+      "Name": "{{ $component.name }}",
+      "Group": "{{ $.Release.Name }}",
+      "Port": 5432,
+      "Username": "{{ include "commons.getValue" (dict "Values" $.Values "Chart" $.Chart "Release" $.Release "component" $component "value" "__components__postgres__username") }}",
+      "Host": "{{ include "commons.getValue" (dict "Values" $.Values "Chart" $.Chart "Release" $.Release "component" $component "value" "__components__postgres__host") }}",
+      "MaintenanceDB": "postgres",
+      "PassFile": "/pgpass"
+    }{{ if ne $i $last }},{{ end }}
     {{- end }}
     {{- end }}
   {{- end }}
