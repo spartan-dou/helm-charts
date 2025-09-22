@@ -126,14 +126,25 @@
         (dict "mountPath" "/pgpass" "subPath" "pgpass" "name" "config")
       )
       "volumes" (list
-        (dict "name" "config" "configMap" (dict "name" "pg-config"))
+        (dict
+          "name" "config"
+          "configMap" (dict
+            "name" (include "commons.getValue" (dict
+              "Values" $.Values
+              "Chart" $.Chart
+              "Release" $.Release
+              "component" $component
+              "value" "__components__config__pg-config"
+            ))
+          )
+        )
       )
     )
     "configMap" (list (dict
       "name" "pg-config"
       "data" (dict
-        "server.json" (indent 4 (.Files.Get "files/servers.json"))
-        "pgpass" (indent 4 (.Files.Get "files/pgpass"))
+        "server.json" (indent 4 (.Files.Get "files/pgadmin/servers.json"))
+        "pgpass" (indent 4 (.Files.Get "files/pgadmin/pgpass"))
       )
     ))
     "service" (dict
