@@ -139,7 +139,7 @@
                 ))
                 "name" "pgAdmin"
               )
-              "value" "__components__config__pg-config"
+              "value" "__components__configmap__pg-config"
             ))
           )
         )
