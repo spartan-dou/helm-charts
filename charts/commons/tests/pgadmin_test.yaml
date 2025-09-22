@@ -1,0 +1,46 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/helm-unittest/helm-unittest/main/schema/helm-testsuite.json
+suite: Tests complets du chart commons
+values:
+  - ./values/values.yaml
+templates:
+  - templates/configmap.yaml
+  - templates/deployment.yaml
+release:
+  name: test
+tests:
+ # --- Deployments ---
+  - it: Vérifie le PgDeployement
+    documentSelector:
+      path: metadata.name
+      value: test-pgAdmin-pg-config
+    asserts:
+      - equal:
+          path: data["pgpass"]
+          value: |-
+            test-nginx-rw:5432:postgres:changeme:changeme
+            test-rw:5432:postgres:changeme:changeme
+      - equal:
+          path: data["server.json"]
+          value: |-
+            {
+              "Servers": {
+                "0": {
+                  "Name": "nginx",
+                  "Group": "test",
+                  "Port": 5432,
+                  "Username": "changeme",
+                  "Host": "test-nginx-rw",
+                  "MaintenanceDB": "postgres",
+                  "PassFile": "/pgpass"
+                },
+                "1": {
+                  "Name": "",
+                  "Group": "test",
+                  "Port": 5432,
+                  "Username": "changeme",
+                  "Host": "test-rw",
+                  "MaintenanceDB": "postgres",
+                  "PassFile": "/pgpass"
+                }
+              }
+            }
