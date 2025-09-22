@@ -126,11 +126,10 @@ components:
     configMap:
       - name: config
         data:
-          config.yaml: |-
+          config.yaml: |
             key: value
-          toto: |-
+          toto.sh: |
             #!/bin/sh
-
             echo "titi"
 
     postgres:
