@@ -17,7 +17,7 @@ tests:
           path: type
           value: kubernetes.io/service-account-token
       - equal:
-          path: annotations.kubernetes.io/service-account.name
+          path: metadata.annotations["kubernetes.io/service-account.name"]
           value: homepage
           
   - it: Vérifie le service account rbac
@@ -54,3 +54,20 @@ tests:
       - equal:
           path: rules[3].verbs[1]
           value: list
+
+  - it: Vérifie le culster role binding rbac
+    templates:
+      - templates/rbac/clusterrolebinding.yaml
+    documentSelector:
+      path: metadata.name
+      value: homepage
+    asserts:
+      - equal:
+          path: kind
+          value: ClusterRoleBinding
+      - equal:
+          path: roleRef.name
+          value: homepage
+      - equal:
+          path: subjects[0].name
+          value: homepage
