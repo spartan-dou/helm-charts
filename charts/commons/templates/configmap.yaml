@@ -5,9 +5,9 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ include "commons.fullname" (dict "Chart" $.Chart "Values" $.Values "Release" $.Release "name" (get $component.configMap.name "name" | default "configmap") "component" $component) }}
+  name: {{ include "commons.fullname" (dict "Chart" $.Chart "Values" $.Values "Release" $.Release "name" (default "configmap" .name) "component" $component) }}
   labels:
-    {{ include "commons.fullname" (dict "Chart" $.Chart "Values" $.Values "Release" $.Release "name" (get $component.configMap.name "name" | default "configmap") "component" $component) | nindent 4 }}
+    {{ include "commons.labels" (dict "Chart" $.Chart "Values" $.Values "Release" $.Release "name" (default "configmap" .name) "component" $component) | nindent 4 }}
 data:
   {{- range $filename, $content := .data }}
   {{ $filename }}: |-
