@@ -157,10 +157,9 @@
       "type" .Values.addons.pgAdmin.service.type
       "ports" (list (dict "name" "pgAdmin" "port" .Values.addons.pgAdmin.port))
     )
+    "ingress" (toYaml .Values.addons.pgAdmin.ingress | fromYaml)
   }}
-  {{- $ingressOverrides := default dict .Values.addons.pgAdmin.ingress }}
-  {{- $ingressOverrides := omit $ingressOverrides "enabled" }}
-  {{- $_ := set $defaults "ingress" (merge (dict "enabled" true) $ingressOverrides) }}
+
   {{- $raw := .Values.addons.pgAdmin | default dict }}
   {{- $overrides := omit $raw "enabled" "name" }}
   {{- $pgAdmin := merge $defaults $overrides }}

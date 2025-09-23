@@ -2,8 +2,6 @@
 suite: Tests complets du chart commons
 values:
   - ./values/values.yaml
-templates:
-  - templates/configmap.yaml
 release:
   name: test
 tests:
@@ -12,6 +10,8 @@ tests:
     documentSelector:
       path: metadata.name
       value: test-pgAdmin-pg-config
+    templates:
+      - templates/configmap.yaml
     asserts:
       - equal:
           path: data["pgpass"]
@@ -33,7 +33,7 @@ tests:
                   "PassFile": "/pgpass"
                 },
                 "1": {
-                  "Name": "",
+                  "Name": "postgres",
                   "Group": "test",
                   "Port": 5432,
                   "Username": "changeme",
@@ -43,3 +43,28 @@ tests:
                 }
               }
             }
+
+  - it: Vérifie le PgDeployement
+    documentSelector:
+      path: metadata.name
+      value: test-pgAdmin
+    templates:
+      - templates/deployment.yaml
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[0].image
+          value: dpage/pgadmin4:9.8.0
+      - equal:
+          path: spec.template.spec.volumes[0].name
+          value: config
+
+  - it: Vérifie le PgDeployement service
+    documentSelector:
+      path: metadata.name
+      value: test-pgAdmin
+    templates:
+      - templates/service.yaml
+    asserts:
+      - equal:
+          path: spec.ports[0].port
+          value: 80
