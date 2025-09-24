@@ -20,7 +20,7 @@ spec:
     spec:
       securityContext:
         runAsUser: {{ .securityContext.runAsUser }}
-        runAsGroup: {{ .securityContext.runAsGroup }}
+        runAsGroup: 5
         fsGroup: {{ .securityContext.fsGroup }}
       {{- with .initContainers }}
       {{- if .containers }}
