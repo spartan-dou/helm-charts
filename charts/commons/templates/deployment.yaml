@@ -23,14 +23,22 @@ spec:
 
       {{- if or $sc.runAsUser $sc.runAsGroup $sc.fsGroup $gsc.runAsUser $gsc.runAsGroup $gsc.fsGroup }}
       securityContext:
-        {{- if or $sc.runAsUser $gsc.runAsUser }}
-        runAsUser: {{ default $sc.runAsUser $gsc.runAsUser }}
+        {{- if hasKey $sc "runAsUser" }}
+        runAsUser: {{ $sc.runAsUser }}
+        {{- else if hasKey $gsc "runAsUser" }}
+        runAsUser: {{ $gsc.runAsUser }}
         {{- end }}
-        {{- if or $sc.runAsGroup $gsc.runAsGroup }}
-        runAsGroup: {{ default $sc.runAsGroup $gsc.runAsGroup }}
+
+        {{- if hasKey $sc "runAsGroup" }}
+        runAsGroup: {{ $sc.runAsGroup }}
+        {{- else if hasKey $gsc "runAsGroup" }}
+        runAsGroup: {{ $gsc.runAsGroup }}
         {{- end }}
-        {{- if or $sc.fsGroup $gsc.fsGroup }}
-        fsGroup: {{ default $sc.fsGroup $gsc.fsGroup }}
+
+        {{- if hasKey $sc "fsGroup" }}
+        fsGroup: {{ $sc.fsGroup }}
+        {{- else if hasKey $gsc "fsGroup" }}
+        fsGroup: {{ $gsc.fsGroup }}
         {{- end }}
       {{- end }}
       {{- with .initContainers }}
