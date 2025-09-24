@@ -48,7 +48,8 @@ spec:
         {{- range .initContainers }}
         - name: {{ .name | default $component.name }}
           {{- with .securityContext }}
-          {{- toYaml . | nindent 10 }}
+          securityContext:
+            {{- toYaml . | nindent 12 }}
           {{- end }}
           image: {{ .image.repository }}:{{ .image.tag | default "latest"  }}
           {{- with .command }}
