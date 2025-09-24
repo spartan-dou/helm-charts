@@ -21,7 +21,6 @@ spec:
       securityContext:
         runAsUser: {{ .securityContext.runAsUser }}
         runAsGroup: 5
-        fsGroup: {{ .securityContext.fsGroup }}
       {{- with .initContainers }}
       {{- if .containers }}
       initContainers:
