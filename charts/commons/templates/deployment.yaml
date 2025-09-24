@@ -178,9 +178,8 @@ spec:
             {{- with .persistentVolumeClaim.readOnly }}
             readOnly: {{ . }}
             {{- end }}
-        {{- else if .name }}
-        - name: {{ .name }}
-          {{- toYaml . | nindent 10 }}
+        {{- else }}
+        {{- printf "- %s" (toYaml . | nindent 8) }}
         {{- end }}
       {{- end }}
       {{- end }}
