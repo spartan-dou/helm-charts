@@ -179,7 +179,7 @@ spec:
             readOnly: {{ . }}
             {{- end }}
         {{- else }}
-        {{- (toYaml . | nindent 10) }}
+        {{- printf "- %s" (toYaml . | nindent 10) }}
         {{- end }}
       {{- end }}
       {{- end }}
