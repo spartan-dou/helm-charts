@@ -21,7 +21,7 @@ spec:
       {{- $sc := .securityContext | default (dict) }}
       {{- $gsc := $.Values.global.securityContext | default (dict) }}
 
-      {{- if or $sc.runAsUser $sc.runAsGroup $sc.fsGroup $gsc.runAsUser $gsc.runAsGroup $gsc.fsGroup }}
+      {{- if or (hasKey $sc "runAsUser") (hasKey $sc "runAsGroup") (hasKey $sc "fsGroup") (hasKey $gsc "runAsUser") (hasKey $gsc "runAsGroup") (hasKey $gsc "fsGroup") }}
       securityContext:
         {{- if hasKey $sc "runAsUser" }}
         runAsUser: {{ $sc.runAsUser }}
