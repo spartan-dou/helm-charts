@@ -21,25 +21,11 @@ spec:
       {{- $sc := .securityContext | default (dict) }}
       {{- $gsc := $.Values.global.securityContext | default (dict) }}
 
-      {{- if or (hasKey $sc "runAsUser") (hasKey $sc "runAsGroup") (hasKey $sc "fsGroup") (hasKey $gsc "runAsUser") (hasKey $gsc "runAsGroup") (hasKey $gsc "fsGroup") }}
+      {{- if or (hasKey $sc "runAsUser") (hasKey $gsc "runAsUser") (hasKey $sc "runAsGroup") (hasKey $gsc "runAsGroup") (hasKey $sc "fsGroup") (hasKey $gsc "fsGroup") }}
       securityContext:
-        {{- if hasKey $sc "runAsUser" }}
         runAsUser: {{ $sc.runAsUser }}
-        {{- else if hasKey $gsc "runAsUser" }}
-        runAsUser: {{ $gsc.runAsUser }}
-        {{- end }}
-
-        {{- if hasKey $sc "runAsGroup" }}
         runAsGroup: {{ $sc.runAsGroup }}
-        {{- else if hasKey $gsc "runAsGroup" }}
-        runAsGroup: {{ $gsc.runAsGroup }}
-        {{- end }}
-
-        {{- if hasKey $sc "fsGroup" }}
         fsGroup: {{ $sc.fsGroup }}
-        {{- else if hasKey $gsc "fsGroup" }}
-        fsGroup: {{ $gsc.fsGroup }}
-        {{- end }}
       {{- end }}
       {{- with .initContainers }}
       {{- if .containers }}
