@@ -136,6 +136,6 @@ app: {{ .Release.Name }}
 
 {{- end }}
 
-{{- $value }}
+{{- $value | quote }}
 
 {{- end }}
