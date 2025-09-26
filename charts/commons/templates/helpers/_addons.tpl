@@ -220,6 +220,6 @@
 {{- end }}
 
 {{/* === Fusion finale === */}}
-{{- $all := concat $result $addons }}
+{{- $all := concat $base $addons }}
 {{- toYaml $all }}
 {{- end }}
