@@ -17,8 +17,8 @@
 
   {{- if $.Values.addons.postgres.enabled }}
     {{- $name := $.Values.addons.postgres.name }}
-    {{- $image := $.Values.global.postgres.image.repository }}
-    {{- $tag := $.Values.global.postgres.image.tag }}
+    {{- $image := $.Values.addons.postgres.image.repository }}
+    {{- $tag := $.Values.addons.postgres.image.tag }}
     {{- $host := include "postgres.host" $ }}
     {{- $port := "5432" }}
 
@@ -36,8 +36,8 @@
 
 
   {{- if $c.postgres.enabled }}
-    {{- $image := $c.image | default $.Values.global.postgres.image.repository }}
-    {{- $tag := $c.tag | default $.Values.global.postgres.image.tag }}
+    {{- $image := $c.image | default $.Values.addons.postgres.image.repository }}
+    {{- $tag := $c.tag | default $.Values.addons.postgres.image.tag }}
     {{- $host := include "commons.getValue" (dict "Values" $.Values "Chart" $.Chart "Release" $.Release "component" $c "value" "__components__postgres__host") }}
     {{- $postgresInit := dict
       "name" (printf "wait-for-postgres-%s" $c.name)
