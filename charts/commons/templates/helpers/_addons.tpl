@@ -3,9 +3,56 @@
 
 {{- range $i, $c := $base }}
   {{- $existing := $c.initContainers | default list }}
-  {{- $merged := $existing }}
   
+  {{- $merged := $existing }}
+
+  {{- if $.Values.addons.redis.enabled }}
+    {{- $redisInit := dict
+      "name" "wait-for-redis"
+      "image" (printf "%s:%s" $.Values.addons.redis.image.repository (default "latest" $.Values.addons.redis.image.tag))
+      "command" (list "sh" "-c" "until redis-cli -h redis ping | grep PONG; do echo waiting for redis; sleep 2; done")
+    }}
+    {{- $merged = append $merged $redisInit }}
+  {{- end }}
+
+  {{- if $.Values.addons.postgres.enabled }}
+    {{- $name := $.Values.addons.postgres.name }}
+    {{- $image := $.Values.global.postgres.image.repository }}
+    {{- $tag := $.Values.global.postgres.image.tag }}
+    {{- $host := include "postgres.host" . }}
+    {{- $port := "5432" }}
+
+    {{- $postgresInit := dict
+      "name" (printf "wait-for-postgres-%s" $name)
+      "image" (printf "%s:%s" $image $tag)
+      "command" (list "sh" "-c" (printf "until pg_isready -h %s -p %s; do echo \"Waiting for Postgres to be ready...\"; sleep 2; done" $host $port))
+      "resources" (dict
+        "requests" (dict "cpu" "10m" "memory" "16Mi")
+        "limits"   (dict "cpu" "50m" "memory" "32Mi")
+      )
+    }}
+    {{- $merged = append $merged $postgresInit }}
+  {{- end }}
+
+
+  {{- if $c.postgres.enabled }}
+    {{- $image := $c.image | default $.Values.global.postgres.image.repository }}
+    {{- $tag := $c.tag | default $.Values.global.postgres.image.tag }}
+    {{- $host := include "commons.getValue" (dict "Values" $.Values "Chart" $.Chart "Release" $.Release "component" $c "value" "__components__postgres__host") }}
+    {{- $postgresInit := dict
+      "name" (printf "wait-for-postgres-%s" $c.name)
+      "image" (printf "%s:%s" $image $tag)
+      "command" (list "sh" "-c" (printf "until pg_isready -h %s -p %s; do echo \"Waiting for Postgres to be ready...\"; sleep 2; done" $host "5432"))
+      "resources" (dict
+        "requests" (dict "cpu" "10m" "memory" "16Mi")
+        "limits"   (dict "cpu" "50m" "memory" "32Mi")
+      )
+    }}
+    {{- $merged = append $merged $postgresInit }}
+  {{- end }}
+
   {{- $_ := set $c "initContainers" $merged }}
+
 {{- end }}
 
 {{- $addons := list }}
