@@ -49,9 +49,8 @@
     {{- $merged = append $merged (list $postgresInit) }}
   {{- end }}
 
-  {{- $_ := set $c "initContainers" $merged }}
+  {{- $_ := set $base $i (merge $c (dict "initContainers" $merged)) }}
 {{- end }}
-
 
 {{- $addons := list }}
 
@@ -95,7 +94,7 @@
   {{- $ingressOverrides := omit $ingressOverrides "enabled" }}
 
   {{- /* fusion defaults + overrides */ -}}
-  {{- $_ := set $defaults "ingress" (merge $ingressDefaults $ingressOverrides) }}
+    {{- $_ := set $defaults "ingress" (merge $ingressDefaults $ingressOverrides) }}
   {{- end }}
   {{- $raw := .Values.addons.vscode | default dict }}
   {{- $overrides := omit $raw "enabled" }}
@@ -187,9 +186,7 @@
               "Chart" $.Chart
               "Release" $.Release
               "component" (dict
-                "configMap" (list (dict
-                  "name" "pg-config"
-                ))
+                "configMap" (list (dict "name" "pg-config"))
                 "name" "pgAdmin"
               )
               "value" "__components__configmap__pg-config"
@@ -212,7 +209,6 @@
     )
     "ingress" (toYaml .Values.addons.pgAdmin.ingress | fromYaml)
   }}
-
   {{- $raw := .Values.addons.pgAdmin | default dict }}
   {{- $overrides := omit $raw "enabled" "name" }}
   {{- $pgAdmin := merge $defaults $overrides }}
@@ -221,6 +217,5 @@
 
 {{/* === Fusion finale === */}}
 {{- $all := concat $base $addons }}
-
 {{- toYaml $all }}
 {{- end }}
