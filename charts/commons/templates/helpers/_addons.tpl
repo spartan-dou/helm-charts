@@ -1,6 +1,12 @@
 {{- define "commons.withAddons" }}
 {{- $base := .Values.components | default list }}
 
+{{- range $i, $c := $base }}
+  {{- $existing := $c.initContainers | default list }}
+  {{- $merged := $existing }}
+  
+  {{- $_ := set $c "initContainers" $merged }}
+{{- end }}
 
 {{- $addons := list }}
 
@@ -62,8 +68,27 @@
         "repository" .Values.addons.redis.image.repository
         "tag" .Values.addons.redis.image.tag | default "latest"
       )
-      "ports" (list (dict "name" "redis" "containerPort" .Values.addons.redis.port))
       "initContainers" (list)
+      "ports" (list (dict "name" "redis" "containerPort" .Values.addons.redis.port))
+      "livenessProbe" (dict
+        "tcpSocket" (dict "port" .Values.addons.redis.port)
+        "initialDelaySeconds" 5
+        "periodSeconds" 10
+      )
+      "readinessProbe" (dict
+        "tcpSocket" (dict "port" .Values.addons.redis.port)
+        "initialDelaySeconds" 5
+        "periodSeconds" 10
+      )
+      "volumeMounts" (list (dict
+        "mountPath" (default "/data" (default dict .Values.addons.redis.storage).mountPath)
+        "name" "data"
+      ))
+      "volumes" (list (dict
+        "name" "data"
+        "persistentVolumeClaim" (dict "claimName" (printf "%s-redis-data" $.Release.Name))
+      ))
+    )
     "pvc" (list (dict
       "name" "data"
       "storage" (default .Values.global.pvc.storage.size (default dict .Values.addons.redis.storage).size)
