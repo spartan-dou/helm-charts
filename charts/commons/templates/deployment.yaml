@@ -133,7 +133,15 @@ spec:
           {{- end }}
           {{- if .ports }}
           ports:
-            {{- range .ports }}
+            {{- range $component.service.ports }}
+            - name: {{ .name }}
+              containerPort: {{ .port }}
+              protocol: {{ default "TCP" .protocol }}
+              {{- with .hostPort }}
+              hostPort: {{ . }}
+              {{- end }}
+            {{- end }}
+            {{- range .additionalsPorts }}
             - name: {{ .name }}
               containerPort: {{ .containerPort }}
               protocol: {{ default "TCP" .protocol }}

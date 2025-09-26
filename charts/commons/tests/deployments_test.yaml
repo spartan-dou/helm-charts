@@ -41,6 +41,24 @@ tests:
           path: spec.template.spec.containers[0].env[3].valueFrom.secretKeyRef.name
           value: test-nginx-postgres-secret
 
+  - it: Vérifie les prots
+    documentSelector:
+      path: metadata.name
+      value: test-nginx
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[0].ports[0].name
+          value: http
+      - equal:
+          path: spec.template.spec.containers[0].ports[0].containerPort
+          value: 80
+      - equal:
+          path: spec.template.spec.containers[0].ports[1].name
+          value: http2
+      - equal:
+          path: spec.template.spec.containers[0].ports[1].containerPort
+          value: 8080
+
   - it: Vérifie les volumes
     documentSelector:
       path: metadata.name

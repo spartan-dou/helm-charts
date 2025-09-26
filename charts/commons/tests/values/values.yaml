@@ -80,9 +80,9 @@ components:
       image:
         repository: nginx
         tag: latest
-      ports:
-        - name: http
-          containerPort: 80
+      additionalsPorts:
+        - name: http2
+          containerPort: 8080
       env:
         - name: ENV
           value: prod
@@ -120,7 +120,6 @@ components:
             claimName: __components__pvc__data-pvc
             subPath: data
     service:
-      enabled: true
       type: ClusterIP
       annotations:
         metallb.universe.tf/address-pool: default
