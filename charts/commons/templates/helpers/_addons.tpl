@@ -4,17 +4,7 @@
 {{- range $i, $c := $base }}
   {{- $existing := $c.initContainers | default list }}
   {{- $merged := $existing }}
-
-  {{- if $.Values.addons.redis.enabled }}
-    {{- $redis := include "commons.redisInitContainer" (dict "Values" $.Values "Chart" $.Chart "Release" $.Release "component" $c) | fromYaml }}
-    {{- $merged = append $merged (list $redis) }}
-  {{- end }}
-
-  {{- if or $.Values.addons.postgres.enabled (and (hasKey $c "postgres") $c.postgres.enabled) }}
-    {{- $postgres := include "commons.waitForPostgres" (dict "Values" $.Values "Chart" $.Chart "Release" $.Release "component" $c) | fromYaml }}
-    {{- $merged = append $merged (list $postgres) }}
-  {{- end }}
-
+  
   {{- $_ := set $c "initContainers" $merged }}
 {{- end }}
 
