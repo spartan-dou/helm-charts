@@ -3,7 +3,6 @@
 
 {{- range $i, $c := $base }}
   {{- $existing := $c.initContainers | default list }}
-  
   {{- $merged := $existing }}
 
   {{- if $.Values.addons.redis.enabled }}
@@ -12,7 +11,7 @@
       "image" (printf "%s:%s" $.Values.addons.redis.image.repository (default "latest" $.Values.addons.redis.image.tag))
       "command" (list "sh" "-c" "until redis-cli -h redis ping | grep PONG; do echo waiting for redis; sleep 2; done")
     }}
-    {{- $merged = append $merged $redisInit }}
+    {{- $merged = append $merged (list $redisInit) }}
   {{- end }}
 
   {{- if $.Values.addons.postgres.enabled }}
@@ -31,9 +30,8 @@
         "limits"   (dict "cpu" "50m" "memory" "32Mi")
       )
     }}
-    {{- $merged = append $merged $postgresInit }}
+    {{- $merged = append $merged (list $postgresInit) }}
   {{- end }}
-
 
   {{- if $c.postgres.enabled }}
     {{- $image := $c.image | default $.Values.addons.postgres.image.repository }}
@@ -48,12 +46,12 @@
         "limits"   (dict "cpu" "50m" "memory" "32Mi")
       )
     }}
-    {{- $merged = append $merged $postgresInit }}
+    {{- $merged = append $merged (list $postgresInit) }}
   {{- end }}
 
   {{- $_ := set $c "initContainers" $merged }}
-
 {{- end }}
+
 
 {{- $addons := list }}
 
