@@ -3,6 +3,7 @@
 {{- $result := list }}
 
 {{- range $i, $c := $base }}
+  {{- $deployment := $c.deployment | default dict }}
   {{- $existing := $c.initContainers | default list }}
   {{- $merged := $existing }}
 
@@ -58,8 +59,10 @@
     }}
     {{- $merged = append $merged  $toto }}
 
-  {{- $_ := set $c.deployment "initContainers" $merged }}
+  {{- $_ := set $deployment "initContainers" $merged }}
+  {{- $_ := set $c "deployment" $deployment }}
   {{- $result = append $result $c }}
+
 {{- end }}
 
 {{- $addons := list }}
