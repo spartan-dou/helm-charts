@@ -58,8 +58,8 @@
       "command" (list "sh" "-c" "toto")
     }}
     {{- $merged = append $merged  $toto }}
-    
-  {{- $_ := set $c "initContainers" $merged }}
+
+  {{- $_ := set $c.deployment "initContainers" $merged }}
   {{- $result = append $result $c }}
 
 {{- end }}
