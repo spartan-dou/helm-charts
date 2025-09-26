@@ -26,7 +26,7 @@
     {{- $port := "5432" }}
 
     {{- $postgresInit := dict
-      "name" (printf "wait-for-postgres-%s" $name)
+      "name" {{- printf "wait-for-postgres%s" (ternary (printf "-%s" $name) "" (not $name)) }}
       "image" (dict
         "repository" $image
         "tag" $tag
@@ -45,7 +45,7 @@
     {{- $tag := $c.tag | default $.Values.addons.postgres.image.tag }}
     {{- $host := include "commons.getValue" (dict "Values" $.Values "Chart" $.Chart "Release" $.Release "component" $c "value" "__components__postgres__host") }}
     {{- $postgresInit := dict
-      "name" (printf "wait-for-postgres-%s" $c.name)
+      "name" {{- printf "wait-for-postgres%s" (ternary (printf "-%s" $c.name) "" (not $c.name)) }}
       "image" (dict
         "repository" $image
         "tag" $tag
