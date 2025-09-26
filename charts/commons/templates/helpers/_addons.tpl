@@ -19,7 +19,6 @@
         "repository" .Values.addons.vscode.image.repository
         "tag" .Values.addons.vscode.image.tag | default "latest"
       )
-      "initContainers" (list)
       "ports" (list (dict "name" "http" "containerPort" .Values.addons.vscode.port))
       "volumeMounts" (list (dict "name" "vscode-data" "mountPath" "/home/coder/project"))
       "volumes" (list (dict
@@ -68,7 +67,6 @@
         "repository" .Values.addons.redis.image.repository
         "tag" .Values.addons.redis.image.tag | default "latest"
       )
-      "initContainers" (list)
       "ports" (list (dict "name" "redis" "containerPort" .Values.addons.redis.port))
       "livenessProbe" (dict
         "tcpSocket" (dict "port" .Values.addons.redis.port)
