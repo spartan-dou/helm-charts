@@ -10,7 +10,7 @@
   command:
     - sh
     - -c
-    - >
+    - |
       {{- if ne $password "" }}
       until redis-cli -h redis -a "$REDIS_PASSWORD" ping | grep PONG;
       do echo waiting for redis; sleep 2; done

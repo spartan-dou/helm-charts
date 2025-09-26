@@ -1,5 +1,23 @@
 {{- define "commons.withAddons" }}
 {{- $base := .Values.components | default list }}
+
+{{- range $i, $c := $base }}
+  {{- $existing := $c.initContainers | default list }}
+  {{- $merged := $existing }}
+
+  {{- if $.Values.addons.redis.enabled }}
+    {{- $redis := include "commons.redisInitContainer" (dict "Values" $.Values "Chart" $.Chart "Release" $.Release "component" $c) | fromYamlArray }}
+    {{- $merged = append $merged $redis }}
+  {{- end }}
+
+  {{- if or $.Values.addons.postgres.enabled (and (hasKey $c "postgres") $c.postgres.enabled) }}
+    {{- $postgres := include "commons.waitForPostgres" (dict "Values" $.Values "Chart" $.Chart "Release" $.Release "component" $c) | fromYamlArray }}
+    {{- $merged = append $merged $postgres }}
+  {{- end }}
+
+  {{- $_ := set $c "initContainers" $merged }}
+{{- end }}
+
 {{- $addons := list }}
 
 {{/* === Addon VSCode === */}}
@@ -11,6 +29,7 @@
         "repository" .Values.addons.vscode.image.repository
         "tag" .Values.addons.vscode.image.tag | default "latest"
       )
+      "initContainers" (list)
       "ports" (list (dict "name" "http" "containerPort" .Values.addons.vscode.port))
       "volumeMounts" (list (dict "name" "vscode-data" "mountPath" "/home/coder/project"))
       "volumes" (list (dict
@@ -60,25 +79,7 @@
         "tag" .Values.addons.redis.image.tag | default "latest"
       )
       "ports" (list (dict "name" "redis" "containerPort" .Values.addons.redis.port))
-      "livenessProbe" (dict
-        "tcpSocket" (dict "port" .Values.addons.redis.port)
-        "initialDelaySeconds" 5
-        "periodSeconds" 10
-      )
-      "readinessProbe" (dict
-        "tcpSocket" (dict "port" .Values.addons.redis.port)
-        "initialDelaySeconds" 5
-        "periodSeconds" 10
-      )
-      "volumeMounts" (list (dict
-        "mountPath" (default "/data" (default dict .Values.addons.redis.storage).mountPath)
-        "name" "data"
-      ))
-      "volumes" (list (dict
-        "name" "data"
-        "persistentVolumeClaim" (dict "claimName" (printf "%s-redis-data" $.Release.Name))
-      ))
-    )
+      "initContainers" (list)
     "pvc" (list (dict
       "name" "data"
       "storage" (default .Values.global.pvc.storage.size (default dict .Values.addons.redis.storage).size)
@@ -168,5 +169,6 @@
 
 {{/* === Fusion finale === */}}
 {{- $all := concat $base $addons }}
+
 {{- toYaml $all }}
 {{- end }}
