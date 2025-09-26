@@ -40,7 +40,7 @@ spec:
         {{- if $.Values.addons.redis.enabled }}
         {{ include "commons.redisInitContainer" (dict "Values" $.Values "Chart" $.Chart "Release" $.Release "component" $component) | nindent 8 }}
         {{- end }}
-        {{- if $component.postgres.enabled }}
+        {{- if or $.Values.addons.postgres.enabled (and (hasKey $component "postgres") $component.postgres.enabled) }}
         {{ include "commons.waitForPostgres" (dict "Values" $.Values "Chart" $.Chart "Release" $.Release "component" $component) | nindent 8 }}
         {{- end }}
         {{- range .initContainers }}
@@ -189,4 +189,5 @@ spec:
         {{- end }}
       {{- end }}
 ---
+{{- end }}
 {{- end }}
