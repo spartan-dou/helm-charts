@@ -2,7 +2,6 @@
 {{- range $components }}
 {{- $component := . }}
 {{- with $component.service }}
-{{- if .enabled }}
 apiVersion: v1
 kind: Service
 metadata:
@@ -29,6 +28,5 @@ spec:
   selector:
     {{ include "commons.selectorLabels" (dict "Chart" $.Chart "Values" $.Values "Release" $.Release "name" .name "component" $component) | nindent 4 }}
 ---
-{{- end }}
 {{- end }}
 {{- end }}

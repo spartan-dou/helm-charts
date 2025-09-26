@@ -135,7 +135,7 @@ spec:
           ports:
             {{- range $component.service.ports }}
             - name: {{ .name }}
-              containerPort: {{ .port }}
+              containerPort: {{ default .port .targetPort }}
               protocol: {{ default "TCP" .protocol }}
               {{- with .hostPort }}
               hostPort: {{ . }}

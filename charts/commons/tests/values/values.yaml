@@ -67,16 +67,15 @@ components:
     deployment:
       replicas: 2
       initContainers:
-        containers:
-          - name: setup-volume
-            image:
-              repository: alpine
-            command:
-              - sh
-              - -c
-              - |
-                mkdir -p /data/init
-                echo {{ include "postgres.host" . }}
+        - name: setup-volume
+          image:
+            repository: alpine
+          command:
+            - sh
+            - -c
+            - |
+              mkdir -p /data/init
+              echo {{ include "postgres.host" . }}
       image:
         repository: nginx
         tag: latest
@@ -127,7 +126,7 @@ components:
       ports:
         - name: http
           port: 80
-          targetPort: 8080
+          targetPort: 80
     ingress:
       enabled: true
       className: traefik
