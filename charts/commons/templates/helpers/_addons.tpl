@@ -50,14 +50,6 @@
     {{- $merged = append $merged $postgresInit }}
   {{- end }}
 
-  
-    {{- $toto := dict
-      "name" "wait-for-redis"
-      "image" "toto:toto"
-      "command" (list "sh" "-c" "toto")
-    }}
-    {{- $merged = append $merged  $toto }}
-
   {{- $_ := set $c.deployment "initContainers" $merged }}
   {{- $result = append $result $c }}
 
