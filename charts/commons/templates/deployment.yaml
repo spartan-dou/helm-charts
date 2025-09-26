@@ -131,7 +131,7 @@ spec:
               {{- end }}
             {{- end }}
           {{- end }}
-          {{- if of .additionalsPorts $component.service.ports }}
+          {{- if or .additionalsPorts $component.service.ports }}
           ports:
             {{- range $component.service.ports }}
             - name: {{ .name }}
