@@ -135,7 +135,41 @@ app: {{ .Release.Name }}
   {{- end }}
 
 {{- end }}
-
 {{- $value }}
+{{- end }}
 
+
+{{/*
+  Fonction pour recuépérer le username postgres global
+*/}}
+{{- define "postgres.username" -}}
+{{- if .Values.addons.postgres.enabled -}}
+{{- include "commons.getValue" (dict "Values" $.Values "Chart" $.Chart "Release" $.Release "value" "__addons__postgres__username") }}
+{{- end }}
+{{- end }}
+
+{{/*
+  Fonction pour recuépérer le database postgres global
+*/}}
+{{- define "postgres.database" -}}
+{{- if .Values.addons.postgres.enabled -}}
+{{- include "commons.getValue" (dict "Values" $.Values "Chart" $.Chart "Release" $.Release "value" "__addons__postgres__databasse") }}
+{{- end }}
+{{- end }}
+
+{{/*
+  Fonction pour recuépérer le password postgres global
+*/}}
+{{- define "postgres.database" -}}
+{{- if .Values.addons.postgres.enabled -}}
+{{- include "commons.getValue" (dict "Values" $.Values "Chart" $.Chart "Release" $.Release "value" "__addons__postgres__password") }}
+{{- end -}}
+{{- end }}
+
+  Fonction pour recuépérer le host postgres global
+*/}}
+{{- define "postgres.host" -}}
+{{- if .Values.addons.postgres.enabled -}}
+{{- include "commons.getValue" (dict "Values" $.Values "Chart" $.Chart "Release" $.Release "value" "__addons__postgres__host") }}
+{{- end -}}
 {{- end }}

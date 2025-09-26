@@ -74,7 +74,9 @@ components:
             command:
               - sh
               - -c
-              - mkdir -p /data/init
+              - |
+                mkdir -p /data/init
+                echo {{ include "postgres.host" . }}
       image:
         repository: nginx
         tag: latest
