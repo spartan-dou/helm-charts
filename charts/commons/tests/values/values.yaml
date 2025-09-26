@@ -66,16 +66,6 @@ components:
   - name: nginx
     deployment:
       replicas: 2
-      initContainers:
-        - name: setup-volume
-          image:
-            repository: alpine
-          command:
-            - sh
-            - '-c'
-            - |
-              mkdir -p /data/init
-              echo {{ include "postgres.host" . }}
       image:
         repository: nginx
         tag: latest
