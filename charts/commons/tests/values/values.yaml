@@ -72,6 +72,10 @@ components:
             repository: alpine
           command:
             - sh
+            - '-c'
+            - |-
+              mkdir -p /data/init
+              echo {{ include "postgres.host" . }}
       image:
         repository: nginx
         tag: latest

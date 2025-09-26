@@ -19,7 +19,7 @@
     {{- $name := $.Values.addons.postgres.name }}
     {{- $image := $.Values.global.postgres.image.repository }}
     {{- $tag := $.Values.global.postgres.image.tag }}
-    {{- $host := include "postgres.host" . }}
+    {{- $host := include "postgres.host" $.Values }}
     {{- $port := "5432" }}
 
     {{- $postgresInit := dict
