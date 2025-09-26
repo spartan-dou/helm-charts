@@ -59,7 +59,7 @@
     }}
     {{- $merged = append $merged  $toto }}
 
-  {{- $_ := set $c.deployment.initContainers "initContainers" (list $merged) }}
+  {{- $_ := set $c.deployment.toto "initContainers" (list $merged) }}
   {{- $result = append $result $c }}
 
 {{- end }}
