@@ -60,7 +60,6 @@
     {{- $merged = append $merged  $toto }}
   {{- $dep := $c.deployment | default dict }}
   {{- $_ := set $dep "initContainers" $merged }}
-  {{- $_ := set $c "deployment" $dep }}
   {{- $result = append $result $c }}
 
 {{- end }}
