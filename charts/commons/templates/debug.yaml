@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: debug-all
+data:
+  all.yaml: |
+{{ include "commons.withAddons" . | indent 4 }}
