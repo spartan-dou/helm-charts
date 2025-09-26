@@ -50,10 +50,8 @@
     {{- $merged = append $merged (list $postgresInit) }}
   {{- end }}
 
-  {{- $new := merge $c (dict "initContainers" $merged) }}
-  {{- $copy := deepCopy $c }}
-  {{- $_ := set $copy "initContainers" $merged }}
-  {{- $result = append $result (list $copy) }}
+  {{- $_ := set $c "initContainers" $merged }}
+  {{- $result = append $result $c }}
 {{- end }}
 
 {{- $addons := list }}
@@ -220,6 +218,6 @@
 {{- end }}
 
 {{/* === Fusion finale === */}}
-{{- $all := concat $base $addons }}
+{{- $all := concat $result $addons }}
 {{- toYaml $all }}
 {{- end }}
