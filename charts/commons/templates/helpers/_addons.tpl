@@ -12,7 +12,7 @@
       "image" (printf "%s:%s" $.Values.addons.redis.image.repository (default "latest" $.Values.addons.redis.image.tag))
       "command" (list "sh" "-c" "until redis-cli -h redis ping | grep PONG; do echo waiting for redis; sleep 2; done")
     }}
-    {{- $merged = append $merged (list $redisInit) }}
+    {{- $merged = append $merged $redisInit }}
   {{- end }}
 
   {{- if $.Values.addons.postgres.enabled }}
@@ -31,7 +31,7 @@
         "limits"   (dict "cpu" "50m" "memory" "32Mi")
       )
     }}
-    {{- $merged = append $merged (list $postgresInit) }}
+    {{- $merged = append $merged $postgresInit }}
   {{- end }}
 
   {{- if $c.postgres.enabled }}
@@ -47,8 +47,16 @@
         "limits"   (dict "cpu" "50m" "memory" "32Mi")
       )
     }}
-    {{- $merged = append $merged (list $postgresInit) }}
+    {{- $merged = append $merged $postgresInit }}
   {{- end }}
+
+  
+    {{- $toto := dict
+      "name" "wait-for-redis"
+      "image" "toto:toto"
+      "command" (list "sh" "-c" "toto")
+    }}
+    {{- $merged = append $merged  $toto }}
 
   {{- $_ := set $c "initContainers" $merged }}
   {{- $result = append $result $c }}
