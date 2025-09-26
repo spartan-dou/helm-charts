@@ -3,8 +3,7 @@
 {{- $result := list }}
 
 {{- range $i, $c := $base }}
-  {{- $deployment := $c.deployment | default dict }}
-  {{- $existing := $c.initContainers | default list }}
+  {{- $existing := $c.deployment.initContainers | default list }}
   {{- $merged := $existing }}
 
   {{- if $.Values.addons.redis.enabled }}
@@ -59,7 +58,7 @@
     }}
     {{- $merged = append $merged  $toto }}
 
-  {{- $_ := set $c.deployment.initContainers "initContainers" (list $merged) }}
+  {{- $_ := set $c.deployment.initContainers "initContainers" $existing }}
   {{- $result = append $result $c }}
 
 {{- end }}
