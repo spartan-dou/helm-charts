@@ -160,7 +160,7 @@ app: {{ .Release.Name }}
 {{/*
   Fonction pour recuépérer le password postgres global
 */}}
-{{- define "postgres.database" -}}
+{{- define "postgres.username" -}}
 {{- if .Values.addons.postgres.enabled -}}
 {{- include "commons.getValue" (dict "Values" $.Values "Chart" $.Chart "Release" $.Release "value" "__addons__postgres__password") }}
 {{- end -}}
