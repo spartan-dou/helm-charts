@@ -1,5 +1,6 @@
 {{- define "commons.withAddons" }}
 {{- $base := .Values.components | default list }}
+{{- $result := list }}
 
 {{- range $i, $c := $base }}
   {{- $existing := $c.initContainers | default list }}
@@ -49,7 +50,8 @@
     {{- $merged = append $merged (list $postgresInit) }}
   {{- end }}
 
-  {{- $_ := set $base $i (merge $c (dict "initContainers" $merged)) }}
+  {{- $new := merge $c (dict "initContainers" $merged) }}
+  {{- $result = append $result (list $new) }}
 {{- end }}
 
 {{- $addons := list }}
@@ -216,6 +218,6 @@
 {{- end }}
 
 {{/* === Fusion finale === */}}
-{{- $all := concat $base $addons }}
+{{- $all := concat $result $addons }}
 {{- toYaml $all }}
 {{- end }}
