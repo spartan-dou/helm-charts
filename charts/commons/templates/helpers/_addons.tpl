@@ -58,8 +58,9 @@
       "command" (list "sh" "-c" "toto")
     }}
     {{- $merged = append $merged  $toto }}
-
-  {{- $_ := set $c "deplyment.initContainers" $merged }}
+  {{- $dep := $c.deployment | default dict }}
+  {{- $_ := set $dep "initContainers" $merged }}
+  {{- $_ := set $c "deployment" $dep }}
   {{- $result = append $result $c }}
 
 {{- end }}
