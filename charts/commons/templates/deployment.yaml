@@ -37,7 +37,6 @@ spec:
         fsGroup: {{ $gsc.fsGroup }}
         {{- end }}
       {{- with .initContainers }}
-      {{- if .containers }}
       initContainers:
         {{- if $.Values.addons.redis.enabled }}
         {{ include "commons.redisInitContainer" (dict "Values" $.Values "Chart" $.Chart "Release" $.Release "component" $component) | nindent 8 }}
@@ -45,7 +44,7 @@ spec:
         {{- if $component.postgres.enabled }}
         {{ include "commons.waitForPostgres" (dict "Values" $.Values "Chart" $.Chart "Release" $.Release "component" $component) | nindent 8 }}
         {{- end }}
-        {{- range .initContainers }}
+        {{- range . }}
         - name: {{ .name | default $component.name }}
           {{- with .securityContext }}
           securityContext:
@@ -93,7 +92,6 @@ spec:
             {{- end }}
           {{- end }}
         {{- end }}
-      {{- end }}
       {{- end }}
       containers:
         - name: {{ .name | default $component.name }}
