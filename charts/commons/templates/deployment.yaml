@@ -5,19 +5,21 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "commons.fullname" (dict "Chart" $.Chart "Values" $.Values "Release" $.Release "name" .name "component" .) }}
+  name: {{ include "commons.fullname" (dict "Chart" $.Chart "Values" $.Values "Release" $.Release "name" .name "component" $component) }}
   labels:
-    {{ include "commons.labels" (dict "Chart" $.Chart "Values" $.Values "Release" $.Release "name" .name "component" .) | nindent 4 }}
+    {{ include "commons.labels" (dict "Chart" $.Chart "Values" $.Values "Release" $.Release "name" .name "component" $component) | nindent 4 }}
 spec:
   replicas: {{ default 1 .replicas }}
   selector:
     matchLabels:
-      {{ include "commons.selectorLabels" (dict "Chart" $.Chart "Values" $.Values "Release" $.Release "name" .name "component" .) | nindent 6 }}
+      {{ include "commons.selectorLabels" (dict "Chart" $.Chart "Values" $.Values "Release" $.Release "name" .name "component" $component) | nindent 6 }}
   template:
     metadata:
       labels:
-        {{ include "commons.selectorLabels" (dict "Chart" $.Chart "Values" $.Values "Release" $.Release "name" .name "component" .) | nindent 8 }}
+        {{ include "commons.selectorLabels" (dict "Chart" $.Chart "Values" $.Values "Release" $.Release "name" .name "component" $component) | nindent 8 }}
     spec:
+      {{- $sc := .securityContext | default (dict) }}
+      {{- $gsc := $.Values.global.securityContext | default (dict) }}
       securityContext:
         {{- if hasKey $sc "runAsUser" }}
         runAsUser: {{ $sc.runAsUser }}
@@ -34,7 +36,6 @@ spec:
         {{- else if hasKey $gsc "fsGroup" }}
         fsGroup: {{ $gsc.fsGroup }}
         {{- end }}
-      {{- with .initContainers }}
       initContainers:
         {{- if $.Values.addons.redis.enabled }}
         {{ include "commons.redisInitContainer" (dict "Values" $.Values "Chart" $.Chart "Release" $.Release "component" $component) | nindent 8 }}
@@ -42,7 +43,7 @@ spec:
         {{- if $component.postgres.enabled }}
         {{ include "commons.waitForPostgres" (dict "Values" $.Values "Chart" $.Chart "Release" $.Release "component" $component) | nindent 8 }}
         {{- end }}
-        {{- range . }}
+        {{- range .initContainers }}
         - name: {{ .name | default $component.name }}
           {{- with .securityContext }}
           securityContext:
@@ -93,8 +94,6 @@ spec:
             {{- end }}
           {{- end }}
         {{- end }}
-      {{- end }}
-
       containers:
         - name: {{ default $component.name .name }}
           image: {{ .image.repository }}:{{ .image.tag | default "latest" }}
@@ -166,9 +165,7 @@ spec:
           resources:
             {{- toYaml . | nindent 12 }}
           {{- end }}
-
         {{ include "commons.sidecars" (dict "component" $component "Values" $.Values) | nindent 8 }}
-
       {{- with .volumes }}
       volumes:
         {{- range . }}
