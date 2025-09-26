@@ -70,6 +70,8 @@ components:
         - name: setup-volume
           image:
             repository: alpine
+          command:
+            - sh
       image:
         repository: nginx
         tag: latest
