@@ -51,7 +51,9 @@
   {{- end }}
 
   {{- $new := merge $c (dict "initContainers" $merged) }}
-  {{- $result = append $result (list $new) }}
+  {{- $copy := deepCopy $c }}
+  {{- $_ := set $copy "initContainers" $merged }}
+  {{- $result = append $result (list $copy) }}
 {{- end }}
 
 {{- $addons := list }}
