@@ -8,13 +8,6 @@ global:
     storage:
       size: 1Gi
       storageClassName: test
-  postgres:
-    storage:
-      size: 1Gi
-      storageClass: test
-    image:
-      repository: ghcr.io/cloudnative-pg/postgresql
-      tag: 16
   ingress:
     className: traefik
   rbac:
@@ -193,6 +186,9 @@ addons:
     enabled: true
   postgres:
     enabled: true
+    image:
+      repository: ghcr.io/cloudnative-pg/postgresql
+      tag: 16
     storage:
       size: 1Gi
       storageClass: test

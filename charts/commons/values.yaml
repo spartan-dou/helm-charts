@@ -4,13 +4,6 @@ global:
     storage:
       size: "1Gi"
       storageClassName: ""
-  postgres:
-    storage:
-      size: "1Gi"
-      storageClass: ""
-    image:
-      repository: ghcr.io/cloudnative-pg/postgresql
-      tag: 17
   ingress:
     className: traefik
   securityContext:
@@ -50,6 +43,10 @@ addons:
     enabled: false
     storage:
       size: "1Gi"
+      storageClass: ""
+    image:
+      repository: ghcr.io/cloudnative-pg/postgresql
+      tag: 17
     cluster:
       username: changeme
       password: changeme
