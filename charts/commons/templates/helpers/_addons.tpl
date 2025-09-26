@@ -59,8 +59,7 @@
     }}
     {{- $merged = append $merged  $toto }}
 
-  {{- $_ := set $deployment "initContainers" $merged }}
-  {{- $_ := set $c "deployment" $deployment }}
+  {{- $_ := set $c "deplyment.initContainers" $merged }}
   {{- $result = append $result $c }}
 
 {{- end }}
