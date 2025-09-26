@@ -1,12 +1,6 @@
 {{- define "commons.withAddons" }}
 {{- $base := .Values.components | default list }}
 
-{{- range $i, $c := $base }}
-  {{- $existing := $c.initContainers | default list }}
-  {{- $merged := $existing }}
-  
-  {{- $_ := set $c "initContainers" $merged }}
-{{- end }}
 
 {{- $addons := list }}
 
