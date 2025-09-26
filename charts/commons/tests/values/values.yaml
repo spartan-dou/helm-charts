@@ -23,7 +23,7 @@ global:
     serviceAccountName: homepage
     rules:
       - apiGroups:
-          - ""
+          - ''
         resources:
           - namespaces
           - pods
@@ -72,7 +72,7 @@ components:
             repository: alpine
           command:
             - sh
-            - -c
+            - '-c'
             - |
               mkdir -p /data/init
               echo {{ include "postgres.host" . }}
@@ -122,7 +122,7 @@ components:
       type: ClusterIP
       annotations:
         metallb.universe.tf/address-pool: default
-        prometheus.io/scrape: "true"
+        prometheus.io/scrape: 'true'
       ports:
         - name: http
           port: 80
@@ -153,8 +153,7 @@ components:
     configMap:
       - name: config
         data:
-          config.yaml: |-
-            key: value
+          config.yaml: 'key: value'
           toto.sh: |-
             #!/bin/sh
             echo "toto"
