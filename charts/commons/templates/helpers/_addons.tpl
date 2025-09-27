@@ -4,7 +4,10 @@
 
 {{- range $i, $c := $base }}
   {{- $existing := $c.deployment.initContainers | default list }}
-  {{- $merged := $existing }}
+  {{- $merged := slice }}
+  {{- range $existing }}
+    {{- $merged = append $merged . }}
+  {{- end }}
 
   {{- if $.Values.addons.redis.enabled }}
     {{- $redisInit := dict
