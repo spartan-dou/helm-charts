@@ -11,7 +11,7 @@
 
   {{- if $.Values.addons.redis.enabled }}
     {{- $redisInit := dict
-      "name" "wait-for-redis"
+      "name" (printf "wait-for-redis%s" $i)
       "image" (dict
         "repository" $.Values.addons.redis.image.repository
         "tag" $.Values.addons.redis.image.tag
