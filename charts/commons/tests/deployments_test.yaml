@@ -21,7 +21,16 @@ tests:
           value: nginx:latest
       - equal:
           path: spec.template.spec.initContainers[0].name
+          value: setup-volume
+      - equal:
+          path: spec.template.spec.initContainers[1].name
           value: wait-for-redis
+      - equal:
+          path: spec.template.spec.initContainers[2].name
+          value: wait-for-postgres
+      - equal:
+          path: spec.template.spec.initContainers[3].name
+          value: wait-for-postgres-nginx
 
   - it: Vérifie les variables d'env
     documentSelector:
