@@ -11,7 +11,7 @@
 
   {{- if $.Values.addons.redis.enabled }}
     {{- $redisInit := dict
-      "name" (printf "wait-for-redis%s" $i)
+      "name" "wait-for-redis"
       "image" (dict
         "repository" $.Values.addons.redis.image.repository
         "tag" $.Values.addons.redis.image.tag
@@ -29,7 +29,7 @@
     {{- $port := "5432" }}
 
     {{- $postgresInit := dict
-      "name" (printf "wait-for-postgres%s" $name)
+      "name" (printf "wait-for-postgres")
       "image" (dict
         "repository" $image
         "tag" $tag
@@ -48,7 +48,7 @@
     {{- $tag := $c.tag | default $.Values.addons.postgres.image.tag }}
     {{- $host := include "commons.getValue" (dict "Values" $.Values "Chart" $.Chart "Release" $.Release "component" $c "value" "__components__postgres__host") }}
     {{- $postgresInit := dict
-      "name" (printf "wait-for-postgres%s" $c.name)
+      "name" (printf "wait-for-postgres-%s" $c.name)
       "image" (dict
         "repository" $image
         "tag" $tag
