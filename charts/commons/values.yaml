@@ -1,3 +1,6 @@
+debug:
+  enabled: false
+  
 global:
   timezone: "Europe/Paris"
   pvc:
