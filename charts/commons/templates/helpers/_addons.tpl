@@ -4,7 +4,7 @@
 
 {{- range $i, $c := $base }}
   {{- $existing := $c.deployment.initContainers | default list }}
-  {{- $merged := slice }}
+  {{- $merged := list }}
   {{- range $existing }}
     {{- $merged = append $merged . }}
   {{- end }}
