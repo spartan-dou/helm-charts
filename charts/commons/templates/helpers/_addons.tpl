@@ -1,5 +1,5 @@
 {{- define "commons.withAddons" }}
-{{- $base := deepCopy .Values.components | default list }}
+{{- $base := deepCopy (.Values.components | default list) }}
 {{- $result := list }}
 
 {{- range $i, $c := $base }}
