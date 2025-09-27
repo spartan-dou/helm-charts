@@ -111,8 +111,19 @@ components:
           subPath: data
       volumes:
         - name: data
-          persistentVolumeClaim:
-            claimName: __components__pvc__data-pvc
+          pvc:
+            name: __components__pvc__data-pvc
+            spec:
+              accessMode: ReadWriteOnce
+              storage: 1Gi
+              storageClassName: local-path
+        - name: data-2
+          pvc:
+            name: data-2-pvc
+            spec:
+              accessMode: ReadWriteOnce
+              storage: 2Gi
+              storageClassName: local-path
     service:
       type: ClusterIP
       annotations:
@@ -136,15 +147,6 @@ components:
         - hosts:
             - web.mondomaine.local
           secretName: web-cert
-    pvc:
-      - name: data-pvc
-        accessMode: ReadWriteOnce
-        storage: 1Gi
-        storageClassName: local-path
-      - name: data-2-pvc
-        accessMode: ReadWriteOnce
-        storage: 2Gi
-        storageClassName: local-path
     configMap:
       - name: config
         data:

@@ -168,14 +168,14 @@ spec:
             {{- with .configMap.readOnly }}
             readOnly: {{ . }}
             {{- end }}
-          {{- else if .persistentVolumeClaim }}
+        {{- else if .pvc }}
         - name: {{ .name }}
           persistentVolumeClaim:
-            claimName: {{ include "commons.getValue" (dict "Values" $.Values "Chart" $.Chart "Release" $.Release "component" $component "value" .persistentVolumeClaim.claimName) }}
-            {{- with .persistentVolumeClaim.readOnly }}
+            claimName: {{ include "commons.fullname" (dict "Chart" $.Chart "Values" $.Values "Release" $.Release "name" (default .name .pvc.name) "component" $component) }}
+            {{- with .pvc.readOnly }}
             readOnly: {{ . }}
             {{- end }}
-          {{- else }}
+        {{- else }}
         - {{ toYaml . | nindent 10 | trim }}
           {{- end }}
         {{- end }}
