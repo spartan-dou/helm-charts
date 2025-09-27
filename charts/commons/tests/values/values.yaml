@@ -66,6 +66,11 @@ components:
           command:
             - sh
             - '-c'
+            - |
+              echo "Préparation du volume..."
+              mkdir -p /data
+              chown -R 1000:1000 /data
+              echo "Volume prêt."
       image:
         repository: nginx
         tag: latest

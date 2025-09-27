@@ -47,9 +47,7 @@ spec:
           image: {{ .image.repository }}:{{ .image.tag | default "latest"  }}
           {{- with .command }}
           command:
-            {{- range . }}
-            - {{ . }}
-            {{- end }}
+            {{ toYaml . | indent 12 }}
           {{- end }}
           {{- with .args }}
           args:
