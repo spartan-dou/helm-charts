@@ -1,8 +1,7 @@
 {{- $components := include "commons.withAddons" . | fromYamlArray }}
 {{- range $components }}
 {{- $component := . }}
-{{- with $component.volumes }}
-{{- range . }}
+{{- range $component.volumes }}
 {{- $volume := . }}
 {{- $pvc := .pvc }}
 {{- with $pvc.spec }}
@@ -27,7 +26,6 @@ spec:
     {{- toYaml .selector | nindent 4 }}
   {{- end }}
 ---
-{{- end }}
 {{- end }}
 {{- end }}
 {{- end }}

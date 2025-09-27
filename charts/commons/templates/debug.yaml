@@ -1,3 +1,4 @@
+{{- if .Values.debug.enabled }}
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -5,3 +6,4 @@ metadata:
 data:
   all.yaml: |
 {{ include "commons.withAddons" . | indent 4 }}
+{{- end }}
