@@ -1,14 +1,14 @@
 {{- $components := include "commons.withAddons" . | fromYamlArray }}
-TETE
+TETE: 1
 {{- range $components }}
 {{- $component := . }}
-TUTU
+TUTU: 2
 {{- range $component.volumes }}
-TOTO
+TOTO: 3
 {{- $volume := . }}
 {{- $pvc := $volume.pvc }}
 {{- if $pvc }}
-TATA
+TATA: 4
 {{- with $pvc.spec }}
 apiVersion: v1
 kind: PersistentVolumeClaim
