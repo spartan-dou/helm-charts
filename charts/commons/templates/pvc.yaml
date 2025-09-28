@@ -1,6 +1,8 @@
 {{- $components := include "commons.withAddons" . | fromYamlArray }}
+TETE
 {{- range $components }}
 {{- $component := . }}
+TUTU
 {{- range $component.volumes }}
 TOTO
 {{- $volume := . }}
