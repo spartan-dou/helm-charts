@@ -1,11 +1,9 @@
 {{- $components := include "commons.withAddons" . | fromYamlArray }}
 {{- range $components }}
 {{- $component := . }}
+{{- range $component.volumes }}
 apiVersion: v1
 kind: PersistentVolumeClaim
-name: {{- $component.name}}
-{{- range $component.volumes }}
-TOTO: 3
 {{- $volume := . }}
 {{- $pvc := $volume.pvc }}
 {{- if $pvc }}
