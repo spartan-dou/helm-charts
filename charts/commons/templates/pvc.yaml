@@ -3,6 +3,7 @@
 {{- $component := . }}
 apiVersion: v1
 kind: PersistentVolumeClaim
+name: {{- $component.name}}
 {{- range $component.volumes }}
 TOTO: 3
 {{- $volume := . }}
