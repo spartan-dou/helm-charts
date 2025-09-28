@@ -1,7 +1,8 @@
 {{- $components := include "commons.withAddons" . | fromYamlArray }}
 {{- range $components }}
 {{- $component := . }}
-TUTU: 2
+apiVersion: v1
+kind: PersistentVolumeClaim
 {{- range $component.volumes }}
 TOTO: 3
 {{- $volume := . }}
