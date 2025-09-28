@@ -4,6 +4,7 @@
 {{- range $component.volumes }}
 {{- $volume := . }}
 {{- $pvc := $volume.pvc }}
+{{- if $pvc }}
 {{- with $pvc.spec }}
 apiVersion: v1
 kind: PersistentVolumeClaim
@@ -26,6 +27,7 @@ spec:
     {{- toYaml .selector | nindent 4 }}
   {{- end }}
 ---
+{{- end }}
 {{- end }}
 {{- end }}
 {{- end }}
