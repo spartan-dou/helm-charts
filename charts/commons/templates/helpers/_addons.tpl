@@ -145,7 +145,7 @@
       "volumes" (list (dict
         "name" "data"
         "pvc" (dict 
-          "name" (printf "%s-redis-data" $.Release.Name)
+          "name" (printf "redis-data")
           "spec" (dict
             "name" "data"
             "storage" (default .Values.global.pvc.storage.size (default dict .Values.addons.redis.storage).size)
