@@ -1,3 +1,5 @@
+debug:
+  enabled: true
 global:
   timezone: Europe/Paris
   securityContext:
@@ -112,7 +114,7 @@ components:
       volumes:
         - name: data
           pvc:
-            name: __components__pvc__data-pvc
+            name: data-pvc
             spec:
               accessMode: ReadWriteOnce
               storage: 1Gi

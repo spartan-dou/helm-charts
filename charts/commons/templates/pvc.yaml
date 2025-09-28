@@ -3,7 +3,7 @@
 {{- $component := . }}
 {{- range $component.volumes }}
 {{- $volume := . }}
-{{- $pvc := .pvc }}
+{{- $pvc := $volume.pvc }}
 {{- with $pvc.spec }}
 apiVersion: v1
 kind: PersistentVolumeClaim

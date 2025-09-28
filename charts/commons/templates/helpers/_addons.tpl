@@ -82,14 +82,15 @@
       "volumeMounts" (list (dict "name" "vscode-data" "mountPath" "/home/coder/project"))
       "volumes" (list (dict
         "name" "vscode-data"
-        "persistentVolumeClaim" (dict "claimName" "vscode-data")
+        "pvc" (dict
+          "name" "vscode-data"
+          "spec" (dict
+            "name" "vscode-data"
+            "storage" "1Gi"
+            "storageClassName" (default .Values.global.pvc.storage.storageClassName .Values.addons.vscode.storageClassName)
+          ))
       ))
     )
-    "pvc" (list (dict
-      "name" "vscode-data"
-      "storage" "1Gi"
-      "storageClassName" (default .Values.global.pvc.storage.storageClassName .Values.addons.vscode.storageClassName)
-    ))
     "service" (dict
       "enabled" true
       "type" "ClusterIP"
@@ -143,14 +144,15 @@
       ))
       "volumes" (list (dict
         "name" "data"
-        "persistentVolumeClaim" (dict "claimName" (printf "%s-redis-data" $.Release.Name))
+        "pvc" (dict 
+          "name" (printf "%s-redis-data" $.Release.Name)
+          "spec" (dict
+            "name" "data"
+            "storage" (default .Values.global.pvc.storage.size (default dict .Values.addons.redis.storage).size)
+            "storageClassName" (default .Values.global.pvc.storage.storageClassName (default dict .Values.addons.redis.storage).storageClassName)
+          ))
       ))
     )
-    "pvc" (list (dict
-      "name" "data"
-      "storage" (default .Values.global.pvc.storage.size (default dict .Values.addons.redis.storage).size)
-      "storageClassName" (default .Values.global.pvc.storage.storageClassName (default dict .Values.addons.redis.storage).storageClassName)
-    ))
     "service" (dict
       "enabled" true
       "type" "ClusterIP"
