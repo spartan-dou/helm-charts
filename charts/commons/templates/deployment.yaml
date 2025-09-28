@@ -164,14 +164,22 @@ spec:
         {{- if .configMap }}
         - name: {{ .name }}
           configMap:
+            {{- if .configMap.spec }}
+            name: {{ include "commons.fullname" (dict "Chart" $.Chart "Values" $.Values "Release" $.Release "name" (default .name .configMap.name) "component" $component) }}
+            {{- else }}
             name: {{ include "commons.getValue" (dict "Values" $.Values "Chart" $.Chart "Release" $.Release "component" $component "value" .configMap.name) }}
+            {{- end }}
             {{- with .configMap.readOnly }}
             readOnly: {{ . }}
             {{- end }}
         {{- else if .pvc }}
         - name: {{ .name }}
           persistentVolumeClaim:
+          {{- if .pvc.spec }}
             claimName: {{ include "commons.fullname" (dict "Chart" $.Chart "Values" $.Values "Release" $.Release "name" (default .name .pvc.name) "component" $component) }}
+            {{- else }}
+            claimName: {{ include "commons.getValue" (dict "Values" $.Values "Chart" $.Chart "Release" $.Release "component" $component "value" .pvc.name) }}
+            {{- end }}
             {{- with .pvc.readOnly }}
             readOnly: {{ . }}
             {{- end }}
