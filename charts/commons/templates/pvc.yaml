@@ -2,9 +2,11 @@
 {{- range $components }}
 {{- $component := . }}
 {{- range $component.volumes }}
+TOTO
 {{- $volume := . }}
 {{- $pvc := $volume.pvc }}
 {{- if $pvc }}
+TATA
 {{- with $pvc.spec }}
 apiVersion: v1
 kind: PersistentVolumeClaim
