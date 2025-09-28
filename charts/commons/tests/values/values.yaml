@@ -1,5 +1,5 @@
 debug:
-  enabled: true
+  enabled: false
 global:
   timezone: Europe/Paris
   securityContext:
@@ -128,7 +128,6 @@ components:
               storageClassName: local-path
         - name: config
           configMap:
-            name: config
             spec:
               data:
                 config.yaml: 'key: value'

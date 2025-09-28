@@ -41,7 +41,7 @@ tests:
   - it: Vérifie le PVC redis-data
     documentSelector:
       path: metadata.name
-      value: test-redis-redis-data
+      value: test-redis-data
     asserts:
       - equal:
           path: spec.resources.requests.storage
