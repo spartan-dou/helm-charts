@@ -43,7 +43,7 @@
     {{- $merged = append $merged $postgresInit }}
   {{- end }}
 
-  {{- if $c.postgres.enabled }}
+  {{- if and $c.postgres $c.postgres.enabled }}
     {{- $image := $c.image | default $.Values.addons.postgres.image.repository }}
     {{- $tag := $c.tag | default $.Values.addons.postgres.image.tag }}
     {{- $host := include "commons.getValue" (dict "Values" $.Values "Chart" $.Chart "Release" $.Release "component" $c "value" "__components__postgres__host") }}
