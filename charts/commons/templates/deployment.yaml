@@ -18,6 +18,10 @@ spec:
       labels:
         {{ include "commons.selectorLabels" (dict "Chart" $.Chart "Values" $.Values "Release" $.Release "name" .name "component" $component) | nindent 8 }}
     spec:
+      {{- if $.Values.global.rbac.enabled }}
+      serviceAccountName: {{ $.Values.global.rbac.serviceAccountName }}
+      automountServiceAccountToken: true
+      {{{- end }}}
       {{- $sc := .securityContext | default (dict) }}
       {{- $gsc := $.Values.global.securityContext | default (dict) }}
       securityContext:
