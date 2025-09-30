@@ -122,6 +122,7 @@ components:
         - name: data-2
           pvc:
             name: data-2-pvc
+            useExisting: false
             spec:
               accessMode: ReadWriteOnce
               storage: 2Gi

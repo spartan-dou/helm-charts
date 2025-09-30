@@ -4,8 +4,7 @@
 {{- range $component.deployment.volumes }}
 {{- $volume := . }}
 {{- $pvc := $volume.pvc }}
-{{- if $pvc }}
-{{- with $pvc.spec }}
+{{- if and $pvc (not $pvc.useExisting) }}
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
@@ -14,20 +13,19 @@ metadata:
     {{ include "commons.labels" (dict "Chart" $.Chart "Values" $.Values "Release" $.Release "name" (default $volume.name $pvc.name) "component" $component) | nindent 4 }}
 spec:
   accessModes:
-    - {{ .accessMode | default "ReadWriteOnce" }}
+    - {{ $pvc.spec.accessMode | default $.Values.global.pvc.accessMode }}
   resources:
     requests:
-      storage: {{ .storage | default $.Values.global.pvc.storage.size }}
-  storageClassName: {{ .storageClassName | default $.Values.global.pvc.storage.storageClassName }}
-  {{- if .volumeMode }}
-  volumeMode: {{ .volumeMode }}
+      storage: {{ $pvc.spec.storage | default $.Values.global.pvc.storage.size }}
+  storageClassName: {{ $pvc.spec.storageClassName | default $.Values.global.pvc.storage.storageClassName }}
+  {{- if $pvc.spec.volumeMode }}
+  volumeMode: {{ $pvc.spec.volumeMode }}
   {{- end }}
-  {{- if .selector }}
+  {{- if $pvc.spec.selector }}
   selector:
-    {{- toYaml .selector | nindent 4 }}
+    {{- toYaml $pvc.spec.selector | nindent 4 }}
   {{- end }}
 ---
-{{- end }}
 {{- end }}
 {{- end }}
 {{- end }}

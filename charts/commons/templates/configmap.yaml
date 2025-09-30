@@ -4,8 +4,7 @@
 {{- range $component.deployment.volumes }}
 {{- $volume := . }}
 {{- $configMap := $volume.configMap }}
-{{- if $configMap }}
-{{- with $configMap.spec }}
+{{- if and $configMap (not $configMap.useExisting) }}
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -18,7 +17,6 @@ data:
   {{ $content | nindent 4 }}
   {{- end }}
 ---
-{{- end }}
 {{- end }}
 {{- end }}
 {{- end }}
