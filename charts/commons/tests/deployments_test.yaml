@@ -90,6 +90,18 @@ tests:
       - equal:
           path: spec.template.spec.containers[0].image
           value: codercom/code-server:39
+      - equal:
+          path: spec.template.spec.containers[0].volumeMounts[0].mountPath
+          value: "/config/toto"
+      - equal:
+          path: spec.template.spec.containers[0].volumeMounts[0].name
+          value: "toto"
+      - equal:
+          path: spec.template.spec.containers[0].volumes[0].name
+          value: "toto"
+      - equal:
+          path: spec.template.spec.containers[0].volumes[0].persistentVolumeClaim.claimName
+          value: "test-nginx-data-pvc"
 
   - it: Vérifie le Deployment redis
     documentSelector:
