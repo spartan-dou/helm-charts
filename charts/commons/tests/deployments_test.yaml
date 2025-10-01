@@ -98,10 +98,10 @@ tests:
           value: "vscode-data"
       - equal:
           path: spec.template.spec.volumes[0].name
-          value: "toto"
+          value: "vscode-data"
       - equal:
           path: spec.template.spec.volumes[0].persistentVolumeClaim.claimName
-          value: "test-nginx-data-pvc"
+          value: "test-code-server-vscode-data"
       - equal:
           path: spec.template.spec.containers[0].volumeMounts[1].mountPath
           value: "/config/toto"
