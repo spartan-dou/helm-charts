@@ -126,9 +126,15 @@ app: {{ .Release.Name }}
     {{- else if eq $field "port" }}
       {{- $value = .Values.addons.redis.port }}
     {{- end }}
-  {{- else if and (eq $type "pvc") (eq $source "components") }}
+  {{- else if and (eq $type "pvc") }}
+    {{- if not (eq $source "components") }}
+      {{- $component := dict "name" $source }}
+    {{- end }}
     {{- $value = include "commons.fullname" (dict "Chart" $.Chart "Values" $.Values "Release" $.Release "name" $field "component" $component) }}
-  {{- else if and (eq $type "configmap") (eq $source "components") }}
+  {{- else if (eq $type "configmap") }}
+    {{- if not (eq $source "components") }}
+      {{- $component := dict "name" $source }}
+    {{- end }}
     {{- $value = include "commons.fullname" (dict "Chart" $.Chart "Values" $.Values "Release" $.Release "name" $field "component" $component) }}
   {{- else if and (eq $type "service") (eq $source "components") }}
     {{- $value = include "commons.fullname" (dict "Chart" $.Chart "Values" $.Values "Release" $.Release "name" $field "component" $component) }}

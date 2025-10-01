@@ -76,20 +76,46 @@
     "deployment" (dict
       "image" (dict
         "repository" .Values.addons.vscode.image.repository
-        "tag" .Values.addons.vscode.image.tag | default "latest"
+        "tag" (default "latest" .Values.addons.vscode.image.tag)
       )
       "ports" (list (dict "name" "http" "containerPort" .Values.addons.vscode.port))
-      "volumeMounts" (list (dict "name" "vscode-data" "mountPath" "/home/coder/project"))
-      "volumes" (list (dict
-        "name" "vscode-data"
-        "pvc" (dict
+      "volumeMounts" (list (dict "name" "vscode-data" "mountPath" "/home/coder/project")
+      {{- range .Values.addons.vscode.volumes }}
+      {{- $name := .name }}
+      {{- with .volumeMount }}
+        (dict "name" $name "mountPath" .mountPath)
+      {{- end }}
+      {{- end }}
+      )
+      "volumes" (append
+        (list (dict
           "name" "vscode-data"
-          "spec" (dict
+          "pvc" (dict
             "name" "vscode-data"
-            "storage" "1Gi"
-            "storageClassName" (default .Values.global.pvc.storage.storageClassName .Values.addons.vscode.storageClassName)
-          ))
-      ))
+            "spec" (dict
+              "storage" "1Gi"
+              "storageClassName" (default .Values.global.pvc.storage.storageClassName .Values.addons.vscode.storageClassName)
+            )
+          )
+        ))
+        {{- range .Values.addons.vscode.volumes }}
+        (dict
+          "name" .name
+          {{- with .pvc }}
+          "pvc" (dict
+            "name" .name
+            "useExisting" (default true .useExisting)
+            {{- with .spec }}
+            "spec" (dict
+              "storage" (default $.Values.global.pvc.storage.size .size)
+              "storageClassName" (default $.Values.global.pvc.storage.storageClassName $.Values.addons.vscode.storageClassName)
+            )
+            {{- end }}
+          )
+          {{- end }}
+        )
+        {{- end }}
+      )
     )
     "service" (dict
       "enabled" true
@@ -97,6 +123,7 @@
       "ports" (list (dict "name" "http" "port" .Values.addons.vscode.port))
     )
   }}
+
   {{- if (default dict (default dict .Values.addons.vscode).ingress).enabled }}
   {{- /* dictionnaire ingress par défaut */ -}}
   {{- $ingressDefaults := dict
@@ -147,7 +174,6 @@
         "pvc" (dict 
           "name" (printf "data")
           "spec" (dict
-            "name" "data"
             "storage" (default .Values.global.pvc.storage.size (default dict .Values.addons.redis.storage).size)
             "storageClassName" (default .Values.global.pvc.storage.storageClassName (default dict .Values.addons.redis.storage).storageClassName)
           ))
