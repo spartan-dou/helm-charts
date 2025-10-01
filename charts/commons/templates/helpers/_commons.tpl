@@ -127,10 +127,13 @@ app: {{ .Release.Name }}
       {{- $value = .Values.addons.redis.port }}
     {{- end }}
   {{- else if and (eq $type "pvc") }}
-  {{- $test := (dict "name" $source) }}
+    {{- $c := dict }}
     {{- if not (eq $source "components") }}
+      {{- $c = (dict "name" $source) }}
+    {{- else }}
+      {{- $c = deepCopy $component }}
     {{- end }}
-    {{- $value = include "commons.fullname" (dict "Chart" $.Chart "Values" $.Values "Release" $.Release "name" $field "component" $test) }}
+    {{- $value = include "commons.fullname" (dict "Chart" $.Chart "Values" $.Values "Release" $.Release "name" $field "component" $c) }}
   {{- else if (eq $type "configmap") }}
     {{- if not (eq $source "components") }}
       {{- $component = merge $component (dict "name" $source) }}
