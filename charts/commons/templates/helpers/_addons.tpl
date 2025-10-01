@@ -72,6 +72,7 @@
 {{/* === Addon VSCode === */}}
 {{- if .Values.addons.vscode.enabled }}
 
+  {{/* VolumeMounts */}}
   {{- $volumeMounts := list (dict "name" "vscode-data" "mountPath" "/home/coder/project") }}
   {{- range .Values.addons.vscode.volumes }}
     {{- $name := .name }}
@@ -80,6 +81,7 @@
     {{- end }}
   {{- end }}
 
+  {{/* Volumes */}}
   {{- $volumes := list (dict
     "name" "vscode-data"
     "pvc" (dict
@@ -92,17 +94,17 @@
   ) }}
 
   {{- range .Values.addons.vscode.volumes }}
-    {{- $vol := dict
-      "name" .name
-      "pvc" (dict
-        "name" .name
-        "useExisting" (default true .useExisting)
-        "spec" (dict
+    {{- $vol := dict "name" .name }}
+    {{- with .pvc }}
+      {{- $spec := dict }}
+      {{- with .spec }}
+        {{- $spec = dict
           "storage" (default $.Values.global.pvc.storage.size .size)
           "storageClassName" (default $.Values.global.pvc.storage.storageClassName $.Values.addons.vscode.storageClassName)
-        )
-      )
-    }}
+        }}
+      {{- end }}
+      {{- $vol = merge $vol (dict "pvc" (merge (dict "name" .name "useExisting" (default true .useExisting)) (dict "spec" $spec))) }}
+    {{- end }}
     {{- $volumes = append $volumes $vol }}
   {{- end }}
 
@@ -118,7 +120,6 @@
       "volumes" $volumes
     )
     "service" (dict
-      "enabled" true
       "type" "ClusterIP"
       "ports" (list (dict "name" "http" "port" .Values.addons.vscode.port))
     )
