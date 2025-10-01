@@ -128,12 +128,12 @@ app: {{ .Release.Name }}
     {{- end }}
   {{- else if and (eq $type "pvc") }}
     {{- if not (eq $source "components") }}
-      {{- $component := dict "name" $source }}
+      {{- $component = merge $component (dict "name" $source) }}
     {{- end }}
     {{- $value = include "commons.fullname" (dict "Chart" $.Chart "Values" $.Values "Release" $.Release "name" $field "component" $component) }}
   {{- else if (eq $type "configmap") }}
     {{- if not (eq $source "components") }}
-      {{- $component := dict "name" $source }}
+      {{- $component = merge $component (dict "name" $source) }}
     {{- end }}
     {{- $value = include "commons.fullname" (dict "Chart" $.Chart "Values" $.Values "Release" $.Release "name" $field "component" $component) }}
   {{- else if and (eq $type "service") (eq $source "components") }}

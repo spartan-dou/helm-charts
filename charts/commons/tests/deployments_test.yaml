@@ -113,7 +113,7 @@ tests:
           value: "toto"
       - equal:
           path: spec.template.spec.volumes[1].persistentVolumeClaim.claimName
-          value: "test-nginx-data-pvc"
+          value: "test-nginx-data-2-pvc"
 
   - it: Vérifie le Deployment redis
     documentSelector:
