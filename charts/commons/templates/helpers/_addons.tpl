@@ -71,6 +71,41 @@
 
 {{/* === Addon VSCode === */}}
 {{- if .Values.addons.vscode.enabled }}
+
+  {{- $volumeMounts := list (dict "name" "vscode-data" "mountPath" "/home/coder/project") }}
+  {{- range .Values.addons.vscode.volumes }}
+    {{- $name := .name }}
+    {{- with .volumeMount }}
+      {{- $volumeMounts = append $volumeMounts (dict "name" $name "mountPath" .mountPath) }}
+    {{- end }}
+  {{- end }}
+
+  {{- $volumes := list (dict
+    "name" "vscode-data"
+    "pvc" (dict
+      "name" "vscode-data"
+      "spec" (dict
+        "storage" "1Gi"
+        "storageClassName" (default .Values.global.pvc.storage.storageClassName .Values.addons.vscode.storageClassName)
+      )
+    )
+  ) }}
+
+  {{- range .Values.addons.vscode.volumes }}
+    {{- $vol := dict
+      "name" .name
+      "pvc" (dict
+        "name" .name
+        "useExisting" (default true .useExisting)
+        "spec" (dict
+          "storage" (default $.Values.global.pvc.storage.size .size)
+          "storageClassName" (default $.Values.global.pvc.storage.storageClassName $.Values.addons.vscode.storageClassName)
+        )
+      )
+    }}
+    {{- $volumes = append $volumes $vol }}
+  {{- end }}
+
   {{- $defaults := dict
     "name" "code-server"
     "deployment" (dict
@@ -79,43 +114,8 @@
         "tag" (default "latest" .Values.addons.vscode.image.tag)
       )
       "ports" (list (dict "name" "http" "containerPort" .Values.addons.vscode.port))
-      "volumeMounts" (list (dict "name" "vscode-data" "mountPath" "/home/coder/project")
-      {{- range .Values.addons.vscode.volumes }}
-      {{- $name := .name }}
-      {{- with .volumeMount }}
-        (dict "name" $name "mountPath" .mountPath)
-      {{- end }}
-      {{- end }}
-      )
-      "volumes" (append
-        (list (dict
-          "name" "vscode-data"
-          "pvc" (dict
-            "name" "vscode-data"
-            "spec" (dict
-              "storage" "1Gi"
-              "storageClassName" (default .Values.global.pvc.storage.storageClassName .Values.addons.vscode.storageClassName)
-            )
-          )
-        ))
-        {{- range .Values.addons.vscode.volumes }}
-        (dict
-          "name" .name
-          {{- with .pvc }}
-          "pvc" (dict
-            "name" .name
-            "useExisting" (default true .useExisting)
-            {{- with .spec }}
-            "spec" (dict
-              "storage" (default $.Values.global.pvc.storage.size .size)
-              "storageClassName" (default $.Values.global.pvc.storage.storageClassName $.Values.addons.vscode.storageClassName)
-            )
-            {{- end }}
-          )
-          {{- end }}
-        )
-        {{- end }}
-      )
+      "volumeMounts" $volumeMounts
+      "volumes" $volumes
     )
     "service" (dict
       "enabled" true
