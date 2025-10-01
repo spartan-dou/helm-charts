@@ -116,8 +116,8 @@
         "tag" (default "latest" .Values.addons.vscode.image.tag)
       )
       "ports" (list (dict "name" "http" "containerPort" .Values.addons.vscode.port))
-      "volumeMounts" $volumeMounts
-      "volumes" $volumes
+      "volumeMounts" $volumeMounts | fromYamlArray 
+      "volumes" $volumes | fromYamlArray 
     )
     "service" (dict
       "type" "ClusterIP"
