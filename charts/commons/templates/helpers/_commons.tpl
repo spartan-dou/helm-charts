@@ -126,7 +126,7 @@ app: {{ .Release.Name }}
     {{- else if eq $field "port" }}
       {{- $value = .Values.addons.redis.port }}
     {{- end }}
-  {{- else if or (eq $type "pvc") (eq $type "configmap") }}
+  {{- else if or (eq $type "pvc") (eq $type "configmap") (eq $type "service") }}
     {{- $c := dict }}
     {{- if not (eq $source "components") }}
       {{- $c = (dict "name" $source) }}
@@ -134,8 +134,6 @@ app: {{ .Release.Name }}
       {{- $c = deepCopy $component }}
     {{- end }}
     {{- $value = include "commons.fullname" (dict "Chart" $.Chart "Values" $.Values "Release" $.Release "name" $field "component" $c) }}
-  {{- else if and (eq $type "service") (eq $source "components") }}
-    {{- $value = include "commons.fullname" (dict "Chart" $.Chart "Values" $.Values "Release" $.Release "name" $field "component" $component) }}
   {{- end }}
 
 {{- end }}
