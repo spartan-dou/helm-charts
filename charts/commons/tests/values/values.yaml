@@ -180,9 +180,8 @@ addons:
       tag: 39
     port: 8080
     volumes:
-      - volumeMount:
-          mountPath: "/config/toto"
-        name: "toto"
+      - name: "toto"
+        mountPath: "/config/toto"
         pvc:
           name: __nginx__pvc__data-2-pvc
     ingress:

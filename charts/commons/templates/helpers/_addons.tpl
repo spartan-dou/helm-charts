@@ -79,8 +79,8 @@
   {{- $volumeMounts := list (dict "name" "vscode-data" "mountPath" "/home/coder/project") }}
   {{- range .Values.addons.vscode.volumes }}
     {{- $name := .name }}
-    {{- with .volumeMount }}
-      {{- $volumeMounts = append $volumeMounts (dict "name" $name "mountPath" .mountPath) }}
+    {{- with .mountPath }}
+      {{- $volumeMounts = append $volumeMounts (dict "name" $name "mountPath" .) }}
     {{- end }}
   {{- end }}
 
