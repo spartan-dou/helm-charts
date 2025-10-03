@@ -19,6 +19,9 @@ spec:
     - name: {{ .name }}
       port: {{ .port }}
       targetPort: {{ .targetPort | default .port }}
+      {{- with .protocol }}
+      protocol: {{ . }}
+      {{- end }}
       {{- if eq $.type "NodePort" }}
       {{- with .nodePort }}
       nodePort: {{ . }}
