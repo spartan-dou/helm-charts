@@ -13,7 +13,7 @@ metadata:
     {{ include "commons.labels" (dict "Chart" $.Chart "Values" $.Values "Release" $.Release "name" (default $volume.name $pvc.name) "component" $component) | nindent 4 }}
 spec:
   accessModes:
-    - {{ $pvc.spec.accessMode | default $.Values.global.pvc.accessMode }}
+    - {{ $pvc.spec.accessMode | default $.Values.global.pvc.storage.accessMode }}
   resources:
     requests:
       storage: {{ $pvc.spec.storage | default $.Values.global.pvc.storage.size }}
