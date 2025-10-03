@@ -155,7 +155,7 @@ spec:
                 {{- toYaml .tcpSocket | nindent 14 }}
             {{- else if .exec }}
               exec:
-                {{- toYaml .exec | exec 14 }}
+                {{- toYaml .exec | nindent 14 }}
             {{- else }}
                 httpGet:
                 {{- toYaml .httpGet | nindent 14 }}
@@ -172,7 +172,7 @@ spec:
                 {{- toYaml .tcpSocket | nindent 14 }}
             {{- else if .exec }}
               exec:
-                {{- toYaml .exec | exec 14 }}
+                {{- toYaml .exec | nindent 14 }}
             {{- else }}
                 httpGet:
                 {{- toYaml .httpGet | nindent 14 }}
@@ -189,7 +189,7 @@ spec:
                 {{- toYaml .tcpSocket | nindent 14 }}
             {{- else if .exec }}
               exec:
-                {{- toYaml .exec | exec 14 }}
+                {{- toYaml .exec | nindent 14 }}
             {{- else }}
                 httpGet:
                 {{- toYaml .httpGet | nindent 14 }}
