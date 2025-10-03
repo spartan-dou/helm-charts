@@ -9,7 +9,7 @@ global:
   pvc:
     storage:
       size: 1Gi
-      storageClass: test
+      storageClassName: test
   ingress:
     className: traefik
   rbac:
@@ -118,7 +118,7 @@ components:
             storage:
               accessMode: ReadWriteOnce
               size: 1Gi
-              storageClass: local-path
+              storageClassName: local-path
         - name: data-2
           pvc:
             name: data-2-pvc
@@ -126,7 +126,7 @@ components:
             storage:
               accessMode: ReadWriteOnce
               size: 2Gi
-              storageClass: local-path
+              storageClassName: local-path
         - name: config
           configMap:
             data:
@@ -163,7 +163,7 @@ components:
         tag: 16
       storage:
         size: 1Gi
-        storageClass: local-path
+        storageClassName: local-path
       cluster:
         username: changeme
         password: changeme
@@ -204,7 +204,7 @@ addons:
       tag: 16
     storage:
       size: 1Gi
-      storageClass: test
+      storageClassName: test
     cluster:
       username: changeme
       password: changeme

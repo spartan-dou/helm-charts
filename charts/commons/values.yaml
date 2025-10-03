@@ -6,7 +6,7 @@ global:
   pvc:
     storage:
       size: "1Gi"
-      storageClass: ""
+      storageClassName: ""
       accessMode: "ReadWriteOnce" 
   ingress:
     className: traefik
@@ -47,7 +47,7 @@ addons:
     enabled: false
     storage:
       size: "1Gi"
-      storageClass: ""
+      storageClassName: ""
     image:
       repository: ghcr.io/cloudnative-pg/postgresql
       tag: 17

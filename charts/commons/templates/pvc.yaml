@@ -17,7 +17,7 @@ spec:
   resources:
     requests:
       storage: {{ ($pvc.storage | default dict).size | default $.Values.global.pvc.storage.size }}
-  storageClassName: {{ ($pvc.storage | default dict).storageClass | default $.Values.global.pvc.storage.storageClass }}
+  storageClassName: {{ ($pvc.storage | default dict).storageClassName | default $.Values.global.pvc.storage.storageClassName }}
   {{- if and $pvc.storage $pvc.storage.volumeMode }}
   volumeMode: {{ $pvc.storage.volumeMode }}
   {{- end }}
