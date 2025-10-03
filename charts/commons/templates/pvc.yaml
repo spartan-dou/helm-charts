@@ -16,8 +16,8 @@ spec:
     - {{ get (get $pvc "spec" | default dict) "accessMode" | default $.Values.global.pvc.storage.accessMode }}
   resources:
     requests:
-      storage: {{ get (get $pvc "spec" | default dict) "storage" | default $.Values.global.pvc.storage.size }}
-  storageClassName: {{ get (get $pvc "spec" | default dict) "storageClassName" | default $.Values.global.pvc.storage.storageClassName }}
+      storage: {{ get (get (get $pvc "spec" | default dict) "storage" | default dict) "size" | default $.Values.global.pvc.storage.size }}
+  storageClassName: {{ get (get (get $pvc "spec" | default dict) "storage" | default dict) "storageClassName" | default $.Values.global.pvc.storage.storageClassName }}
   {{- if get (get $pvc "spec" | default dict) "volumeMode" }}
   volumeMode: {{ $pvc.spec.volumeMode }}
   {{- end }}
