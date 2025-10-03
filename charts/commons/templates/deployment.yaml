@@ -40,6 +40,9 @@ spec:
         {{- else if hasKey $gsc "fsGroup" }}
         fsGroup: {{ $gsc.fsGroup }}
         {{- end }}
+      {{- with .hostNetwork }}
+      hostNetwork: {{ . }}
+      {{- end }}
       {{- with .initContainers }}
       initContainers:
         {{- range . }}
