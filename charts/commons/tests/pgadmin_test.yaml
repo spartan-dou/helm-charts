@@ -16,8 +16,8 @@ tests:
       - equal:
           path: data["pgpass"]
           value: |-
-            test-nginx-rw:5432:postgres:changeme:changeme
-            test-rw:5432:postgres:changeme:changeme
+            test-nginx-postgres-rw:5432:postgres:changeme:changeme
+            test-postgres-rw:5432:postgres:changeme:changeme
       - equal:
           path: data["server.json"]
           value: |-
@@ -28,7 +28,7 @@ tests:
                   "Group": "test",
                   "Port": 5432,
                   "Username": "changeme",
-                  "Host": "test-nginx-rw",
+                  "Host": "test-nginx-postgres-rw",
                   "MaintenanceDB": "postgres",
                   "PassFile": "/pgpass"
                 },
@@ -37,7 +37,7 @@ tests:
                   "Group": "test",
                   "Port": 5432,
                   "Username": "changeme",
-                  "Host": "test-rw",
+                  "Host": "test-postgres-rw",
                   "MaintenanceDB": "postgres",
                   "PassFile": "/pgpass"
                 }
