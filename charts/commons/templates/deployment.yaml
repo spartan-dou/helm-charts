@@ -150,15 +150,54 @@ spec:
           {{- end }}
           {{- with .livenessProbe }}
           livenessProbe:
-            {{- toYaml . | nindent 12 }}
+            {{- if .tcpSocket }}
+              tcpSocket:
+                {{- toYaml .tcpSocket | nindent 14 }}
+            {{- else if .exec }}
+              exec:
+                {{- toYaml .exec | exec 14 }}
+            {{- else }}
+                httpGet:
+                {{- toYaml .httpGet | nindent 14 }}
+            {{- end }}
+            initialDelaySeconds: {{ default 10 .initialDelaySeconds }}
+            periodSeconds: {{ default 10 .periodSeconds }}
+            timeoutSeconds: {{ default 2 .timeoutSeconds }}
+            failureThreshold: {{ default 3 .failureThreshold }}
           {{- end }}
           {{- with .readinessProbe }}
           readinessProbe:
-            {{- toYaml . | nindent 12 }}
+            {{- if .tcpSocket }}
+              tcpSocket:
+                {{- toYaml .tcpSocket | nindent 14 }}
+            {{- else if .exec }}
+              exec:
+                {{- toYaml .exec | exec 14 }}
+            {{- else }}
+                httpGet:
+                {{- toYaml .httpGet | nindent 14 }}
+            {{- end }}
+            initialDelaySeconds: {{ default 5 .initialDelaySeconds }}
+            periodSeconds: {{ default 5 .periodSeconds }}
+            timeoutSeconds: {{ default 2 .timeoutSeconds }}
+            failureThreshold: {{ default 3 .failureThreshold }}
           {{- end }}
           {{- with .startupProbe }}
           startupProbe:
-            {{- toYaml . | nindent 12 }}
+            {{- if .tcpSocket }}
+              tcpSocket:
+                {{- toYaml .tcpSocket | nindent 14 }}
+            {{- else if .exec }}
+              exec:
+                {{- toYaml .exec | exec 14 }}
+            {{- else }}
+                httpGet:
+                {{- toYaml .httpGet | nindent 14 }}
+            {{- end }}
+            initialDelaySeconds: {{ default 0 .initialDelaySeconds }}
+            periodSeconds: {{ default 5 .periodSeconds }}
+            timeoutSeconds: {{ default 2 .timeoutSeconds }}
+            failureThreshold: {{ default 30 .failureThreshold }}
           {{- end }}
           {{- with .resources }}
           resources:
