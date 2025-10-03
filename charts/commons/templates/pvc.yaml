@@ -13,15 +13,15 @@ metadata:
     {{ include "commons.labels" (dict "Chart" $.Chart "Values" $.Values "Release" $.Release "name" (default $volume.name $pvc.name) "component" $component) | nindent 4 }}
 spec:
   accessModes:
-    - {{ (.storage | default dict).accessMode | default $.Values.global.pvc.storage.accessMode }}
+    - {{ ($pvc.storage | default dict).accessMode | default $.Values.global.pvc.storage.accessMode }}
   resources:
     requests:
-      storage: {{ (.storage | default dict).size | default $.Values.global.pvc.storage.size }}
-  storageClassName: {{ (.storage | default dict).storageClass | default $.Values.global.pvc.storage.storageClass }}
-  {{- if and .storage .storage.volumeMode }}
+      storage: {{ ($pvc.storage | default dict).size | default $.Values.global.pvc.storage.size }}
+  storageClassName: {{ ($pvc.storage | default dict).storageClass | default $.Values.global.pvc.storage.storageClass }}
+  {{- if and $pvc.storage $pvc.storage.volumeMode }}
   volumeMode: {{ $pvc.storage.volumeMode }}
   {{- end }}
-  {{- if and .storage .storage.selector }}
+  {{- if and $pvc.storage $pvc.storage.selector }}
   selector:
     {{- toYaml $pvc.storage.selector | nindent 4 }}
   {{- end }}
