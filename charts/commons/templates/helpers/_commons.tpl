@@ -79,7 +79,7 @@ app: {{ .Release.Name }}
 */}}
 {{- define "commons.getValue" -}}
 {{- $component := default "" .component }}
-{{- $value := default "" .value }}
+{{- $value := toString (default "" .value) }}
 {{- $valueKeys := splitList "__" $value }}
 
 {{- if and (gt (len $valueKeys) 2) (eq (index $valueKeys 0) "") }}
