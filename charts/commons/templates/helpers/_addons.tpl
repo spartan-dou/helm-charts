@@ -27,6 +27,7 @@
     {{- $tag := $.Values.addons.postgres.image.tag }}
     {{- $host := include "postgres.host" $ }}
     {{- $port := "5432" }}
+    {{- $user := include "postgres.username" $ }}
 
     {{- $postgresInit := dict
       "name" (printf "wait-for-postgres")
@@ -34,7 +35,7 @@
         "repository" $image
         "tag" $tag
       )
-      "command" (list "sh" "-c" (printf "until pg_isready -h %s -p %s; do echo \"Waiting for Postgres to be ready...\"; sleep 2; done" $host $port))
+      "command" (list "sh" "-c" (printf "until pg_isready -h %s -p %s -U %s; do echo \"Waiting for Postgres to be ready...\"; sleep 2; done" $host $port $user))
       "resources" (dict
         "requests" (dict "cpu" "10m" "memory" "16Mi")
         "limits"   (dict "cpu" "50m" "memory" "32Mi")
@@ -47,13 +48,14 @@
     {{- $image := $c.image | default $.Values.addons.postgres.image.repository }}
     {{- $tag := $c.tag | default $.Values.addons.postgres.image.tag }}
     {{- $host := include "commons.getValue" (dict "Values" $.Values "Chart" $.Chart "Release" $.Release "component" $c "value" "__components__postgres__host") }}
+    {{- $user := include "commons.getValue" (dict "Values" $.Values "Chart" $.Chart "Release" $.Release "component" $c "value" "__components__postgres__username") }}
     {{- $postgresInit := dict
       "name" (printf "wait-for-postgres-%s" $c.name)
       "image" (dict
         "repository" $image
         "tag" $tag
       )
-      "command" (list "sh" "-c" (printf "until pg_isready -h %s -p %s; do echo \"Waiting for Postgres to be ready...\"; sleep 2; done" $host "5432"))
+      "command" (list "sh" "-c" (printf "until pg_isready -h %s -p %s -U %s; do echo \"Waiting for Postgres to be ready...\"; sleep 2; done" $host "5432" $user))
       "resources" (dict
         "requests" (dict "cpu" "10m" "memory" "16Mi")
         "limits"   (dict "cpu" "50m" "memory" "32Mi")
