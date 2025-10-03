@@ -115,26 +115,25 @@ components:
         - name: data
           pvc:
             name: data-pvc
-            spec:
+            storage:
               accessMode: ReadWriteOnce
-              storage: 1Gi
+              size: 1Gi
               storageClassName: local-path
         - name: data-2
           pvc:
             name: data-2-pvc
             useExisting: false
-            spec:
+            storage:
               accessMode: ReadWriteOnce
-              storage: 2Gi
+              size: 2Gi
               storageClassName: local-path
         - name: config
           configMap:
-            spec:
-              data:
-                config.yaml: 'key: value'
-                toto.sh: |-
-                  #!/bin/sh
-                  echo "toto"
+            data:
+              config.yaml: 'key: value'
+              toto.sh: |-
+                #!/bin/sh
+                echo "toto"
     service:
       type: ClusterIP
       annotations:

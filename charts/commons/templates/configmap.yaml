@@ -12,7 +12,7 @@ metadata:
   labels:
     {{ include "commons.labels" (dict "Chart" $.Chart "Values" $.Values "Release" $.Release "name" (default $volume.name $configMap.name) "component" $component) | nindent 4 }}
 data:
-  {{- range $filename, $content := $configMap.spec.data }}
+  {{- range $filename, $content := $configMap.data }}
   {{ $filename }}: |-
 {{ $content | indent 4 }}
   {{- end }}

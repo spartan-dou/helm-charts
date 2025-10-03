@@ -13,17 +13,17 @@ metadata:
     {{ include "commons.labels" (dict "Chart" $.Chart "Values" $.Values "Release" $.Release "name" (default $volume.name $pvc.name) "component" $component) | nindent 4 }}
 spec:
   accessModes:
-    - {{ get (get $pvc "spec" | default dict) "accessMode" | default $.Values.global.pvc.storage.accessMode }}
+    - {{ (.storage | default dict).accessMode | default $.Values.global.pvc.storage.accessMode }}
   resources:
     requests:
-      storage: {{ get (get (get $pvc "spec" | default dict) "storage" | default dict) "size" | default $.Values.global.pvc.storage.size }}
-  storageClassName: {{ get (get (get $pvc "spec" | default dict) "storage" | default dict) "storageClassName" | default $.Values.global.pvc.storage.storageClassName }}
-  {{- if get (get $pvc "spec" | default dict) "volumeMode" }}
-  volumeMode: {{ $pvc.spec.volumeMode }}
+      storage: {{ (.storage | default dict).size | default $.Values.global.pvc.storage.size }}
+  storageClassName: {{ (.storage | default dict).storageClassName | default $.Values.global.pvc.storage.storageClassName }}
+  {{- if and .storage .storage.volumeMode }}
+  volumeMode: {{ $pvc.storage.volumeMode }}
   {{- end }}
-  {{- if get (get $pvc "spec" | default dict) "selector" }}
+  {{- if and .storage .storage.selector }}
   selector:
-    {{- toYaml $pvc.spec.selector | nindent 4 }}
+    {{- toYaml $pvc.storage.selector | nindent 4 }}
   {{- end }}
 ---
 {{- end }}

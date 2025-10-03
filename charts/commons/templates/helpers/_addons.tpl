@@ -88,8 +88,8 @@
     "name" "vscode-data"
     "pvc" (dict
       "name" "vscode-data"
-      "spec" (dict
-        "storage" "1Gi"
+      "storage" (dict
+        "size" "1Gi"
         "storageClassName" (default .Values.global.pvc.storage.storageClassName .Values.addons.vscode.storageClassName)
       )
     )
@@ -98,14 +98,14 @@
   {{- range .Values.addons.vscode.volumes }}
     {{- $vol := dict "name" .name }}
     {{- with .pvc }}
-      {{- $spec := dict }}
-      {{- with .spec }}
-        {{- $spec = dict
-          "storage" (default $.Values.global.pvc.storage.size .size)
+      {{- $storage := dict }}
+      {{- with .storage }}
+        {{- $storage = dict
+          "size" (default $.Values.global.pvc.storage.size .size)
           "storageClassName" (default $.Values.global.pvc.storage.storageClassName $.Values.addons.vscode.storageClassName)
         }}
       {{- end }}
-      {{- $vol = merge $vol (dict "pvc" (merge (dict "name" .name "useExisting" (default true .useExisting)) (dict "spec" $spec))) }}
+      {{- $vol = merge $vol (dict "pvc" (merge (dict "name" .name "useExisting" (default true .useExisting)) (dict "storage" $storage))) }}
     {{- end }}
     {{- $volumes = append $volumes $vol }}
   {{- end }}
@@ -176,8 +176,8 @@
         "name" "data"
         "pvc" (dict 
           "name" (printf "data")
-          "spec" (dict
-            "storage" (default .Values.global.pvc.storage.size (default dict .Values.addons.redis.storage).size)
+          "storage" (dict
+            "size" (default .Values.global.pvc.storage.size (default dict .Values.addons.redis.storage).size)
             "storageClassName" (default .Values.global.pvc.storage.storageClassName (default dict .Values.addons.redis.storage).storageClassName)
           ))
       ))
@@ -228,12 +228,10 @@
           "name" "config"
           "configMap" (dict
             "name" "pg-config"
-            "spec" (dict
-              "data" (dict
-                "server.json" (trim (include "pgadmin.servers" (dict "Values" $.Values "Chart" $.Chart "Release" $.Release)))
-                "pgpass" (trim (include "pgadmin.pgpass" (dict "Values" $.Values "Chart" $.Chart "Release" $.Release)))
-              ))
-          )
+            "data" (dict
+              "server.json" (trim (include "pgadmin.servers" (dict "Values" $.Values "Chart" $.Chart "Release" $.Release)))
+              "pgpass" (trim (include "pgadmin.pgpass" (dict "Values" $.Values "Chart" $.Chart "Release" $.Release)))
+            ))
         )
       )
     )
