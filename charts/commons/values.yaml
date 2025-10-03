@@ -6,7 +6,7 @@ global:
   pvc:
     storage:
       size: "1Gi"
-      storageClassName: ""
+      storageClass: ""
       accessMode: "ReadWriteOnce" 
   ingress:
     className: traefik
