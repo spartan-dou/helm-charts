@@ -148,17 +148,17 @@ spec:
               {{- end }}
             {{- end }}
           {{- end }}
-          {{- with .livenessProbe }}
+          {{- if or .livenessProbe .probe }}
           livenessProbe:
             {{- if .tcpSocket }}
               tcpSocket:
-                {{- toYaml .tcpSocket | nindent 14 }}
+                {{- toYaml .tcpSocket | nindent 16 }}
             {{- else if .exec }}
               exec:
-                {{- toYaml .exec | nindent 14 }}
+                {{- toYaml .exec | nindent 16 }}
             {{- else }}
-                httpGet:
-                {{- toYaml .httpGet | nindent 14 }}
+              httpGet:
+              {{- toYaml .httpGet | nindent 16 }}
             {{- end }}
             initialDelaySeconds: {{ default 10 .initialDelaySeconds }}
             periodSeconds: {{ default 10 .periodSeconds }}
@@ -169,13 +169,13 @@ spec:
           readinessProbe:
             {{- if .tcpSocket }}
               tcpSocket:
-                {{- toYaml .tcpSocket | nindent 14 }}
+                {{- toYaml .tcpSocket | nindent 16 }}
             {{- else if .exec }}
               exec:
-                {{- toYaml .exec | nindent 14 }}
+                {{- toYaml .exec | nindent 16 }}
             {{- else }}
-                httpGet:
-                {{- toYaml .httpGet | nindent 14 }}
+              httpGet:
+              {{- toYaml .httpGet | nindent 16 }}
             {{- end }}
             initialDelaySeconds: {{ default 5 .initialDelaySeconds }}
             periodSeconds: {{ default 5 .periodSeconds }}
@@ -186,13 +186,13 @@ spec:
           startupProbe:
             {{- if .tcpSocket }}
               tcpSocket:
-                {{- toYaml .tcpSocket | nindent 14 }}
+                {{- toYaml .tcpSocket | nindent 16 }}
             {{- else if .exec }}
               exec:
-                {{- toYaml .exec | nindent 14 }}
+                {{- toYaml .exec | nindent 16 }}
             {{- else }}
-                httpGet:
-                {{- toYaml .httpGet | nindent 14 }}
+              httpGet:
+              {{- toYaml .httpGet | nindent 16 }}
             {{- end }}
             initialDelaySeconds: {{ default 0 .initialDelaySeconds }}
             periodSeconds: {{ default 5 .periodSeconds }}
