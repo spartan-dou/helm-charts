@@ -91,9 +91,9 @@ app: {{ .Release.Name }}
   {{- if eq $type "postgres" }}
     {{- if eq $field "host" }}
       {{- if eq $source "addons" }}
-        {{- $value = printf "%s-rw" (include "commons.fullname" (dict "Chart" $.Chart "Values" $.Values "Release" $.Release "name" .name)) }}
+        {{- $value = printf "%s-postgres-rw" (include "commons.fullname" (dict "Chart" $.Chart "Values" $.Values "Release" $.Release "name" .name)) }}
       {{- else if eq $source "components" }}
-        {{- $value = printf "%s-rw" (include "commons.fullname" (dict "Chart" $.Chart "Values" $.Values "Release" $.Release "name" .name "component" $component)) }}
+        {{- $value = printf "%s-postgres-rw" (include "commons.fullname" (dict "Chart" $.Chart "Values" $.Values "Release" $.Release "name" .name "component" $component)) }}
       {{- end }}
     {{- else if eq $field "username" }}
       {{- if eq $source "addons" }}
