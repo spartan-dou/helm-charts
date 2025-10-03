@@ -10,13 +10,14 @@
   {{- end }}
 
   {{- if $.Values.addons.redis.enabled }}
+    {{ $host := include "commons.getValue" (dict "Values" $.Values "Chart" $.Chart "Release" $.Release "value" "__addons__redis__host") }}
     {{- $redisInit := dict
       "name" "wait-for-redis"
       "image" (dict
         "repository" $.Values.addons.redis.image.repository
         "tag" $.Values.addons.redis.image.tag
       )
-      "command" (list "sh" "-c" "until redis-cli -h redis ping | grep PONG; do echo waiting for redis; sleep 2; done")
+      "command" (list "sh" "-c" (printf "until redis-cli -h %s ping | grep PONG; do echo waiting for redis; sleep 2; done" $host))
     }}
     {{- $merged = append $merged $redisInit }}
   {{- end }}
