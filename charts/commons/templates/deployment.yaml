@@ -148,57 +148,63 @@ spec:
               {{- end }}
             {{- end }}
           {{- end }}
-          {{- if or .livenessProbe .probe }}
+          {{- $livenessProbe := or .livenessProbe .probe }}
+          {{- with $livenessProbe }}
           livenessProbe:
             {{- if .tcpSocket }}
-              tcpSocket:
-                {{- toYaml .tcpSocket | nindent 16 }}
+            tcpSocket:
+              {{- toYaml .tcpSocket | nindent 14 }}
             {{- else if .exec }}
-              exec:
-                {{- toYaml .exec | nindent 16 }}
-            {{- else }}
-              httpGet:
-              {{- toYaml .httpGet | nindent 16 }}
+            exec:
+              {{- toYaml .exec | nindent 14 }}
+            {{- else if .httpGet }}
+            httpGet:
+              {{- toYaml .httpGet | nindent 14 }}
             {{- end }}
             initialDelaySeconds: {{ default 10 .initialDelaySeconds }}
             periodSeconds: {{ default 10 .periodSeconds }}
             timeoutSeconds: {{ default 2 .timeoutSeconds }}
             failureThreshold: {{ default 3 .failureThreshold }}
           {{- end }}
-          {{- with .readinessProbe }}
+
+          {{- $readinessProbe := or .readinessProbe .probe }}
+          {{- with $readinessProbe }}
           readinessProbe:
             {{- if .tcpSocket }}
-              tcpSocket:
-                {{- toYaml .tcpSocket | nindent 16 }}
+            tcpSocket:
+              {{- toYaml .tcpSocket | nindent 14 }}
             {{- else if .exec }}
-              exec:
-                {{- toYaml .exec | nindent 16 }}
-            {{- else }}
-              httpGet:
-              {{- toYaml .httpGet | nindent 16 }}
+            exec:
+              {{- toYaml .exec | nindent 14 }}
+            {{- else if .httpGet }}
+            httpGet:
+              {{- toYaml .httpGet | nindent 14 }}
             {{- end }}
             initialDelaySeconds: {{ default 5 .initialDelaySeconds }}
             periodSeconds: {{ default 5 .periodSeconds }}
             timeoutSeconds: {{ default 2 .timeoutSeconds }}
             failureThreshold: {{ default 3 .failureThreshold }}
           {{- end }}
-          {{- with .startupProbe }}
+
+          {{- $startupProbe := or .startupProbe .probe }}
+          {{- with $startupProbe }}
           startupProbe:
             {{- if .tcpSocket }}
-              tcpSocket:
-                {{- toYaml .tcpSocket | nindent 16 }}
+            tcpSocket:
+              {{- toYaml .tcpSocket | nindent 14 }}
             {{- else if .exec }}
-              exec:
-                {{- toYaml .exec | nindent 16 }}
-            {{- else }}
-              httpGet:
-              {{- toYaml .httpGet | nindent 16 }}
+            exec:
+              {{- toYaml .exec | nindent 14 }}
+            {{- else if .httpGet }}
+            httpGet:
+              {{- toYaml .httpGet | nindent 14 }}
             {{- end }}
             initialDelaySeconds: {{ default 0 .initialDelaySeconds }}
             periodSeconds: {{ default 5 .periodSeconds }}
             timeoutSeconds: {{ default 2 .timeoutSeconds }}
             failureThreshold: {{ default 30 .failureThreshold }}
           {{- end }}
+
           {{- with .resources }}
           resources:
             {{- toYaml . | nindent 12 }}
