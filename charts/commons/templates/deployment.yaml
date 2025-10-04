@@ -17,6 +17,13 @@ spec:
     metadata:
       labels:
         {{ include "commons.selectorLabels" (dict "Chart" $.Chart "Values" $.Values "Release" $.Release "name" .name "component" $component) | nindent 8 }}
+        {{- range $index, $volume := .volumes }}
+          {{- with $volume.configMap }}
+            {{- with .data }}
+        configmap-hash-{{ $index }}: {{ .data  | sha256sum | trunc 63 }}
+            {{- end }}
+          {{- end }}
+        {{- end }}
     spec:
       {{- if $.Values.global.rbac.enabled }}
       serviceAccountName: {{ $.Values.global.rbac.serviceAccountName }}
