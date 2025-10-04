@@ -159,7 +159,8 @@ spec:
               {{- toYaml .exec | nindent 14 }}
             {{- else if .httpGet }}
             httpGet:
-              {{- toYaml .httpGet | nindent 14 }}
+              path: {{ default "/" .httpGet.path }}
+              port: {{ default "http" .httpGet.port }}
             {{- end }}
             initialDelaySeconds: {{ default 10 .initialDelaySeconds }}
             periodSeconds: {{ default 10 .periodSeconds }}
@@ -178,7 +179,8 @@ spec:
               {{- toYaml .exec | nindent 14 }}
             {{- else if .httpGet }}
             httpGet:
-              {{- toYaml .httpGet | nindent 14 }}
+              path: {{ default "/" .httpGet.path }}
+              port: {{ default "http" .httpGet.port }}
             {{- end }}
             initialDelaySeconds: {{ default 5 .initialDelaySeconds }}
             periodSeconds: {{ default 5 .periodSeconds }}
@@ -197,7 +199,8 @@ spec:
               {{- toYaml .exec | nindent 14 }}
             {{- else if .httpGet }}
             httpGet:
-              {{- toYaml .httpGet | nindent 14 }}
+              path: {{ default "/" .httpGet.path }}
+              port: {{ default "http" .httpGet.port }}
             {{- end }}
             initialDelaySeconds: {{ default 0 .initialDelaySeconds }}
             periodSeconds: {{ default 5 .periodSeconds }}
