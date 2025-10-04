@@ -39,11 +39,10 @@ addons:
     image:
       repository: dpage/pgadmin4
       tag: 9.8.0
-    port: 80
     ingress:
       enabled: false
     service:
-      type: ClusterIP
+      port: 80
   postgres:
     enabled: false
     storage:

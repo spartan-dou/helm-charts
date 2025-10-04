@@ -118,7 +118,6 @@
         "repository" .Values.addons.vscode.image.repository
         "tag" (default "latest" .Values.addons.vscode.image.tag)
       )
-      "ports" (list (dict "name" "http" "containerPort" .Values.addons.vscode.service.port))
       "volumeMounts" $volumeMounts
       "volumes" $volumes 
     )
@@ -158,7 +157,6 @@
         "repository" .Values.addons.redis.image.repository
         "tag" .Values.addons.redis.image.tag | default "latest"
       )
-      "ports" (list (dict "name" "redis" "containerPort" .Values.addons.redis.port))
       "livenessProbe" (dict
         "tcpSocket" (dict "port" .Values.addons.redis.port)
         "initialDelaySeconds" 5
@@ -209,7 +207,6 @@
         (dict "name" "PGPASS_FILE" "value" "/pgpass")
         (dict "name" "PGADMIN_CONFIG_SERVER_MODE" "value" "False")
       )
-      "ports" (list (dict "name" "pgAdmin" "containerPort" .Values.addons.pgAdmin.port))
       "livenessProbe" (dict
         "tcpSocket" (dict "port" .Values.addons.pgAdmin.port)
         "initialDelaySeconds" 5
@@ -239,7 +236,7 @@
     "service" (dict
       "enabled" true
       "type" .Values.addons.pgAdmin.service.type
-      "ports" (list (dict "name" "pgAdmin" "port" .Values.addons.pgAdmin.port))
+      "ports" (list (dict "name" "pgAdmin" "port" .Values.addons.pgAdmin.service.port))
     )
     "ingress" (toYaml .Values.addons.pgAdmin.ingress | fromYaml)
   }}
