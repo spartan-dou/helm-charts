@@ -178,7 +178,8 @@ addons:
     image:
       repository: codercom/code-server
       tag: 39
-    port: 8080
+    service:
+      port: 8080
     volumes:
       - name: "toto"
         mountPath: "/config/toto"

@@ -118,13 +118,13 @@
         "repository" .Values.addons.vscode.image.repository
         "tag" (default "latest" .Values.addons.vscode.image.tag)
       )
-      "ports" (list (dict "name" "http" "containerPort" .Values.addons.vscode.port))
+      "ports" (list (dict "name" "http" "containerPort" .Values.addons.vscode.service.port))
       "volumeMounts" $volumeMounts
       "volumes" $volumes 
     )
     "service" (dict
-      "type" "ClusterIP"
-      "ports" (list (dict "name" "http" "port" .Values.addons.vscode.port))
+      "type" (default "ClusterIP" .Values.addons.vscode.service.type)
+      "ports" (list (dict "name" "http" "port" .Values.addons.vscode.service.port))
     )
   }}
 
