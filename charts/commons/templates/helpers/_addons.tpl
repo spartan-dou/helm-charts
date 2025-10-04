@@ -193,14 +193,14 @@
   {{- $addons = append $addons $redis }}
 {{- end }}
 
-{{/* === Addon PGadmin === */}}
-{{- if .Values.addons.pgAdmin.enabled }}
+{{/* === Addon pgadmin === */}}
+{{- if .Values.addons.pgadmin.enabled }}
   {{- $defaults := dict
-    "name" "pgAdmin"
+    "name" "pgadmin"
     "deployment" (dict
       "image" (dict
-        "repository" .Values.addons.pgAdmin.image.repository
-        "tag" (default "latest" .Values.addons.pgAdmin.image.tag)
+        "repository" .Values.addons.pgadmin.image.repository
+        "tag" (default "latest" .Values.addons.pgadmin.image.tag)
       )
       "env" (list
         (dict "name" "PGADMIN_CONFIG_MASTER_PASSWORD_REQUIRED" "value" "False")
@@ -208,12 +208,12 @@
         (dict "name" "PGADMIN_CONFIG_SERVER_MODE" "value" "False")
       )
       "livenessProbe" (dict
-        "tcpSocket" (dict "port" .Values.addons.pgAdmin.port)
+        "tcpSocket" (dict "port" .Values.addons.pgadmin.port)
         "initialDelaySeconds" 5
         "periodSeconds" 10
       )
       "readinessProbe" (dict
-        "tcpSocket" (dict "port" .Values.addons.pgAdmin.port)
+        "tcpSocket" (dict "port" .Values.addons.pgadmin.port)
         "initialDelaySeconds" 5
         "periodSeconds" 10
       )
@@ -235,15 +235,15 @@
     )
     "service" (dict
       "enabled" true
-      "type" .Values.addons.pgAdmin.service.type
-      "ports" (list (dict "name" "pgAdmin" "port" .Values.addons.pgAdmin.service.port))
+      "type" .Values.addons.pgadmin.service.type
+      "ports" (list (dict "name" "pgadmin" "port" .Values.addons.pgadmin.service.port))
     )
-    "ingress" (toYaml .Values.addons.pgAdmin.ingress | fromYaml)
+    "ingress" (toYaml .Values.addons.pgadmin.ingress | fromYaml)
   }}
-  {{- $raw := .Values.addons.pgAdmin | default dict }}
+  {{- $raw := .Values.addons.pgadmin | default dict }}
   {{- $overrides := omit $raw "enabled" "name" }}
-  {{- $pgAdmin := merge $defaults $overrides }}
-  {{- $addons = append $addons $pgAdmin }}
+  {{- $pgadmin := merge $defaults $overrides }}
+  {{- $addons = append $addons $pgadmin }}
 {{- end }}
 
 {{/* === Fusion finale === */}}

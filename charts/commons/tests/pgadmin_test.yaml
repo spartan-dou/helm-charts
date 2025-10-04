@@ -9,7 +9,7 @@ tests:
   - it: Vérifie le PgDeployement
     documentSelector:
       path: metadata.name
-      value: test-pgAdmin-pg-config
+      value: test-pgadmin-pg-config
     templates:
       - templates/configmap.yaml
     asserts:
@@ -47,7 +47,7 @@ tests:
   - it: Vérifie le PgDeployement
     documentSelector:
       path: metadata.name
-      value: test-pgAdmin
+      value: test-pgadmin
     templates:
       - templates/deployment.yaml
     asserts:
@@ -61,7 +61,7 @@ tests:
   - it: Vérifie le PgDeployement service
     documentSelector:
       path: metadata.name
-      value: test-pgAdmin
+      value: test-pgadmin
     templates:
       - templates/service.yaml
     asserts:

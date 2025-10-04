@@ -34,7 +34,7 @@ addons:
       repository: redis
       tag: 8.2.2-alpine
     port: 6379
-  pgAdmin:
+  pgadmin:
     enabled: false
     image:
       repository: dpage/pgadmin4
