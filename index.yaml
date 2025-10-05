@@ -158,6 +158,14 @@ entries:
     version: 0.1.0
   commons:
   - apiVersion: v2
+    created: "2025-10-05T16:48:16.469705099Z"
+    description: Commons chart
+    digest: e4f9aa0e894897e6e765500f1ab489716314b5ba0f138ad65b071293d040d27a
+    name: commons
+    urls:
+    - https://github.com/spartan-dou/helm-charts/releases/download/commons-0.4.10/commons-0.4.10.tgz
+    version: 0.4.10
+  - apiVersion: v2
     created: "2025-10-05T16:46:42.136787104Z"
     description: Commons chart
     digest: 8aef41b45ec1bf3c0fbf162bd3e70c55be3231043ddd3e95914c99132c7ff835
@@ -3360,4 +3368,4 @@ entries:
     urls:
     - https://github.com/spartan-dou/helm-charts/releases/download/vaultwarden-0.0.2/vaultwarden-0.0.2.tgz
     version: 0.0.2
-generated: "2025-10-05T16:46:42.137214932Z"
+generated: "2025-10-05T16:48:16.470190095Z"
