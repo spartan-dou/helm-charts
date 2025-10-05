@@ -95,13 +95,13 @@ tests:
           value: "/home/coder/project"
       - equal:
           path: spec.template.spec.containers[0].volumeMounts[0].name
-          value: "vscode-data"
+          value: "vscode-config"
       - equal:
           path: spec.template.spec.volumes[0].name
-          value: "vscode-data"
+          value: "vscode-config"
       - equal:
           path: spec.template.spec.volumes[0].persistentVolumeClaim.claimName
-          value: "test-code-server-vscode-data"
+          value: "test-code-server-vscode-config"
       - equal:
           path: spec.template.spec.containers[0].volumeMounts[1].mountPath
           value: "/config/toto"
