@@ -92,7 +92,7 @@ tests:
           value: codercom/code-server:39
       - equal:
           path: spec.template.spec.containers[0].volumeMounts[0].mountPath
-          value: "/home/coder/project"
+          value: "/home/coder/"
       - equal:
           path: spec.template.spec.containers[0].volumeMounts[0].name
           value: "vscode-config"
