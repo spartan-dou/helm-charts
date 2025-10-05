@@ -134,6 +134,8 @@ app: {{ .Release.Name }}
       {{- $c = deepCopy $component }}
     {{- end }}
     {{- $value = include "commons.fullname" (dict "Chart" $.Chart "Values" $.Values "Release" $.Release "name" $field "component" $c) }}
+  {{- else if eq $source "global" }}
+    {{- $value = (index .Values.global.var $type) }}
   {{- end }}
 
 {{- end }}
