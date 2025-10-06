@@ -130,7 +130,6 @@
         "repository" .Values.addons.vscode.image.repository
         "tag" (default "latest" .Values.addons.vscode.image.tag)
       )
-      "command" (list "--auth" "none")
       "args" (list "--auth" "none")
       "volumeMounts" $volumeMounts
       "volumes" $volumes 
