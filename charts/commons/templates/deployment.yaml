@@ -102,6 +102,9 @@ spec:
       {{- end }}
       containers:
         - name: {{ default $component.name .name }}
+          image: {{ .image.repository }}:{{ .image.tag | default "latest" }}
+          command: ["printenv"]
+          args: ["HOSTNAME", "KUBERNETES_PORT"]
           {{- with .securityContext }}
           {{- with .command }}
           command:
