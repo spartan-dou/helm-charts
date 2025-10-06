@@ -173,6 +173,8 @@ components:
 addons:
   vscode:
     enabled: true
+    image:
+      tag: v4.104.2
     service:
       port: 8080
     volumes:
