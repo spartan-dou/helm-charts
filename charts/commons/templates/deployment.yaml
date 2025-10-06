@@ -104,7 +104,10 @@ spec:
         - name: {{ default $component.name .name }}
           image: {{ .image.repository }}:{{ .image.tag | default "latest" }}
           command: ["printenv"]
-          args: {{ .args | fromYamlArray }}
+          args:
+          {{- range .args }}
+            - {{ . }}
+          {{- end }}
           {{- with .securityContext }}
           {{- with .command }}
           command:
