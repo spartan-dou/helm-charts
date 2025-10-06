@@ -104,6 +104,14 @@ spec:
         - name: {{ default $component.name .name }}
           image: {{ .image.repository }}:{{ .image.tag | default "latest" }}
           {{- with .securityContext }}
+          {{- with .command }}
+          command:
+            {{ toYaml . | nindent 10 }}
+          {{- end }}
+          {{- with .args }}
+          args:
+            {{ toYaml . | nindent 10 }}
+          {{- end }}
           securityContext:
             {{- toYaml . | nindent 12 }}
           {{- end }}
