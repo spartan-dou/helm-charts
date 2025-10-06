@@ -20,7 +20,7 @@ spec:
         {{- range $index, $volume := .volumes }}
           {{- with $volume.configMap }}
             {{- with .data }}
-        configmap-hash-{{ $index }}: {{ .data | toYaml | sha256sum | trunc 63 }}
+        configmap-{{ default $index $volume.name }}-hash: {{ .data | toYaml | sha256sum | trunc 63 }}
             {{- end }}
           {{- end }}
         {{- end }}
