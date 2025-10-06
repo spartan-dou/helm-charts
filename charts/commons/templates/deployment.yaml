@@ -102,7 +102,6 @@ spec:
       {{- end }}
       containers:
         - name: {{ default $component.name .name }}
-          image: {{ .image.repository }}:{{ .image.tag | default "latest" }}
           {{- with .securityContext }}
           {{- with .command }}
           command:
