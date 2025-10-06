@@ -10,5 +10,5 @@ keywords:
   - authelia
 dependencies:
 - name: redis
-  version: 20.9.0
+  version: 23.0.10
   repository: https://charts.bitnami.com/bitnami
