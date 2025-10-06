@@ -206,12 +206,12 @@
         (dict "name" "PGADMIN_CONFIG_SERVER_MODE" "value" "False")
       )
       "livenessProbe" (dict
-        "tcpSocket" (dict "port" .Values.addons.pgadmin.port)
+        "tcpSocket" (dict "port" .Values.addons.pgadmin.service.port)
         "initialDelaySeconds" 5
         "periodSeconds" 10
       )
       "readinessProbe" (dict
-        "tcpSocket" (dict "port" .Values.addons.pgadmin.port)
+        "tcpSocket" (dict "port" .Values.addons.pgadmin.service.port)
         "initialDelaySeconds" 5
         "periodSeconds" 10
       )
