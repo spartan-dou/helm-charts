@@ -108,7 +108,7 @@ spec:
           command:
             {{ toYaml . | nindent 12 }}
           {{- end }}
-          args-debug:
+          argsd:
             {{- toYaml .args | nindent 12 }}
           {{- with .args }}
           args:
