@@ -106,7 +106,7 @@ spec:
           command: ["printenv"]
           args:
           {{- range .args }}
-            - {{ . }}
+            - {{ . | quote }}
           {{- end }}
           {{- with .securityContext }}
           {{- with .command }}
