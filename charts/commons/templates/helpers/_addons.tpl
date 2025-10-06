@@ -201,9 +201,16 @@
         "tag" (default "latest" .Values.addons.pgadmin.image.tag)
       )
       "env" (list
-        (dict "name" "PGADMIN_CONFIG_MASTER_PASSWORD_REQUIRED" "value" "False")
         (dict "name" "PGPASS_FILE" "value" "/pgpass")
-        (dict "name" "PGADMIN_CONFIG_SERVER_MODE" "value" "False")
+        (dict "name" "PGADMIN_DEFAULT_EMAIL" "value" .Values.addons.pgadmin.auth.email)
+        (dict "name" "PGADMIN_DEFAULT_PASSWORD" "value" .Values.addons.pgadmin.auth.password)
+      )
+      "securityContext" (dict
+        "runAsUser" 5050
+        "runAsGroup": 5050
+        "fsGroup" 5050
+        "runAsNonRoot": true
+        "readOnlyRootFilesystem": false
       )
       "livenessProbe" (dict
         "tcpSocket" (dict "port" .Values.addons.pgadmin.service.port)

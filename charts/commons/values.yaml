@@ -36,6 +36,9 @@ addons:
     image:
       repository: dpage/pgadmin4
       tag: 9.8.0
+    auth:
+      email: test@test.com
+      password: changeme
     ingress:
       enabled: false
     service:
