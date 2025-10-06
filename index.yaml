@@ -920,6 +920,20 @@ entries:
     version: 1.0.0
   frigate:
   - apiVersion: v2
+    appVersion: 0.16.1
+    created: "2025-10-06T14:49:58.586623831Z"
+    description: Frigate chart
+    digest: 370ce727865075886a82b1aae5ea0e0da950690c8b74297d5cf693e56de3b05d
+    keywords:
+    - home-assistant
+    - NVR
+    - frigate
+    name: frigate
+    type: application
+    urls:
+    - https://github.com/spartan-dou/helm-charts/releases/download/frigate-1.2.0/frigate-1.2.0.tgz
+    version: 1.2.0
+  - apiVersion: v2
     appVersion: 0.15.0
     created: "2025-02-11T18:40:28.051105884Z"
     description: Frigate chart
@@ -1060,6 +1074,22 @@ entries:
     - https://github.com/spartan-dou/helm-charts/releases/download/frigate-1.0.0/frigate-1.0.0.tgz
     version: 1.0.0
   home-assistant:
+  - apiVersion: v2
+    appVersion: 2025.10.1
+    created: "2025-10-06T14:49:58.823766241Z"
+    description: Home Assistant
+    digest: ab7b77b0fe8cdbb50fd6e34feaf48a852472a468cf4f1ce04d6d7a1d715d1eb9
+    home: https://www.home-assistant.io/
+    icon: https://commons.wikimedia.org/wiki/File:New_Home_Assistant_logo.svg
+    keywords:
+    - home-assistant
+    - domotique
+    - vscode
+    name: home-assistant
+    type: application
+    urls:
+    - https://github.com/spartan-dou/helm-charts/releases/download/home-assistant-1.8.0/home-assistant-1.8.0.tgz
+    version: 1.8.0
   - apiVersion: v2
     appVersion: 2025.8.0
     created: "2025-08-08T07:32:04.385366021Z"
@@ -2355,6 +2385,22 @@ entries:
     version: 1.0.0
   nextcloud:
   - apiVersion: v2
+    appVersion: 32.0.0
+    created: "2025-10-06T14:49:58.999208024Z"
+    dependencies:
+    - name: redis
+      repository: https://charts.bitnami.com/bitnami
+      version: 20.9.0
+    description: Nextcloud
+    digest: ea5cd83bb451a07a4f667ecaf754da2ae21bce2f100823315e34de8f524a7083
+    keywords:
+    - nextcloud
+    name: nextcloud
+    type: application
+    urls:
+    - https://github.com/spartan-dou/helm-charts/releases/download/nextcloud-0.4.0/nextcloud-0.4.0.tgz
+    version: 0.4.0
+  - apiVersion: v2
     appVersion: 31.0.5
     created: "2025-05-30T09:07:22.758614822Z"
     dependencies:
@@ -3060,6 +3106,24 @@ entries:
     version: 0.0.1
   servarr:
   - apiVersion: v2
+    appVersion: 1.3.0
+    created: "2025-10-06T14:49:59.169839833Z"
+    description: A Helm chart for arr aps
+    digest: 029c6231e38da21f8e7e90ae55a404169507b4a412789cb1def2995e837b3ffa
+    keywords:
+    - servarr
+    - radarr
+    - sonarr
+    - lidarr
+    - recyclarr
+    - flaresolverr
+    - rdtclient
+    name: servarr
+    type: application
+    urls:
+    - https://github.com/spartan-dou/helm-charts/releases/download/servarr-1.3.0/servarr-1.3.0.tgz
+    version: 1.3.0
+  - apiVersion: v2
     appVersion: 1.2.0
     created: "2025-05-30T09:06:51.517414053Z"
     description: A Helm chart for arr aps
@@ -3367,6 +3431,16 @@ entries:
     version: 1.0.0
   vaultwarden:
   - apiVersion: v2
+    appVersion: 1.34.3
+    created: "2025-10-06T14:49:59.397895605Z"
+    description: A Helm chart for vaultwarden
+    digest: 97d7fe888bcb1dc65b325802f2b5c3a6a4b95057ad06400cf04901dec731eb63
+    name: vaultwarden
+    type: application
+    urls:
+    - https://github.com/spartan-dou/helm-charts/releases/download/vaultwarden-1.1.0/vaultwarden-1.1.0.tgz
+    version: 1.1.0
+  - apiVersion: v2
     appVersion: 1.33.2
     created: "2025-02-10T17:33:54.650116706Z"
     description: A Helm chart for vaultwarden
@@ -3416,4 +3490,4 @@ entries:
     urls:
     - https://github.com/spartan-dou/helm-charts/releases/download/vaultwarden-0.0.2/vaultwarden-0.0.2.tgz
     version: 0.0.2
-generated: "2025-10-06T14:27:34.815157102Z"
+generated: "2025-10-06T14:49:59.39862559Z"
