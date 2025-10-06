@@ -173,14 +173,10 @@ components:
 addons:
   vscode:
     enabled: true
-    image:
-      repository: codercom/code-server
-      tag: 39
     service:
       port: 8080
     volumes:
       - name: "toto"
-        mountPath: "/config/toto"
         pvc:
           name: __nginx__pvc__data-2-pvc
     ingress:
