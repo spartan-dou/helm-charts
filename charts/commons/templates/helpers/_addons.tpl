@@ -209,8 +209,8 @@
         "runAsUser" 5050
         "runAsGroup" 5050
         "fsGroup" 5050
-        "runAsNonRoot": true
-        "readOnlyRootFilesystem": false
+        "runAsNonRoot" true
+        "readOnlyRootFilesystem" false
       )
       "livenessProbe" (dict
         "tcpSocket" (dict "port" .Values.addons.pgadmin.service.port)
