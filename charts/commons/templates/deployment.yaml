@@ -108,8 +108,6 @@ spec:
           command:
             {{ toYaml . | nindent 12 }}
           {{- end }}
-          args:
-            {{- toYaml .args | nindent 12 }}
           {{- with .args }}
           args:
             {{ toYaml . | nindent 12 }}
