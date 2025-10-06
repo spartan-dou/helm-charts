@@ -201,6 +201,7 @@
         "tag" (default "latest" .Values.addons.pgadmin.image.tag)
       )
       "env" (list
+        (dict "name" "PGPASS_FILE" "value" "/pgadmin4/pgpass")
         (dict "name" "PGADMIN_DEFAULT_EMAIL" "value" .Values.addons.pgadmin.auth.email)
         (dict "name" "PGADMIN_DEFAULT_PASSWORD" "value" .Values.addons.pgadmin.auth.password)
       )
@@ -223,6 +224,7 @@
       )
       "volumeMounts" (list
         (dict "mountPath" "/pgadmin4/servers.json" "subPath" "servers.json" "name" "config")
+        (dict "mountPath" "/pgadmin4/pgpass" "subPath" "pgpass" "name" "config")
       )
       "volumes" (list
         (dict
@@ -231,6 +233,7 @@
             "name" "pg-config"
             "data" (dict
               "servers.json" (trim (include "pgadmin.servers" (dict "Values" $.Values "Chart" $.Chart "Release" $.Release)))
+              "pgpass" (trim (include "pgadmin.pgpass" (dict "Values" $.Values "Chart" $.Chart "Release" $.Release)))
             ))
         )
       )
