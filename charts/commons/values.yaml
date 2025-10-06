@@ -18,8 +18,8 @@ addons:
   vscode:
     enabled: false
     image:
-      repository: linuxserver/code-server
-      tag: v4.104.2
+      repository: lscr.io/linuxserver/code-server
+      tag: 4.104.2
     service:
       port: 8443
     ingress:
