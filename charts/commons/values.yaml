@@ -21,7 +21,7 @@ addons:
       repository: linuxserver/code-server
       tag: v4.104.2
     service:
-      port: 8080
+      port: 8443
     ingress:
       enabled: false
   redis:
