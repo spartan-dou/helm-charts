@@ -76,9 +76,7 @@
 {{- if .Values.addons.vscode.enabled }}
 
   {{/* VolumeMounts */}}
-  {{- $volumeMounts := list
-    (dict "name" "vscode-config" "mountPath" "/home/coder/.config")
-    (dict "name" "vscode-local" "mountPath" "/home/coder/.local") }}
+  {{- $volumeMounts := list (dict "name" "vscode-config" "mountPath" "/config") }}
   {{- range .Values.addons.vscode.volumes }}
     {{- $name := .name }}
     {{- with .mountPath }}
@@ -96,17 +94,7 @@
         "storageClassName" (default .Values.global.pvc.storage.storageClassName .Values.addons.vscode.storageClassName)
       )
     )
-  )
-  (dict
-    "name" "vscode-local"
-    "pvc" (dict
-      "name" "vscode-local"
-      "storage" (dict
-        "size" "1Gi"
-        "storageClassName" (default .Values.global.pvc.storage.storageClassName .Values.addons.vscode.storageClassName)
-      )
-    )
-  ) }}
+  )}}
 
   {{- range .Values.addons.vscode.volumes }}
     {{- $vol := dict "name" .name }}
@@ -130,7 +118,7 @@
         "repository" .Values.addons.vscode.image.repository
         "tag" (default "latest" .Values.addons.vscode.image.tag)
       )
-      "args" (list "--auth" "none")
+      "env" (list (dict "name" "DEFAULT_WORKSPACE" "value" "/config/workspace"))
       "volumeMounts" $volumeMounts
       "volumes" $volumes 
     )
