@@ -61,11 +61,11 @@ spec:
           image: {{ .image.repository }}:{{ .image.tag | default "latest"  }}
           {{- with .command }}
           command:
-            {{ toYaml . | nindent 10 }}
+            {{ toYaml . | nindent 12 }}
           {{- end }}
           {{- with .args }}
           args:
-            {{ toYaml . | nindent 10 }}
+            {{ toYaml . | nindent 12 }}
           {{- end }}
           {{- with .env }}
           env:
@@ -106,11 +106,11 @@ spec:
           {{- with .securityContext }}
           {{- with .command }}
           command:
-            {{ toYaml . | nindent 10 }}
+            {{ toYaml . | nindent 12 }}
           {{- end }}
           {{- with .args }}
           args:
-            {{ toYaml . | nindent 10 }}
+            {{ toYaml . | nindent 12 }}
           {{- end }}
           securityContext:
             {{- toYaml . | nindent 12 }}
