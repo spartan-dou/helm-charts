@@ -103,12 +103,6 @@ spec:
       containers:
         - name: {{ default $component.name .name }}
           image: {{ .image.repository }}:{{ .image.tag | default "latest" }}
-          command: ["printenv"]
-          args:
-          {{- range .args }}
-            - {{ . | quote }}
-          {{- end }}
-          {{- with .securityContext }}
           {{- with .command }}
           command:
             {{ toYaml . | nindent 12 }}
@@ -117,6 +111,7 @@ spec:
           args:
             {{ toYaml . | nindent 12 }}
           {{- end }}
+          {{- with .securityContext }}
           securityContext:
             {{- toYaml . | nindent 12 }}
           {{- end }}
