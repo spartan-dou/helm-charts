@@ -31,7 +31,7 @@ tests:
                   "Username": "changeme",
                   "Host": "test-nginx-postgres-rw",
                   "MaintenanceDB": "postgres",
-                  "PassFile": "/pgpass"
+                  "PassFile": "/pgadmin4/pgpass"
                 },
                 "1": {
                   "Name": "postgres",
@@ -40,7 +40,7 @@ tests:
                   "Username": "changeme",
                   "Host": "test-postgres-rw",
                   "MaintenanceDB": "postgres",
-                  "PassFile": "/pgpass"
+                  "PassFile": "/pgadmin4/pgpass"
                 }
               }
             }
