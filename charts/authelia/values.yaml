@@ -4,7 +4,7 @@ timezone: "Europe/Paris"
 
 image:
   repository: authelia/authelia
-  tag: "4.39.11"
+  tag: "4.39.12"
 
 imagePullSecrets: []
 nameOverride: ""
