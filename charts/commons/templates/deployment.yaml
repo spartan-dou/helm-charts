@@ -10,8 +10,10 @@ metadata:
     {{ include "commons.labels" (dict "Chart" $.Chart "Values" $.Values "Release" $.Release "name" .name "component" $component) | nindent 4 }}
 spec:
   replicas: {{ default 1 .replicas }}
+  {{- with .strategy }}
   strategy:
-    type: {{ default "RollingUpdate" .strategy.type }}
+    type: {{ default "RollingUpdate" .type }}
+  {{- end }}
   selector:
     matchLabels:
       {{ include "commons.selectorLabels" (dict "Chart" $.Chart "Values" $.Values "Release" $.Release "name" .name "component" $component) | nindent 6 }}
