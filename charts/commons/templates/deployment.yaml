@@ -138,6 +138,10 @@ spec:
                 {{- end }}
               {{- end }}
             {{- end }}
+          {{- with .lifecycle }}
+          lifecycle:
+          {{- toYaml . | nindent 12 }}
+          {{- end }}
           {{- with .volumeMounts }}
           volumeMounts:
             {{- range . }}
