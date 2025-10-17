@@ -1,7 +1,10 @@
 suite: Test CronJob template
+values:
+  - ./values/values.yaml
 templates:
-  - cronjob.yaml
-
+  - templates/cronjob.yaml
+release:
+  name: test
 tests:
   - it: Vérifie le Deployment web
     documentSelector:
