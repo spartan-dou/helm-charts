@@ -204,6 +204,8 @@ addons:
     password: changeme
   pgadmin:
     enabled: true
+    image:
+      tag: 9.8.0
   postgres:
     enabled: true
     image:
