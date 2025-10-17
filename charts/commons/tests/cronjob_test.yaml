@@ -16,7 +16,7 @@ tests:
           value: CronJob
       - equal:
           path: spec.schedule
-          value: "*/5 * * * *"
+          value: "0 3 * * *"
       - equal:
           path: spec.successfulJobsHistoryLimit
           value: 3
