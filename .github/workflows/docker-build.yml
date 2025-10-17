@@ -35,7 +35,8 @@ jobs:
           images: ghcr.io/${{ github.repository }}
           tags: |
             type=raw,value=latest
-            type=ref,event=release   # ajoute le tag de la release (ex: v1.0.0)
+            type=semver,pattern={{version}}
+
 
       - name: Build and push
         uses: docker/build-push-action@v5
