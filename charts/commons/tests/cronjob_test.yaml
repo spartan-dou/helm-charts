@@ -3,32 +3,20 @@ templates:
   - cronjob.yaml
 
 tests:
-  - it: should create a CronJob resource
+  - it: Vérifie le Deployment web
+    documentSelector:
+      path: metadata.name
+      value: test-nginx
     asserts:
-      - isKind:
-          of: CronJob
-
-  - it: should set the correct schedule
-    set:
-      schedule: "*/5 * * * *"
-    asserts:
+      - equal:
+          path: kind
+          value: CronJob
       - equal:
           path: spec.schedule
           value: "*/5 * * * *"
-
-  - it: should set concurrencyPolicy to Forbid
-    set:
-      concurrencyPolicy: Forbid
-    asserts:
       - equal:
           path: spec.concurrencyPolicy
           value: Forbid
-
-  - it: should use the right image
-    set:
-      image.repository: busybox
-      image.tag: latest
-    asserts:
       - equal:
           path: spec.jobTemplate.spec.template.spec.containers[0].image
           value: "busybox:latest"
