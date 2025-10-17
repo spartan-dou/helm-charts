@@ -18,8 +18,8 @@ tests:
           path: spec.schedule
           value: "*/5 * * * *"
       - equal:
-          path: spec.concurrencyPolicy
-          value: Forbid
+          path: spec.successfulJobsHistoryLimit
+          value: 3
       - equal:
           path: spec.jobTemplate.spec.template.spec.containers[0].image
-          value: "busybox:latest"
+          value: "nginx:latest"
