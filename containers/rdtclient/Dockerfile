@@ -39,7 +39,7 @@ RUN \
    dotnet publish --no-restore -c Release -o out ; 
 
 # Stage 3 - Build runtime image
-FROM ghcr.io/linuxserver/baseimage-alpine:3.20
+FROM ghcr.io/linuxserver/baseimage-alpine:3.22
 ARG TARGETPLATFORM
 ENV TARGETPLATFORM=${TARGETPLATFORM:-linux/amd64}
 ARG BUILDPLATFORM
