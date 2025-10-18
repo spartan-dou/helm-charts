@@ -86,7 +86,9 @@ app: {{ .Release.Name }}
 
   {{- $source := default "" (index $valueKeys 1) }}
   {{- $type := default "" (index $valueKeys 2) }}
-  {{- $field := default "" (index $valueKeys 3) }}
+  {{- $field := "" -}}
+  {{- if ge (len $valueKeys) 4 }}{{- $field = index $valueKeys 3 }}{{- end }}
+
 
   {{- if eq $type "postgres" }}
     {{- if eq $field "host" }}
