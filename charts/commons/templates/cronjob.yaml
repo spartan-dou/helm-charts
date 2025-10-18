@@ -14,7 +14,6 @@ spec:
   {{- with .concurrencyPolicy}}
   startingDeadlineSeconds: {{ . }}
   {{- end }}
-  restartPolicy: {{ default "Never" .restartPolicy | quote }}
   successfulJobsHistoryLimit: {{ default 5 .successfulJobsHistoryLimit }}
   failedJobsHistoryLimit: {{ default 5 .failedJobsHistoryLimit }}
   {{- with .suspend}}
@@ -24,6 +23,7 @@ spec:
     spec:
       template:
         spec:
+          restartPolicy: {{ default "Never" .restartPolicy }}
           {{- if $.Values.global.rbac.enabled }}
           serviceAccountName: {{ $.Values.global.rbac.serviceAccountName }}
           automountServiceAccountToken: true
