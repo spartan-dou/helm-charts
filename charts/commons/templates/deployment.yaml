@@ -25,6 +25,7 @@ spec:
           {{- with $volume.configMap }}
             {{- with .data }}
         checksum/{{ default $index $volume.name }}: {{ printf "%v" .data | sha256sum }}
+        checksum/{{ default $index $volume.name }}: {{ printf "%v" .data }}
             {{- end }}
           {{- end }}
         {{- end }}
