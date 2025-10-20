@@ -23,9 +23,9 @@ spec:
         {{ include "commons.selectorLabels" (dict "Chart" $.Chart "Values" $.Values "Release" $.Release "name" .name "component" $component) | nindent 8 }}
         {{- range $index, $volume := .volumes }}
           {{- with $volume.configMap }}
-            {{- with .data }}
-        checksum/{{ default $index $volume.name }}: {{ printf "%v" .data | sha256sum }}
-        checksum/{{ default $index $volume.name }}: {{ $volume }}
+            {{- with $volume.configMap.data }}
+        checksum/{{ default $index $volume.name }}: {{ printf "%v" $volume.configMap.data | sha256sum }}
+        checksum/{{ default $index $volume.name }}: {{ $volume.configMap.data }}
             {{- end }}
           {{- end }}
         {{- end }}
