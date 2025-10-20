@@ -24,7 +24,7 @@ spec:
         {{- range $index, $volume := .volumes }}
           {{- with $volume.configMap }}
             {{- with .data }}
-        checksum/{{ default $index $volume.name }}: {{ .data | toYaml | sha256sum }}
+        checksum/{{ default $index $volume.name }}: {{ printf "%v" .data | sha256sum }}
             {{- end }}
           {{- end }}
         {{- end }}
