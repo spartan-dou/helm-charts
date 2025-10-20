@@ -124,7 +124,7 @@ app: {{ .Release.Name }}
     {{- end }}
   {{- else if and (eq $source "addons") (eq $type "redis") }}
     {{- if eq $field "host" }}
-      {{- $value = include "commons.fullname" (dict "Chart" $.Chart "Values" $.Values "Release" $.Release "name" .Values.addons.redis.name "component" $component) }}
+      {{- $value = include "commons.fullname" (dict "Chart" $.Chart "Values" $.Values "Release" $.Release "component" (dict "name" .Values.addons.redis.name)) }}
     {{- else if eq $field "port" }}
       {{- $value = .Values.addons.redis.port }}
     {{- end }}
