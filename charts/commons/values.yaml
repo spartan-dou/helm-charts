@@ -19,7 +19,7 @@ addons:
     enabled: false
     image:
       repository: lscr.io/linuxserver/code-server
-      tag: 4.105.0
+      tag: 4.105.1
     service:
       port: 8443
     ingress:
