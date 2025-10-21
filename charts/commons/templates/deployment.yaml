@@ -1,0 +1,277 @@
+{{- $components := include "commons.withAddons" . | fromYamlArray }}
+{{- range $components }}
+{{- $component := . }}
+{{- with $component.deployment }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "commons.fullname" (dict "Chart" $.Chart "Values" $.Values "Release" $.Release "name" .name "component" $component) }}
+  labels:
+    {{ include "commons.labels" (dict "Chart" $.Chart "Values" $.Values "Release" $.Release "name" .name "component" $component) | nindent 4 }}
+spec:
+  replicas: {{ default 1 .replicas }}
+  {{- with .strategy }}
+  strategy:
+    type: {{ default "RollingUpdate" .type }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{ include "commons.selectorLabels" (dict "Chart" $.Chart "Values" $.Values "Release" $.Release "name" .name "component" $component) | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{ include "commons.selectorLabels" (dict "Chart" $.Chart "Values" $.Values "Release" $.Release "name" .name "component" $component) | nindent 8 }}
+        {{- range $index, $volume := .volumes }}
+          {{- with $volume.configMap }}
+            {{- with $volume.configMap.data }}
+        checksum/{{ default $index $volume.name }}: {{ printf "%v" $volume.configMap.data | sha256sum | trunc 63 }}
+            {{- end }}
+          {{- end }}
+        {{- end }}
+    spec:
+      {{- if $.Values.global.rbac.enabled }}
+      serviceAccountName: {{ $.Values.global.rbac.serviceAccountName }}
+      automountServiceAccountToken: true
+      {{- end }}
+      {{- $sc := .securityContext | default (dict) }}
+      {{- $gsc := $.Values.global.securityContext | default (dict) }}
+      {{- if ne $sc.enabled false }}
+      securityContext:
+        {{- if hasKey $sc "runAsUser" }}
+        runAsUser: {{ $sc.runAsUser }}
+        {{- else if hasKey $gsc "runAsUser" }}
+        runAsUser: {{ $gsc.runAsUser }}
+        {{- end }}
+        {{- if hasKey $sc "runAsGroup" }}
+        runAsGroup: {{ $sc.runAsGroup }}
+        {{- else if hasKey $gsc "runAsGroup" }}
+        runAsGroup: {{ $gsc.runAsGroup }}
+        {{- end }}
+        {{- if hasKey $sc "fsGroup" }}
+        fsGroup: {{ $sc.fsGroup }}
+        {{- else if hasKey $gsc "fsGroup" }}
+        fsGroup: {{ $gsc.fsGroup }}
+        {{- end }}
+      {{- end }}
+      {{- with .hostNetwork }}
+      hostNetwork: {{ . }}
+      {{- end }}
+      {{- with .initContainers }}
+      initContainers:
+        {{- range . }}
+        - name: {{ .name | default $component.name }}
+          {{- with .securityContext }}
+          {{- if ne .enabled false }}
+          securityContext:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- end }}
+          image: {{ .image.repository }}:{{ .image.tag | default "latest"  }}
+          {{- with .command }}
+          command:
+            {{ toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .args }}
+          args:
+            {{ toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .env }}
+          env:
+            - name: TZ
+              value: {{ $.Values.global.timezone | quote }}
+            {{- range . }}
+            - name: {{ .name }}
+              {{- with .value }}
+              value: {{ include "commons.getValue" (dict "Values" $.Values "Chart" $.Chart "Release" $.Release "component" $component "value" .) | quote }}
+              {{- end }}
+              {{- with .valueFrom }}
+              valueFrom:
+                {{- if .secretKeyRef }}
+                secretKeyRef:
+                  name: {{ include "commons.getValue" (dict "Values" $.Values "Chart" $.Chart "Release" $.Release "component" $component "value" .secretKeyRef.name) }}
+                  key: {{ .secretKeyRef.key }}
+                {{- else }}
+                {{- toYaml . | nindent 16 }}
+                {{- end }}
+              {{- end }}
+            {{- end }}
+          {{- end }}
+          {{- with .volumeMounts }}
+          volumeMounts:
+            {{- range . }}
+            - name: {{ .name }}
+              mountPath: {{ .mountPath }}
+              {{- with .subPath }}
+              subPath: {{ . }}
+              {{- end }}
+            {{- end }}
+          {{- end }}
+        {{- end }}
+      {{- end }}
+      containers:
+        - name: {{ default $component.name .name }}
+          image: {{ .image.repository }}:{{ .image.tag | default "latest" }}
+          {{- with .command }}
+          command:
+            {{ toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .args }}
+          args:
+            {{ toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .securityContext }}
+          {{- if ne .enabled false }}
+          securityContext:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- end }}
+          env:
+            - name: TZ
+              value: {{ $.Values.global.timezone | quote }}
+            {{- range .env }}
+            - name: {{ .name }}
+              {{- with .value }}
+              value: {{ include "commons.getValue" (dict "Values" $.Values "Chart" $.Chart "Release" $.Release "component" $component "value" .) | quote }}
+              {{- end }}
+              {{- with .valueFrom }}
+              valueFrom:
+                {{- if .secretKeyRef }}
+                secretKeyRef:
+                  name: {{ include "commons.getValue" (dict "Values" $.Values "Chart" $.Chart "Release" $.Release "component" $component "value" .secretKeyRef.name) }}
+                  key: {{ .secretKeyRef.key }}
+                {{- else }}
+                {{- toYaml . | nindent 16 }}
+                {{- end }}
+              {{- end }}
+            {{- end }}
+          {{- with .lifecycle }}
+          lifecycle:
+          {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .volumeMounts }}
+          volumeMounts:
+            {{- range . }}
+            - name: {{ .name }}
+              mountPath: {{ .mountPath }}
+              {{- with .subPath }}
+              subPath: {{ . }}
+              {{- end }}
+            {{- end }}
+          {{- end }}
+          {{- if or .additionalsPorts  (and $component.service $component.service.ports) }}
+          ports:
+            {{- range $component.service.ports }}
+            - name: {{ .name }}
+              containerPort: {{ default .port .targetPort }}
+              protocol: {{ default "TCP" .protocol }}
+              {{- with .hostPort }}
+              hostPort: {{ . }}
+              {{- end }}
+            {{- end }}
+            {{- range .additionalsPorts }}
+            - name: {{ .name }}
+              containerPort: {{ .containerPort }}
+              protocol: {{ default "TCP" .protocol }}
+              {{- with .hostPort }}
+              hostPort: {{ . }}
+              {{- end }}
+            {{- end }}
+          {{- end }}
+          {{- $livenessProbe := or .livenessProbe .probe }}
+          {{- with $livenessProbe }}
+          livenessProbe:
+            {{- if .tcpSocket }}
+            tcpSocket:
+              {{- toYaml .tcpSocket | nindent 14 }}
+            {{- else if .exec }}
+            exec:
+              {{- toYaml .exec | nindent 14 }}
+            {{- else if .httpGet }}
+            httpGet:
+              path: {{ default "/" .httpGet.path }}
+              port: {{ default "http" .httpGet.port }}
+            {{- end }}
+            initialDelaySeconds: {{ default 10 .initialDelaySeconds }}
+            periodSeconds: {{ default 10 .periodSeconds }}
+            timeoutSeconds: {{ default 2 .timeoutSeconds }}
+            failureThreshold: {{ default 3 .failureThreshold }}
+          {{- end }}
+
+          {{- $readinessProbe := or .readinessProbe .probe }}
+          {{- with $readinessProbe }}
+          readinessProbe:
+            {{- if .tcpSocket }}
+            tcpSocket:
+              {{- toYaml .tcpSocket | nindent 14 }}
+            {{- else if .exec }}
+            exec:
+              {{- toYaml .exec | nindent 14 }}
+            {{- else if .httpGet }}
+            httpGet:
+              path: {{ default "/" .httpGet.path }}
+              port: {{ default "http" .httpGet.port }}
+            {{- end }}
+            initialDelaySeconds: {{ default 5 .initialDelaySeconds }}
+            periodSeconds: {{ default 5 .periodSeconds }}
+            timeoutSeconds: {{ default 2 .timeoutSeconds }}
+            failureThreshold: {{ default 3 .failureThreshold }}
+          {{- end }}
+
+          {{- $startupProbe := or .startupProbe .probe }}
+          {{- with $startupProbe }}
+          startupProbe:
+            {{- if .tcpSocket }}
+            tcpSocket:
+              {{- toYaml .tcpSocket | nindent 14 }}
+            {{- else if .exec }}
+            exec:
+              {{- toYaml .exec | nindent 14 }}
+            {{- else if .httpGet }}
+            httpGet:
+              path: {{ default "/" .httpGet.path }}
+              port: {{ default "http" .httpGet.port }}
+            {{- end }}
+            initialDelaySeconds: {{ default 0 .initialDelaySeconds }}
+            periodSeconds: {{ default 5 .periodSeconds }}
+            timeoutSeconds: {{ default 2 .timeoutSeconds }}
+            failureThreshold: {{ default 30 .failureThreshold }}
+          {{- end }}
+
+          {{- with .resources }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+        {{ include "commons.sidecars" (dict "component" $component "Values" $.Values) | nindent 8 }}
+      {{- with .volumes }}
+      volumes:
+        {{- range . }}
+        {{- if .configMap }}
+        - name: {{ .name }}
+          configMap:
+            {{- if .configMap.useExisting }}
+            name: {{ include "commons.getValue" (dict "Values" $.Values "Chart" $.Chart "Release" $.Release "component" $component "value" .configMap.name) }}
+            {{- else }}
+            name: {{ include "commons.fullname" (dict "Chart" $.Chart "Values" $.Values "Release" $.Release "name" (default .name .configMap.name) "component" $component) }}
+            {{- end }}
+            {{- with .configMap.readOnly }}
+            readOnly: {{ . }}
+            {{- end }}
+        {{- else if .pvc }}
+        - name: {{ .name }}
+          persistentVolumeClaim:
+            {{- if .pvc.useExisting }}
+            claimName: {{ include "commons.getValue" (dict "Values" $.Values "Chart" $.Chart "Release" $.Release "component" $component "value" .pvc.name) }}
+            {{- else }}
+            claimName: {{ include "commons.fullname" (dict "Chart" $.Chart "Values" $.Values "Release" $.Release "name" (default .name .pvc.name) "component" $component) }}
+            {{- end }}
+            {{- with .pvc.readOnly }}
+            readOnly: {{ . }}
+            {{- end }}
+        {{- else }}
+        - {{ toYaml . | nindent 10 | trim }}
+          {{- end }}
+        {{- end }}
+      {{- end }}
+---
+{{- end }}
+{{- end }}
