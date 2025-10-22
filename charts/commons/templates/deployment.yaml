@@ -76,25 +76,7 @@ spec:
             {{ toYaml . | nindent 12 }}
           {{- end }}
           {{- with .env }}
-          env:
-            - name: TZ
-              value: {{ $.Values.global.timezone | quote }}
-            {{- range . }}
-            - name: {{ .name }}
-              {{- with .value }}
-              value: {{ include "commons.getValue" (dict "Values" $.Values "Chart" $.Chart "Release" $.Release "component" $component "value" .) | quote }}
-              {{- end }}
-              {{- with .valueFrom }}
-              valueFrom:
-                {{- if .secretKeyRef }}
-                secretKeyRef:
-                  name: {{ include "commons.getValue" (dict "Values" $.Values "Chart" $.Chart "Release" $.Release "component" $component "value" .secretKeyRef.name) }}
-                  key: {{ .secretKeyRef.key }}
-                {{- else }}
-                {{- toYaml . | nindent 16 }}
-                {{- end }}
-              {{- end }}
-            {{- end }}
+          {{- include "containers.envs" (dict "Values" $.Values "Chart" $.Chart "Release" $.Release "component" $component "value" .) | nindent 10 }}
           {{- end }}
           {{- with .volumeMounts }}
           volumeMounts:
@@ -125,29 +107,14 @@ spec:
             {{- toYaml . | nindent 12 }}
           {{- end }}
           {{- end }}
-          env:
-            - name: TZ
-              value: {{ $.Values.global.timezone | quote }}
-            {{- range .env }}
-            - name: {{ .name }}
-              {{- with .value }}
-              value: {{ include "commons.getValue" (dict "Values" $.Values "Chart" $.Chart "Release" $.Release "component" $component "value" .) | quote }}
-              {{- end }}
-              {{- with .valueFrom }}
-              valueFrom:
-                {{- if .secretKeyRef }}
-                secretKeyRef:
-                  name: {{ include "commons.getValue" (dict "Values" $.Values "Chart" $.Chart "Release" $.Release "component" $component "value" .secretKeyRef.name) }}
-                  key: {{ .secretKeyRef.key }}
-                {{- else }}
-                {{- toYaml . | nindent 16 }}
-                {{- end }}
-              {{- end }}
-            {{- end }}
+          
+          {{- include "containers.envs" (dict "Values" $.Values "Chart" $.Chart "Release" $.Release "component" $component "value" .) | nindent 10 }}
+
           {{- with .lifecycle }}
           lifecycle:
           {{- toYaml . | nindent 12 }}
           {{- end }}
+
           {{- with .volumeMounts }}
           volumeMounts:
             {{- range . }}
@@ -158,6 +125,7 @@ spec:
               {{- end }}
             {{- end }}
           {{- end }}
+          
           {{- if or .additionalsPorts  (and $component.service $component.service.ports) }}
           ports:
             {{- range $component.service.ports }}
@@ -177,71 +145,14 @@ spec:
               {{- end }}
             {{- end }}
           {{- end }}
-          {{- $livenessProbe := or .livenessProbe .probe }}
-          {{- with $livenessProbe }}
-          livenessProbe:
-            {{- if .tcpSocket }}
-            tcpSocket:
-              {{- toYaml .tcpSocket | nindent 14 }}
-            {{- else if .exec }}
-            exec:
-              {{- toYaml .exec | nindent 14 }}
-            {{- else if .httpGet }}
-            httpGet:
-              path: {{ default "/" .httpGet.path }}
-              port: {{ default "http" .httpGet.port }}
-            {{- end }}
-            initialDelaySeconds: {{ default 10 .initialDelaySeconds }}
-            periodSeconds: {{ default 10 .periodSeconds }}
-            timeoutSeconds: {{ default 2 .timeoutSeconds }}
-            failureThreshold: {{ default 3 .failureThreshold }}
-          {{- end }}
-
-          {{- $readinessProbe := or .readinessProbe .probe }}
-          {{- with $readinessProbe }}
-          readinessProbe:
-            {{- if .tcpSocket }}
-            tcpSocket:
-              {{- toYaml .tcpSocket | nindent 14 }}
-            {{- else if .exec }}
-            exec:
-              {{- toYaml .exec | nindent 14 }}
-            {{- else if .httpGet }}
-            httpGet:
-              path: {{ default "/" .httpGet.path }}
-              port: {{ default "http" .httpGet.port }}
-            {{- end }}
-            initialDelaySeconds: {{ default 5 .initialDelaySeconds }}
-            periodSeconds: {{ default 5 .periodSeconds }}
-            timeoutSeconds: {{ default 2 .timeoutSeconds }}
-            failureThreshold: {{ default 3 .failureThreshold }}
-          {{- end }}
-
-          {{- $startupProbe := or .startupProbe .probe }}
-          {{- with $startupProbe }}
-          startupProbe:
-            {{- if .tcpSocket }}
-            tcpSocket:
-              {{- toYaml .tcpSocket | nindent 14 }}
-            {{- else if .exec }}
-            exec:
-              {{- toYaml .exec | nindent 14 }}
-            {{- else if .httpGet }}
-            httpGet:
-              path: {{ default "/" .httpGet.path }}
-              port: {{ default "http" .httpGet.port }}
-            {{- end }}
-            initialDelaySeconds: {{ default 0 .initialDelaySeconds }}
-            periodSeconds: {{ default 5 .periodSeconds }}
-            timeoutSeconds: {{ default 2 .timeoutSeconds }}
-            failureThreshold: {{ default 30 .failureThreshold }}
-          {{- end }}
+          
+          {{ include "containers.probes" . | nindent 10 }}
 
           {{- with .resources }}
           resources:
-            {{- toYaml . | nindent 12 }}
+             {{- toYaml . | nindent 12 }}
           {{- end }}
-        {{ include "commons.sidecars" (dict "component" $component "Values" $.Values) | nindent 8 }}
+        {{ include "container.sidecars" (dict "component" $component "Values" $.Values) | nindent 8 }}
       {{- with .volumes }}
       volumes:
         {{- range . }}
