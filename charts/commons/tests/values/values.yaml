@@ -67,7 +67,12 @@ components:
       image:
         repository: nginx
         tag: latest
-      
+    
+    secrets:
+      - name: toto
+        data:
+          tata: tutu
+
     deployment:
       replicas: 2
       initContainers:
