@@ -68,6 +68,28 @@
   {{- $_ := set $c.deployment "initContainers" $merged }}
   {{- $result = append $result $c }}
 
+  {{- $existingCronjob := $c.cronjob.initContainers | default list }}
+  {{- $mergedCronjob := list }}
+  {{- range $existingCronjob }}
+    {{- $mergedCronjob = append $mergedCronjob . }}
+  {{- end }}
+
+  {{- if $.Values.addons.redis.enabled }}
+    {{- $mergedCronjob = append $mergedCronjob $redisInit }}
+  {{- end }}
+
+  {{- if $.Values.addons.postgres.enabled }}
+    {{- $mergedCronjob = append $mergedCronjob $postgresInit }}
+  {{- end }}
+
+  
+  {{- if and $c.postgres $c.postgres.enabled }}
+    {{- $mergedCronjob = append $mergedCronjob $postgresInit }}
+  {{- end }}
+
+  {{- $_ := set $c.cronjob "initContainers" $merged }}
+  {{- $result = append $result $c }}
+
 {{- end }}
 
 {{- $addons := list }}
