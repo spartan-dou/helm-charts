@@ -1,17 +1,17 @@
 {{- define "containers.envs" }}
 env:
   - name: TZ
-    value: {{ ..Values.global.timezone | quote }}
+    value: {{ $.Values.global.timezone | quote }}
   {{- range .env }}
   - name: {{ .name }}
     {{- with .value }}
-    value: {{ include "commons.getValue" (dict "Values" ..Values "Chart" ..Chart "Release" ..Release "component" .component "value" .) | quote }}
+    value: {{ include "commons.getValue" (dict "Values" $.Values "Chart" $.Chart "Release" $.Release "component" .component "value" .) | quote }}
     {{- end }}
     {{- with .valueFrom }}
     valueFrom:
       {{- if .secretKeyRef }}
       secretKeyRef:
-        name: {{ include "commons.getValue" (dict "Values" ..Values "Chart" ..Chart "Release" ..Release "component" .component "value" .secretKeyRef.name) }}
+        name: {{ include "commons.getValue" (dict "Values" $.Values "Chart" $.Chart "Release" $.Release "component" .component "value" .secretKeyRef.name) }}
         key: {{ .secretKeyRef.key }}
       {{- else }}
       {{- toYaml . | nindent 16 }}
