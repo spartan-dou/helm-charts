@@ -162,6 +162,9 @@ spec:
             {{- else }}
             name: {{ include "commons.fullname" (dict "Chart" $.Chart "Values" $.Values "Release" $.Release "name" (default .name .configMap.name) "component" $component) }}
             {{- end }}
+            {{- with .configMap.defaultMode }}
+            defaultMode: {{ . }}
+            {{- end }}
             {{- with .configMap.readOnly }}
             readOnly: {{ . }}
             {{- end }}
