@@ -9,10 +9,12 @@
     {{- $merged = append $merged . }}
   {{- end }}
 
-  {{- $existingCronjob := $c.cronjob.initContainers | default list }}
-  {{- $mergedCronjob := list }}
-  {{- range $existingCronjob }}
-    {{- $mergedCronjob = append $mergedCronjob . }}
+  {{- if $c.cronjob }}
+    {{- $existingCronjob := $c.cronjob.initContainers | default list }}
+    {{- $mergedCronjob := list }}
+    {{- range $existingCronjob }}
+      {{- $mergedCronjob = append $mergedCronjob . }}
+    {{- end }}
   {{- end }}
 
   {{- if $.Values.addons.redis.enabled }}
@@ -26,7 +28,9 @@
       "command" (list "sh" "-c" (printf "until redis-cli -h %s ping | grep PONG; do echo waiting for redis; sleep 2; done" $host))
     }}
     {{- $merged = append $merged $redisInit }}
-    {{- $mergedCronjob = append $mergedCronjob $redisInit }}
+    {{- if $c.cronjob }}
+      {{- $mergedCronjob = append $mergedCronjob $redisInit }}
+    {{- end }}
   {{- end }}
 
   {{- if $.Values.addons.postgres.enabled }}
@@ -50,7 +54,9 @@
       )
     }}
     {{- $merged = append $merged $postgresInit }}
-    {{- $mergedCronjob = append $mergedCronjob $postgresInit }}
+    {{- if $c.cronjob }}
+      {{- $mergedCronjob = append $mergedCronjob $postgresInit }}
+    {{- end }}
   {{- end }}
 
   {{- if and $c.postgres $c.postgres.enabled }}
@@ -71,11 +77,15 @@
       )
     }}
     {{- $merged = append $merged $postgresInit }}
-    {{- $mergedCronjob = append $mergedCronjob $postgresInit }}
+    {{- if $c.cronjob }}
+      {{- $mergedCronjob = append $mergedCronjob $postgresInit }}
+    {{- end }}
   {{- end }}
 
   {{- $_ := set $c.deployment "initContainers" $merged }}
-  {{- $_ := set $c.cronjob "initContainers" $mergedCronjob }}
+  {{- if $c.cronjob }}
+    {{- $_ := set $c.cronjob "initContainers" $mergedCronjob }}
+  {{- end }}
   {{- $result = append $result $c }}
 
 {{- end }}
