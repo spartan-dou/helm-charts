@@ -108,7 +108,7 @@ spec:
           {{- end }}
           {{- end }}
           
-          {{- include "containers.envs" (dict "Values" $.Values "Chart" $.Chart "Release" $.Release "component" $component "value" .) | nindent 10 }}
+          {{- include "containers.envs" (dict "Values" $.Values "Chart" $.Chart "Release" $.Release "component" $component) | nindent 10 }}
 
           {{- with .lifecycle }}
           lifecycle:

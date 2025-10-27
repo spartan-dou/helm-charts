@@ -1,4 +1,5 @@
 {{- define "containers.envs" }}
+{{- with .component }}
 env:
   - name: TZ
     value: {{ $.Values.global.timezone | quote }}
@@ -19,8 +20,11 @@ env:
     {{- end }}
   {{- end }}
 {{- end }}
+{{- end }}
+{{- end }}
 
 {{- define "containers.probes" }}
+{{- with .component }}
 {{- $livenessProbe := or .livenessProbe .probe }}
 {{- with .livenessProbe }}
 livenessProbe:
@@ -79,6 +83,7 @@ startupProbe:
   periodSeconds: {{ default 5 .periodSeconds }}
   timeoutSeconds: {{ default 2 .timeoutSeconds }}
   failureThreshold: {{ default 30 .failureThreshold }}
+{{- end }}
 {{- end }}
 {{- end }}
 
