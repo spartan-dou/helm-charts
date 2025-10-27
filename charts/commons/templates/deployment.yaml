@@ -144,7 +144,7 @@ spec:
             {{- end }}
           {{- end }}
           
-          {{ include "containers.probes" "component" $component | nindent 10 }}
+          {{ include "containers.probes" (dict "component" $component) | nindent 10 }}
 
           {{- with .resources }}
           resources:
