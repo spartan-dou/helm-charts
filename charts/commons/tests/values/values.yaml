@@ -71,7 +71,7 @@ components:
     secrets:
       - name: toto
         data:
-          tata: tutu
+          - tata: tutu
 
     deployment:
       replicas: 2
