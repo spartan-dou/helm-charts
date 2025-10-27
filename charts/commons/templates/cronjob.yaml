@@ -55,16 +55,16 @@ spec:
             - name: {{ .name | default $component.name }}
               {{- with .securityContext }}
               securityContext:
-                {{- toYaml . | nindent 12 }}
+                {{- toYaml . | nindent 16 }}
               {{- end }}
               image: {{ .image.repository }}:{{ .image.tag | default "latest"  }}
               {{- with .command }}
               command:
-                {{ toYaml . | nindent 12 }}
+                {{ toYaml . | nindent 16 }}
               {{- end }}
               {{- with .args }}
               args:
-                {{ toYaml . | nindent 12 }}
+                {{ toYaml . | nindent 16 }}
               {{- end }}
               {{- with .env }}
               env:
@@ -82,7 +82,7 @@ spec:
                       name: {{ include "commons.getValue" (dict "Values" $.Values "Chart" $.Chart "Release" $.Release "component" $component "value" .secretKeyRef.name) }}
                       key: {{ .secretKeyRef.key }}
                     {{- else }}
-                    {{- toYaml . | nindent 16 }}
+                    {{- toYaml . | nindent 20 }}
                     {{- end }}
                   {{- end }}
                 {{- end }}
@@ -104,15 +104,15 @@ spec:
               image: {{ .image.repository }}:{{ .image.tag | default "latest" }}
               {{- with .command }}
               command:
-                {{ toYaml . | nindent 12 }}
+                {{ toYaml . | nindent 16 }}
               {{- end }}
               {{- with .args }}
               args:
-                {{ toYaml . | nindent 12 }}
+                {{ toYaml . | nindent 16 }}
               {{- end }}
               {{- with .securityContext }}
               securityContext:
-                {{- toYaml . | nindent 12 }}
+                {{- toYaml . | nindent 16 }}
               {{- end }}
               env:
                 - name: TZ
@@ -129,13 +129,13 @@ spec:
                       name: {{ include "commons.getValue" (dict "Values" $.Values "Chart" $.Chart "Release" $.Release "component" $component "value" .secretKeyRef.name) }}
                       key: {{ .secretKeyRef.key }}
                     {{- else }}
-                    {{- toYaml . | nindent 16 }}
+                    {{- toYaml . | nindent 20 }}
                     {{- end }}
                   {{- end }}
                 {{- end }}
               {{- with .lifecycle }}
               lifecycle:
-              {{- toYaml . | nindent 12 }}
+              {{- toYaml . | nindent 16 }}
               {{- end }}
               {{- with .volumeMounts }}
               volumeMounts:
@@ -151,7 +151,7 @@ spec:
 
               {{- with .resources }}
               resources:
-                {{- toYaml . | nindent 12 }}
+                {{- toYaml . | nindent 16 }}
               {{- end }}
             {{ include "containers.sidecars" (dict "component" $component "Values" $.Values) | nindent 8 }}
           {{- with .volumes }}
@@ -180,7 +180,7 @@ spec:
                 readOnly: {{ . }}
                 {{- end }}
             {{- else }}
-            - {{ toYaml . | nindent 10 | trim }}
+            - {{ toYaml . | nindent 14 | trim }}
               {{- end }}
             {{- end }}
           {{- end }}
