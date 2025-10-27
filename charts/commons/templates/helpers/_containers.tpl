@@ -21,7 +21,7 @@ env:
 {{- end }}
 
 {{- define "containers.probes" }}
-{{- .livenessProbe := or .livenessProbe .probe }}
+{{- $livenessProbe := or .livenessProbe .probe }}
 {{- with .livenessProbe }}
 livenessProbe:
   {{- if .tcpSocket }}
@@ -41,7 +41,7 @@ livenessProbe:
   failureThreshold: {{ default 3 .failureThreshold }}
 {{- end }}
 
-{{- .readinessProbe := or .readinessProbe .probe }}
+{{- $readinessProbe := or .readinessProbe .probe }}
 {{- with .readinessProbe }}
 readinessProbe:
   {{- if .tcpSocket }}
@@ -61,7 +61,7 @@ readinessProbe:
   failureThreshold: {{ default 3 .failureThreshold }}
 {{- end }}
 
-{{- .startupProbe := or .startupProbe .probe }}
+{{- $startupProbe := or .startupProbe .probe }}
 {{- with .startupProbe }}
 startupProbe:
   {{- if .tcpSocket }}
