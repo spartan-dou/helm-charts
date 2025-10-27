@@ -75,9 +75,7 @@ spec:
           args:
             {{ toYaml . | nindent 12 }}
           {{- end }}
-          {{- with .env }}
-          {{- include "containers.envs" (dict "Values" $.Values "Chart" $.Chart "Release" $.Release "component" $component) | nindent 10 }}
-          {{- end }}
+          {{- include "containers.envs" (dict "Values" $.Values "Chart" $.Chart "Release" $.Release "component" $component "env" .env) | nindent 10 }}
           {{- with .volumeMounts }}
           volumeMounts:
             {{- range . }}
@@ -108,7 +106,7 @@ spec:
           {{- end }}
           {{- end }}
           
-          {{- include "containers.envs" (dict "Values" $.Values "Chart" $.Chart "Release" $.Release "component" $component) | nindent 10 }}
+          {{- include "containers.envs" (dict "Values" $.Values "Chart" $.Chart "Release" $.Release "component" $component "env" .env) | nindent 10 }}
 
           {{- with .lifecycle }}
           lifecycle:

@@ -1,10 +1,11 @@
 {{- define "containers.envs" }}
 {{- $component := .component }}
+{{- $env := .env }}
 {{- with $component }}
 env:
   - name: TZ
     value: {{ $.Values.global.timezone | quote }}
-  {{- range $component.env }}
+  {{- range $env }}
   - name: {{ .name }}
     {{- with .value }}
     value: {{ include "commons.getValue" (dict "Values" $.Values "Chart" $.Chart "Release" $.Release "component" $component "value" .) | quote }}
