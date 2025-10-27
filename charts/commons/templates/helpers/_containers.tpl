@@ -4,7 +4,7 @@
 env:
   - name: TZ
     value: {{ $.Values.global.timezone | quote }}
-  {{- range .env }}
+  {{- range $component.env }}
   - name: {{ .name }}
     {{- with .value }}
     value: {{ include "commons.getValue" (dict "Values" $.Values "Chart" $.Chart "Release" $.Release "component" $component "value" .) | quote }}
