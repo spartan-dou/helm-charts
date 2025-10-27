@@ -21,7 +21,6 @@ env:
   {{- end }}
 {{- end }}
 {{- end }}
-{{- end }}
 
 {{- define "containers.probes" }}
 {{- with .component }}
