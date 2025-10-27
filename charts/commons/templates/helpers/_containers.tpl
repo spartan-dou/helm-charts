@@ -26,8 +26,7 @@ env:
 
 {{- define "containers.probes" }}
 {{- $component := .component }}
-{{- $deployment := .component.deployment }}
-{{- with $deployment }}
+{{- with $component.deployment }}
 {{- $livenessProbe := or .livenessProbe .probe }}
 {{- with .livenessProbe }}
 livenessProbe:
