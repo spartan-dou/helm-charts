@@ -28,7 +28,7 @@ env:
 {{- $component := .component }}
 {{- with $component.deployment }}
 {{- $livenessProbe := or .livenessProbe .probe }}
-{{- with .livenessProbe }}
+{{- with $livenessProbe }}
 livenessProbe:
   {{- if .tcpSocket }}
   tcpSocket:
@@ -48,7 +48,7 @@ livenessProbe:
 {{- end }}
 
 {{- $readinessProbe := or .readinessProbe .probe }}
-{{- with .readinessProbe }}
+{{- with $readinessProbe }}
 readinessProbe:
   {{- if .tcpSocket }}
   tcpSocket:
@@ -68,7 +68,7 @@ readinessProbe:
 {{- end }}
 
 {{- $startupProbe := or .startupProbe .probe }}
-{{- with .startupProbe }}
+{{- with $startupProbe }}
 startupProbe:
   {{- if .tcpSocket }}
   tcpSocket:
