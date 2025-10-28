@@ -11,7 +11,7 @@ spec:
   {{- with .concurrencyPolicy}}
   concurrencyPolicy: {{ . | quote }}
   {{- end }}
-  {{- with .concurrencyPolicy}}
+  {{- with .startingDeadlineSeconds}}
   startingDeadlineSeconds: {{ . }}
   {{- end }}
   successfulJobsHistoryLimit: {{ default 5 .successfulJobsHistoryLimit }}
