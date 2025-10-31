@@ -52,6 +52,9 @@ spec:
         {{- else if hasKey $gsc "fsGroup" }}
         fsGroup: {{ $gsc.fsGroup }}
         {{- end }}
+        {{- with $sc.supplementalGroups }}
+        supplementalGroups: {{ . }}
+        {{- end }}
       {{- end }}
       {{- with .hostNetwork }}
       hostNetwork: {{ . }}
