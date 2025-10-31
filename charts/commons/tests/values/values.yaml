@@ -75,6 +75,9 @@ components:
 
     deployment:
       replicas: 2
+      secretKeyContext:
+        supplementalGroups:
+          - 10
       initContainers:
         - name: setup-volume
           image:

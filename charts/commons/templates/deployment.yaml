@@ -53,7 +53,7 @@ spec:
         fsGroup: {{ $gsc.fsGroup }}
         {{- end }}
         {{- with $sc.supplementalGroups }}
-        supplementalGroups: {{ . }}
+        supplementalGroups: {{ toYaml . | nindent 10 }}
         {{- end }}
       {{- end }}
       {{- with .hostNetwork }}
