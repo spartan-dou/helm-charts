@@ -7,10 +7,6 @@ global:
       accessMode: "ReadWriteOnce" 
   ingress:
     className: traefik
-  securityContext:
-    runAsUser: 1000
-    runAsGroup: 1000
-    fsGroup: 1000
   rbac:
     enabled: false
 
