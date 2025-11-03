@@ -75,7 +75,7 @@ components:
 
     deployment:
       replicas: 2
-      secretKeyContext:
+      securityContext:
         runAsUser: 80
         supplementalGroups:
           - 10
