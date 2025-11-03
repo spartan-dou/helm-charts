@@ -168,7 +168,7 @@ tests:
       - hasDocuments:
           count: 3
 
-  - it: ne doit pas créer le Service Vscode si désactivé
+  - it: ne doit pas forcer le groupe dans security context
     set:
       global:
         securityContext: {}
@@ -181,6 +181,9 @@ tests:
           value: 80
       - equal:
           path: spec.template.spec.containers[0].securityContext.runAsUser
+          value: 80
+      - equal:
+          path: spec.template.spec.securityContext.runAsGroup
           value: 80
       - notExists:
           path: spec.template.spec.securityContext.runAsGroup
