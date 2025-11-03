@@ -1,6 +1,9 @@
 global:
   timezone: Europe/Paris
-  securityContext: {}
+  securityContext:
+    runAsUser: 1000
+    runAsGroup: 1001
+    fsGroup: 1000
   pvc:
     storage:
       size: 1Gi
