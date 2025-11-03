@@ -38,7 +38,7 @@ spec:
       {{- $merged := mergeOverwrite (deepCopy $gsc) (deepCopy $sc) }}
       {{- if gt (len $merged) 0 }}
       securityContext:
-        {{- toYaml $merged | nindent 8 }}
+        {{- toYaml $.Values.global.securityContext | nindent 8 }}
       {{- end }}
       {{- with .hostNetwork }}
       hostNetwork: {{ . }}

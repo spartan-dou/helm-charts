@@ -171,8 +171,7 @@ tests:
   - it: ne doit pas forcer le groupe dans security context
     set:
       global:
-        securityContext:
-          runAsGroup: 11
+        securityContext: {}
     documentSelector:
       path: metadata.name
       value: test-nginx
