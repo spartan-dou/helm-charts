@@ -20,6 +20,12 @@ tests:
           path: spec.template.spec.containers[0].image
           value: nginx:latest
       - equal:
+          path: spec.template.spec.securityContext.runAsUser
+          value: 80
+      - equal:
+          path: spec.template.spec.securityContext.supplementalGroups[0]
+          value: 10
+      - equal:
           path: spec.template.spec.initContainers[0].name
           value: setup-volume
       - equal:
@@ -87,6 +93,9 @@ tests:
       - equal:
           path: spec.replicas
           value: 1
+      - equal:
+          path: spec.template.spec.securityContext.runAsUser
+          value: 1000
       - equal:
           path: spec.template.spec.containers[0].image
           value: lscr.io/linuxserver/code-server:4.104.2

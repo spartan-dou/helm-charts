@@ -2,7 +2,7 @@ global:
   timezone: Europe/Paris
   securityContext:
     runAsUser: 1000
-    runAsGroup: 1000
+    runAsGroup: 1001
     fsGroup: 1000
   pvc:
     storage:
@@ -76,6 +76,7 @@ components:
     deployment:
       replicas: 2
       secretKeyContext:
+        runAsUser: 80
         supplementalGroups:
           - 10
       initContainers:
