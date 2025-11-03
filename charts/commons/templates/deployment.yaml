@@ -33,7 +33,9 @@ spec:
       serviceAccountName: {{ $.Values.global.rbac.serviceAccountName }}
       automountServiceAccountToken: true
       {{- end }}
-      {{ include "containers.securityContext" . | nindent 6 }}
+
+      {{ include "containers.securityContext" (dict "Global" $.Values.global "SecurityContext" .securityContext) | nindent 6 }}
+
       {{- with .hostNetwork }}
       hostNetwork: {{ . }}
       {{- end }}

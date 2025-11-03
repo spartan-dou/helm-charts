@@ -88,7 +88,7 @@ startupProbe:
 
 {{- define "containers.securityContext" }}
 {{- $sc := .securityContext | default (dict) }}
-{{- $gsc := $.Values.global.securityContext | default (dict) }}
+{{- $gsc := .global.securityContext | default (dict) }}
 {{- $merged := mergeOverwrite (deepCopy $gsc) (deepCopy $sc) }}
 {{- if gt (len $merged) 0 }}
 securityContext:
