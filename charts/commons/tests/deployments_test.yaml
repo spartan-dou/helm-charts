@@ -167,3 +167,23 @@ tests:
     asserts:
       - hasDocuments:
           count: 3
+
+  - it: ne doit pas créer le Service Vscode si désactivé
+    set:
+      global:
+        securityContext: {}
+    documentSelector:
+      path: metadata.name
+      value: test-nginx
+    asserts:
+      - equal:
+          path: spec.template.spec.securityContext.runAsUser
+          value: 80
+      - equal:
+          path: spec.template.spec.containers[0].securityContext.runAsUser
+          value: 80
+      - notExists:
+          path: spec.template.spec.securityContext.runAsGroup
+      - equal:
+          path: spec.template.spec.securityContext.supplementalGroups[0]
+          value: 10
