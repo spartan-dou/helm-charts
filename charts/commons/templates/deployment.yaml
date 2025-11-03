@@ -33,10 +33,9 @@ spec:
       serviceAccountName: {{ $.Values.global.rbac.serviceAccountName }}
       automountServiceAccountToken: true
       {{- end }}
-      {{- $sc := .securityContext }}
-      {{- if not $sc }}{{- $sc = dict }}{{- end }}
+      {{- $sc := .securityContext | default (dict) }}
       {{- $gsc := $.Values.global.securityContext | default (dict) }}
-      {{- $merged := deepCopy $sc | mergeOverwrite $gsc }}
+      {{- $merged := mergeOverwrite (deepCopy $gsc) $sc }}
       {{- if gt (len $merged) 0 }}
       securityContext:
         {{- toYaml $merged | nindent 8 }}
