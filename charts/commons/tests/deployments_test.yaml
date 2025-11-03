@@ -23,6 +23,9 @@ tests:
           path: spec.template.spec.securityContext.runAsUser
           value: 80
       - equal:
+          path: spec.template.spec.containers[0].securityContext.runAsUser
+          value: 80
+      - equal:
           path: spec.template.spec.securityContext.runAsGroup
           value: 1001
       - equal:
@@ -99,6 +102,9 @@ tests:
       - equal:
           path: spec.template.spec.securityContext.runAsUser
           value: 1000
+      - equal:
+          path: spec.template.spec.securityContext.runAsGroup
+          value: 1001
       - equal:
           path: spec.template.spec.containers[0].image
           value: lscr.io/linuxserver/code-server:4.104.2
