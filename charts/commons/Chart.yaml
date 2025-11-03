@@ -1,4 +1,4 @@
 apiVersion: v2
 name: commons
 description: Commons chart
-version: 0.5.0
+version: 0.5.1
