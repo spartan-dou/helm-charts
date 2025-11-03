@@ -35,7 +35,7 @@ spec:
       {{- end }}
       {{- $sc := .securityContext | default (dict) }}
       {{- $gsc := $.Values.global.securityContext | default (dict) }}
-      {{- $merged := merge $gsc $sc }}
+      {{- $merged := merge $sc $gsc }}
       {{- if gt (len $merged) 0 }}
       securityContext:
         {{- toYaml $merged | nindent 8 }}
