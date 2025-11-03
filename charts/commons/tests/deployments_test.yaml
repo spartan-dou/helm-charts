@@ -142,6 +142,9 @@ tests:
           path: spec.replicas
           value: 1
       - equal:
+          path: spec.template.spec.securityContext.runAsUser
+          value: 1000
+      - equal:
           path: spec.template.spec.containers[0].image
           value: redis:8.2.1
 
