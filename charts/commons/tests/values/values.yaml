@@ -1,6 +1,6 @@
 global:
   timezone: Europe/Paris
-  securityContext: {}
+  securityContext:
   pvc:
     storage:
       size: 1Gi
