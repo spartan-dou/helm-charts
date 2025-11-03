@@ -35,26 +35,10 @@ spec:
       {{- end }}
       {{- $sc := .securityContext | default (dict) }}
       {{- $gsc := $.Values.global.securityContext | default (dict) }}
-      {{- if ne $sc.enabled false }}
+      {{- $merged := merge $gsc $sc }}
+      {{- if gt (len $merged) 0 }}
       securityContext:
-        {{- if hasKey $sc "runAsUser" }}
-        runAsUser: {{ $sc.runAsUser }}
-        {{- else if hasKey $gsc "runAsUser" }}
-        runAsUser: {{ $gsc.runAsUser }}
-        {{- end }}
-        {{- if hasKey $sc "runAsGroup" }}
-        runAsGroup: {{ $sc.runAsGroup }}
-        {{- else if hasKey $gsc "runAsGroup" }}
-        runAsGroup: {{ $gsc.runAsGroup }}
-        {{- end }}
-        {{- if hasKey $sc "fsGroup" }}
-        fsGroup: {{ $sc.fsGroup }}
-        {{- else if hasKey $gsc "fsGroup" }}
-        fsGroup: {{ $gsc.fsGroup }}
-        {{- end }}
-        {{- with $sc.supplementalGroups }}
-        supplementalGroups: {{ toYaml . | nindent 10 }}
-        {{- end }}
+        {{- toYaml $merged | nindent 8 }}
       {{- end }}
       {{- with .hostNetwork }}
       hostNetwork: {{ . }}
@@ -64,10 +48,8 @@ spec:
         {{- range . }}
         - name: {{ .name | default $component.name }}
           {{- with .securityContext }}
-          {{- if ne .enabled false }}
           securityContext:
             {{- toYaml . | nindent 12 }}
-          {{- end }}
           {{- end }}
           image: {{ .image.repository }}:{{ .image.tag | default "latest"  }}
           {{- with .command }}
@@ -103,10 +85,8 @@ spec:
             {{ toYaml . | nindent 12 }}
           {{- end }}
           {{- with .securityContext }}
-          {{- if ne .enabled false }}
           securityContext:
             {{- toYaml . | nindent 12 }}
-          {{- end }}
           {{- end }}
           
           {{- include "containers.envs" (dict "Values" $.Values "Chart" $.Chart "Release" $.Release "component" $component "env" .env) | nindent 10 }}
