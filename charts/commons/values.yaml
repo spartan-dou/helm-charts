@@ -25,7 +25,7 @@ addons:
     name: redis
     image:
       repository: redis
-      tag: 8.2.2-alpine
+      tag: 8.2.3-alpine
     port: 6379
   pgadmin:
     enabled: false
