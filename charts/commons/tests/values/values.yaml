@@ -79,6 +79,8 @@ components:
         runAsUser: 80
         supplementalGroups:
           - 10
+      containers:
+        runAsUser: 20
       initContainers:
         - name: setup-volume
           image:

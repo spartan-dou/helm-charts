@@ -24,7 +24,7 @@ tests:
           value: 80
       - equal:
           path: spec.template.spec.containers[0].securityContext.runAsUser
-          value: 80
+          value: 20
       - equal:
           path: spec.template.spec.securityContext.runAsGroup
           value: 1001
