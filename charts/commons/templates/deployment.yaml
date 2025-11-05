@@ -80,9 +80,11 @@ spec:
           args:
             {{ toYaml . | nindent 12 }}
           {{- end }}
-          {{- with (default dict .container.securityContext) }}
+          {{- if .container }}
+          {{- with .container.securityContext) }}
           securityContext:
             {{- toYaml . | nindent 12 }}
+          {{- end }}
           {{- end }}
           
           {{- include "containers.envs" (dict "Values" $.Values "Chart" $.Chart "Release" $.Release "component" $component "env" .env) | nindent 10 }}
