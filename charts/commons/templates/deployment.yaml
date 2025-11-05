@@ -80,7 +80,7 @@ spec:
           args:
             {{ toYaml . | nindent 12 }}
           {{- end }}
-          {{- with .securityContext }}
+          {{- with .container.securityContext }}
           securityContext:
             {{- toYaml . | nindent 12 }}
           {{- end }}
