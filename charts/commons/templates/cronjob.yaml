@@ -35,7 +35,7 @@ spec:
           initContainers:
             {{- range . }}
             - name: {{ .name | default $component.name }}
-              {{- with .securityContext }}
+              {{- with .container.securityContext }}
               securityContext:
                 {{- toYaml . | nindent 16 }}
               {{- end }}
@@ -92,7 +92,7 @@ spec:
               args:
                 {{ toYaml . | nindent 16 }}
               {{- end }}
-              {{- with .securityContext }}
+              {{- with .container.securityContext }}
               securityContext:
                 {{- toYaml . | nindent 16 }}
               {{- end }}
