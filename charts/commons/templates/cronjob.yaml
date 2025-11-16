@@ -103,10 +103,6 @@ spec:
               securityContext:
                 {{- toYaml . | nindent 16 }}
               {{- end }}
-              {{- with .container.capabilities }}
-              capabilities:
-                {{- toYaml . | nindent 16 }}
-              {{- end }}
               {{- end }}
               env:
                 - name: TZ
