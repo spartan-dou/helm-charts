@@ -2,7 +2,7 @@
   Récupère le nom du chart (peut être surchargé par .Values.nameOverride)
 */}}
 {{- define "commons.name" -}}
-{{- default .Chart.Name .Values.nameOverride | trunc 63 | trimSuffix "-" }}
+{{- default .Release.Name .Values.nameOverride | trunc 63 | trimSuffix "-" }}
 {{- end }}
 
 {{- define "commons.fullname" -}}
@@ -51,10 +51,9 @@
 {{- define "commons.labels" -}}
 helm.sh/chart: {{ include "commons.chart" . }}
 {{ include "commons.selectorLabels" . }}
-{{- if .Chart.AppVersion }}
-app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
-{{- end }}
+app.kubernetes.io/version: {{ default .Chart.Version .Chart.AppVersion | quote }}
 app.kubernetes.io/managed-by: {{ .Release.Service }}
+helm.sh/chart: {{ .Chart.Name }}-{{ .Chart.Version }}
 {{- end }}
 
 {{/*
