@@ -20,7 +20,7 @@ spec:
   template:
     metadata:
       labels:
-        {{ include "commons.selectorLabels" (dict "Chart" $.Chart "Values" $.Values "Release" $.Release "name" .name "component" $component) | nindent 8 }}
+        {{ include "commons.labels" (dict "Chart" $.Chart "Values" $.Values "Release" $.Release "name" .name "component" $component) | nindent 8 }}
         {{- range $index, $volume := .volumes }}
           {{- with $volume.configMap }}
             {{- with $volume.configMap.data }}
