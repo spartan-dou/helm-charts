@@ -53,7 +53,6 @@ helm.sh/chart: {{ include "commons.chart" . }}
 {{ include "commons.selectorLabels" . }}
 app.kubernetes.io/version: {{ default .Chart.Version .Chart.AppVersion | quote }}
 app.kubernetes.io/managed-by: {{ .Release.Service }}
-helm.sh/chart: {{ .Chart.Name }}-{{ .Chart.Version }}
 {{- end }}
 
 {{/*
