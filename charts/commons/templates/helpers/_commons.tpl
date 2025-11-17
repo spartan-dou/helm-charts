@@ -51,7 +51,7 @@ app.kubernetes.io/managed-by: {{ .Release.Service }}
   Labels utilisés pour les selectors (matchLabels)
 */}}
 {{- define "commons.selectorLabels" -}}
-app.kubernetes.io/name: {{ include "commons.name" (dict "Release" $.Release "component" $component) }}
+app.kubernetes.io/name: {{ include "commons.name" (dict "Release" .Release "component" .component) }}
 app.kubernetes.io/instance: {{ .Release.Name }}
 {{- if and .component (kindIs "map" .component) (.component.name) }}
 app: {{ .component.name }}
