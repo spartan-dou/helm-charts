@@ -2,7 +2,11 @@
   Récupère le nom du chart (peut être surchargé par .Values.nameOverride)
 */}}
 {{- define "commons.name" -}}
+{{- if .component }}
 {{- default $.Release.Name .component.appNameOverride -}}
+{{- else }}
+{{- $.Release.Name -}}
+{{- end }}
 {{- end }}
 
 {{- define "commons.fullname" -}}
