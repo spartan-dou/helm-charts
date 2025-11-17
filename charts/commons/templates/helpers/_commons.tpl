@@ -6,8 +6,8 @@
 {{- end }}
 
 {{- define "commons.fullname" -}}
-{{- $x := default .Release.Name .component.name -}}
-{{- $y := .Release.Name -}}
+{{- $x := .Release.Name -}}
+{{- $y := default .Release.Name .component.name -}}
 {{- $z := .name -}}
 
 {{- if and (eq $x $y) (eq $y $z) -}}
