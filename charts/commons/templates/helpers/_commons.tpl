@@ -2,12 +2,12 @@
   Récupère le nom du chart (peut être surchargé par .Values.nameOverride)
 */}}
 {{- define "commons.name" -}}
-{{- default .Release.Name .component.appNameOverride -}}
+{{- default $.Release.Name .component.appNameOverride -}}
 {{- end }}
 
 {{- define "commons.fullname" -}}
-{{- $x := .Release.Name -}}
-{{- $x := .Release.Name -}}
+{{- $x := $.Release.Name -}}
+{{- $x := $.Release.Name -}}
 {{- $y := $x -}}
 {{- with .component }}
   {{- with .name }}
@@ -42,7 +42,7 @@
 */}}
 {{- define "commons.labels" -}}
 helm.sh/chart: {{ include "commons.chart" . }}
-{{ include "commons.selectorLabels" . }}
+{{ include "commons.selectorLabels" (dict "Release" $.Release "component" .component) }}
 app.kubernetes.io/version: {{ default .Chart.Version .Chart.AppVersion | quote }}
 app.kubernetes.io/managed-by: {{ .Release.Service }}
 {{- end }}
@@ -51,7 +51,7 @@ app.kubernetes.io/managed-by: {{ .Release.Service }}
   Labels utilisés pour les selectors (matchLabels)
 */}}
 {{- define "commons.selectorLabels" -}}
-app.kubernetes.io/name: {{ include "commons.name" (dict "Release" .Release "component" .component) }}
+app.kubernetes.io/name: {{ include "commons.name" (dict "Release" $.Release "component" .component) }}
 app.kubernetes.io/instance: {{ .Release.Name }}
 {{- if and .component (kindIs "map" .component) (.component.name) }}
 app: {{ .component.name }}
@@ -83,9 +83,9 @@ app: {{ .Release.Name }}
   {{- if eq $type "postgres" }}
     {{- if eq $field "host" }}
       {{- if eq $source "addons" }}
-        {{- $value = printf "%s-postgres-rw" (include "commons.fullname" (dict "Chart" $.Chart "Values" $.Values "Release" $.Release "name" .name)) }}
+        {{- $value = printf "%s-postgres-rw" (include "commons.fullname" (dict "Values" $.Values "Release" $.Release "name" .name)) }}
       {{- else if eq $source "components" }}
-        {{- $value = printf "%s-postgres-rw" (include "commons.fullname" (dict "Chart" $.Chart "Values" $.Values "Release" $.Release "name" .name "component" $component)) }}
+        {{- $value = printf "%s-postgres-rw" (include "commons.fullname" (dict "Values" $.Values "Release" $.Release "name" .name "component" $component)) }}
       {{- end }}
     {{- else if eq $field "username" }}
       {{- if eq $source "addons" }}
@@ -95,9 +95,9 @@ app: {{ .Release.Name }}
       {{- end }}
     {{- else if eq $field "password_secret" }}
       {{- if eq $source "addons" }}
-        {{- $value = printf "%s-postgres-secret" (include "commons.fullname" (dict "Chart" $.Chart "Values" $.Values "Release" $.Release "name" .name)) }}
+        {{- $value = printf "%s-postgres-secret" (include "commons.fullname" (dict "Values" $.Values "Release" $.Release "name" .name)) }}
       {{- else if eq $source "components" }}
-        {{- $value = printf "%s-postgres-secret" (include "commons.fullname" (dict "Chart" $.Chart "Values" $.Values "Release" $.Release "name" .name "component" $component)) }}
+        {{- $value = printf "%s-postgres-secret" (include "commons.fullname" (dict "Values" $.Values "Release" $.Release "name" .name "component" $component)) }}
       {{- end }}
     {{- else if eq $field "password" }}
       {{- if eq $source "addons" }}
