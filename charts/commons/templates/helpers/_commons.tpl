@@ -7,7 +7,13 @@
 
 {{- define "commons.fullname" -}}
 {{- $x := .Release.Name -}}
-{{- $y := default $x (default "" .component.name) -}}
+{{- $x := .Release.Name -}}
+{{- $y := $x -}}
+{{- with .component }}
+  {{- if .name }}
+    {{- $y = .name -}}
+  {{- end }}
+{{- end }}
 {{- $z := default $y .name -}}
 
 {{- if and (eq $x $y) (eq $y $z) -}}
