@@ -2,39 +2,24 @@
   Récupère le nom du chart (peut être surchargé par .Values.nameOverride)
 */}}
 {{- define "commons.name" -}}
-{{- default .Release.Name .Values.nameOverride | trunc 63 | trimSuffix "-" }}
+{{- .Release.Name }}
 {{- end }}
 
 {{- define "commons.fullname" -}}
-{{- $component := default "" .component }}
-{{- if .Values.fullnameOverride }}
-  {{- .Values.fullnameOverride | trunc 63 | trimSuffix "-" }}
-{{- else }}
-  {{- $baseName := default .Chart.Name .Values.nameOverride }}
-  {{- if eq $baseName "commons" }}
-    {{- $baseName = "" }}
-  {{- end }}
-  {{- $full := "" }}
-  {{- if and $baseName (not (contains $baseName .Release.Name)) }}
-    {{- $full = printf "%s-%s" .Release.Name $baseName }}
-  {{- else }}
-    {{- $full = .Release.Name }}
-  {{- end }}
-  {{- $suffix := "" }}
-  {{- if and $component (kindIs "map" $component) ($component.name) }}
-    {{- $suffix = printf "%s-%s" $suffix $component.name}}
-  {{- end }}
-  {{- if .name }}
-    {{- $suffix = printf "%s-%s" $suffix .name}}
-  {{- end }}
+{{- $x := .component.name -}}
+{{- $y := .Release.Name -}}
+{{- $z := .name -}}
 
-  
-  {{- if $suffix }}
-    {{- $full = printf "%s%s" $full $suffix }}
-  {{- end }}
-  {{- $full | trunc 63 | trimSuffix "-" }}
-{{- end }}
-{{- end }}
+{{- if and (eq $x $y) (eq $y $z) -}}
+  {{- $x -}}
+{{- else if and (eq $x $y) (ne $z $x) -}}
+  {{- printf "%s-%s" $x $z -}}
+{{- else if and (ne $x $y) (eq $y $z) -}}
+  {{- printf "%s-%s" $x $y -}}
+{{- else -}}
+  {{- printf "%s-%s-%s" $x $y $z -}}
+{{- end -}}
+{{- end -}}
 
 
 
