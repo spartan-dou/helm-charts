@@ -6,7 +6,7 @@
 {{- end }}
 
 {{- define "commons.fullname" -}}
-{{- $x := .component.name -}}
+{{- $x := default .Release.Name .component.name -}}
 {{- $y := .Release.Name -}}
 {{- $z := .name -}}
 
