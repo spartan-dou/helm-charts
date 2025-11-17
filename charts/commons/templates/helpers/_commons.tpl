@@ -7,8 +7,8 @@
 
 {{- define "commons.fullname" -}}
 {{- $x := .Release.Name -}}
-{{- $y := default .Release.Name .component.name -}}
-{{- $z := .name -}}
+{{- $y := default $x (default "" .component.name) -}}
+{{- $z := default $y .name -}}
 
 {{- if and (eq $x $y) (eq $y $z) -}}
   {{- $x -}}
@@ -20,6 +20,7 @@
   {{- printf "%s-%s-%s" $x $y $z -}}
 {{- end -}}
 {{- end -}}
+
 
 
 
