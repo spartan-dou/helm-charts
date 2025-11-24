@@ -58,15 +58,15 @@ global:
 components:
   - name: nginx
     cronjob:
-      schedule: '0 3 * * *'
-      successfulJobsHistoryLimit: 3
-      failedJobsHistoryLimit: 1
-      env:
-        - name: ENV
-          value: prod
-      image:
-        repository: nginx
-        tag: latest
+      - schedule: '0 3 * * *'
+        successfulJobsHistoryLimit: 3
+        failedJobsHistoryLimit: 1
+        env:
+          - name: ENV
+            value: prod
+        image:
+          repository: nginx
+          tag: latest
     
     secrets:
       - name: toto
