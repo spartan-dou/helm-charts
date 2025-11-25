@@ -57,7 +57,7 @@ global:
           - list
 components:
   - name: nginx
-    cronjob:
+    cronjobs:
       - schedule: '0 3 * * *'
         successfulJobsHistoryLimit: 3
         failedJobsHistoryLimit: 1

@@ -9,16 +9,6 @@
     {{- $merged = append $merged . }}
   {{- end }}
 
-  {{- $existingCronjob := list }}
-  {{- if $c.cronjob }}
-    {{- $existingCronjob = $c.cronjob.initContainers | default list }}
-  {{- end }}
-
-  {{- $mergedCronjob := list }}
-  {{- range $existingCronjob }}
-    {{- $mergedCronjob = append $mergedCronjob . }}
-  {{- end }}
-
   {{- if $.Values.addons.redis.enabled }}
     {{ $host := include "commons.getValue" (dict "Values" $.Values "Chart" $.Chart "Release" $.Release "value" "__addons__redis__host") }}
     {{- $redisInit := dict
@@ -30,31 +20,22 @@
       "command" (list "sh" "-c" (printf "until redis-cli -h %s ping | grep PONG; do echo waiting for redis; sleep 2; done" $host))
     }}
     {{- $merged = append $merged $redisInit }}
-    {{- $mergedCronjob = append $mergedCronjob $redisInit }}
   {{- end }}
 
   {{- if $.Values.addons.postgres.enabled }}
-    {{- $name := $.Values.addons.postgres.name }}
-    {{- $image := $.Values.addons.postgres.image.repository }}
-    {{- $tag := $.Values.addons.postgres.image.tag }}
-    {{- $host := include "postgres.host" $ }}
-    {{- $port := "5432" }}
-    {{- $user := include "postgres.username" $ }}
-
     {{- $postgresInit := dict
-      "name" (printf "wait-for-postgres")
+      "name" "wait-for-postgres"
       "image" (dict
-        "repository" $image
-        "tag" $tag
+        "repository" $.Values.addons.postgres.image.repository
+        "tag" $.Values.addons.postgres.image.tag
       )
-      "command" (list "sh" "-c" (printf "until pg_isready -h %s -p %s -U %s; do echo \"Waiting for Postgres to be ready...\"; sleep 2; done" $host $port $user))
+      "command" (list "sh" "-c" (printf "until pg_isready -h %s -p %s -U %s; do echo \"Waiting for Postgres to be ready...\"; sleep 2; done" (include "postgres.host" $) "5432" (include "postgres.username" $)))
       "resources" (dict
         "requests" (dict "cpu" "10m" "memory" "16Mi")
         "limits"   (dict "cpu" "50m" "memory" "32Mi")
       )
     }}
     {{- $merged = append $merged $postgresInit }}
-    {{- $mergedCronjob = append $mergedCronjob $postgresInit }}
   {{- end }}
 
   {{- if and $c.postgres $c.postgres.enabled }}
@@ -75,15 +56,52 @@
       )
     }}
     {{- $merged = append $merged $postgresInit }}
-    {{- $mergedCronjob = append $mergedCronjob $postgresInit }}
   {{- end }}
 
   {{- $_ := set $c.deployment "initContainers" $merged }}
-  {{- if $c.cronjob }}
-    {{- $_ := set $c.cronjob "initContainers" $mergedCronjob }}
-  {{- end }}
-  {{- $result = append $result $c }}
 
+  {{- if $c.cronjobs }}
+    {{- range $cj := $c.cronjobs }}
+      {{- $existingCronjob := $cj.initContainers | default list }}
+      {{- $mergedCronjob := list }}
+      {{- range $existingCronjob }}
+        {{- $mergedCronjob = append $mergedCronjob . }}
+      {{- end }}
+
+      {{- if $.Values.addons.redis.enabled }}
+        {{ $host := include "commons.getValue" (dict "Values" $.Values "Chart" $.Chart "Release" $.Release "value" "__addons__redis__host") }}
+        {{- $redisInit := dict
+          "name" "wait-for-redis"
+          "image" (dict
+            "repository" $.Values.addons.redis.image.repository
+            "tag" $.Values.addons.redis.image.tag
+          )
+          "command" (list "sh" "-c" (printf "until redis-cli -h %s ping | grep PONG; do echo waiting for redis; sleep 2; done" $host))
+        }}
+        {{- $mergedCronjob = append $mergedCronjob $redisInit }}
+      {{- end }}
+
+      {{- if $.Values.addons.postgres.enabled }}
+        {{- $postgresInit := dict
+          "name" "wait-for-postgres"
+          "image" (dict
+            "repository" $.Values.addons.postgres.image.repository
+            "tag" $.Values.addons.postgres.image.tag
+          )
+          "command" (list "sh" "-c" (printf "until pg_isready -h %s -p %s -U %s; do echo \"Waiting for Postgres to be ready...\"; sleep 2; done" (include "postgres.host" $) "5432" (include "postgres.username" $)))
+          "resources" (dict
+            "requests" (dict "cpu" "10m" "memory" "16Mi")
+            "limits"   (dict "cpu" "50m" "memory" "32Mi")
+          )
+        }}
+        {{- $mergedCronjob = append $mergedCronjob $postgresInit }}
+      {{- end }}
+
+      {{- $_ := set $cj "initContainers" $mergedCronjob }}
+    {{- end }}
+  {{- end }}
+
+  {{- $result = append $result $c }}
 {{- end }}
 
 {{- $addons := list }}
