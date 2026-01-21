@@ -35,9 +35,20 @@ RUN apt-get update && apt-get install -y \
     && rm -rf /var/lib/apt/lists/*
 
 # Installation des drivers NVIDIA et dépendances
+RUN add-apt-repository multiverse \
+    && echo "deb http://archive.ubuntu.com/ubuntu noble-proposed multiverse" | sudo tee /etc/apt/sources.list.d/proposed.list
+    && apt update
+
 RUN apt-get update && apt-get install -y \
     libnvidia-encode-590 \
     libnvidia-decode-590 \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN rm /etc/apt/sources.list.d/proposed.list \
+    && sudo apt update
+
+# Installation des dépendances
+RUN apt-get update && apt-get install -y \
     mesa-va-drivers \
     libva2 \
     libva-drm2 \
