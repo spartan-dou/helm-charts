@@ -4,7 +4,8 @@ ENV DEBIAN_FRONTEND=noninteractive \
     DISPLAY=:99 \
     XDG_RUNTIME_DIR=/run/user/0 \
     NVIDIA_VISIBLE_DEVICES=all \
-    NVIDIA_DRIVER_CAPABILITIES=all
+    NVIDIA_DRIVER_CAPABILITIES=all \
+    PULSE_SERVER=unix:/run/pulse/native
 
 # Installation des paquets de base et dépôts
 RUN apt-get update && apt-get install -y \
@@ -25,12 +26,10 @@ RUN apt-get update && apt-get install -y \
     x11-xserver-utils \
     && rm -rf /var/lib/apt/lists/*
 
-# Pipewire
+# PulseAudio
 RUN apt-get update && apt-get install -y \
-    pipewire \
-    pipewire-pulse \
-    pipewire-audio-client-libraries \
-    wireplumber \
+    pulseaudio \
+    pulseaudio-utils \
     pavucontrol \
     && rm -rf /var/lib/apt/lists/*
 
@@ -39,13 +38,11 @@ RUN echo "deb http://archive.ubuntu.com/ubuntu noble-proposed multiverse" > /etc
 
 # Installer les libs NVIDIA nécessaires (NVENC/NVDEC inclus dans libnvidia-compute-590)
 RUN apt-get update && apt-get install -y \
-    libnvidia-encode-590 \
-    libnvidia-decode-590 \
     nvidia-utils-590 \
     libnvidia-compute-590 \
     && rm -rf /var/lib/apt/lists/*
 
-# Désactiver proposed après installation
+# Désactiver proposed
 RUN rm /etc/apt/sources.list.d/proposed.list
 
 # VAAPI (optionnel)
@@ -63,8 +60,8 @@ RUN wget -O sunshine.deb https://github.com/LizardByte/Sunshine/releases/downloa
     rm sunshine.deb && \
     rm -rf /var/lib/apt/lists/*
 
-# Runtime dirs
-RUN mkdir -p /run/pulse /run/pipewire /run/user/0 && \
+# Dossiers runtime
+RUN mkdir -p /run/pulse /run/user/0 && \
     chmod 700 /run/user/0
 
 # Supervisor
