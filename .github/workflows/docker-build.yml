@@ -18,16 +18,14 @@ jobs:
     permissions:
       contents: read
       packages: write
-    
+
     strategy:
       matrix:
         include:
           - name: sunshine-desktop
             context: ./containers/sunshine-desktop
             dockerfile: ./containers/sunshine-desktop/Dockerfile
-          
-          # Ajoutez d'autres images ici
-    
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v6
@@ -39,14 +37,14 @@ jobs:
         uses: docker/login-action@v3
         with:
           registry: ${{ env.REGISTRY }}
-          username: ${{ github.actor }}
+          username: ${{ github.repository_owner }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Extract metadata
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: ${{ env.REGISTRY }}/${{ matrix.name }}
+          images: ${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ matrix.name }}
           tags: |
             type=ref,event=branch
             type=sha,prefix={{branch}}-
