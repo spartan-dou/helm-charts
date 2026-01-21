@@ -1,5 +1,7 @@
 FROM nvidia/cuda:12.6.0-runtime-ubuntu24.04
 
+ARG VERSION=0.0.1
+
 ENV DEBIAN_FRONTEND=noninteractive \
     DISPLAY=:0 \
     XDG_RUNTIME_DIR=/run/user/0 \
