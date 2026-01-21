@@ -36,7 +36,7 @@ RUN apt-get update && apt-get install -y \
 
 # Installation des drivers NVIDIA et dépendances
 RUN add-apt-repository multiverse \
-    && echo "deb http://archive.ubuntu.com/ubuntu noble-proposed multiverse" | sudo tee /etc/apt/sources.list.d/proposed.list
+    && echo "deb http://archive.ubuntu.com/ubuntu noble-proposed multiverse" | sudo tee /etc/apt/sources.list.d/proposed.list \
     && apt update
 
 RUN apt-get update && apt-get install -y \
