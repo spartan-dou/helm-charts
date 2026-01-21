@@ -1,11 +1,11 @@
 FROM nvidia/cuda:12.6.0-runtime-ubuntu24.04
 
 ENV DEBIAN_FRONTEND=noninteractive \
-    DISPLAY=:99 \
+    DISPLAY=:0 \
     XDG_RUNTIME_DIR=/run/user/0 \
     NVIDIA_VISIBLE_DEVICES=all \
     NVIDIA_DRIVER_CAPABILITIES=all \
-    PULSE_SERVER=unix:/run/pulse/native
+    WLR_BACKENDS=headless
 
 # Installation des paquets de base et dépôts
 RUN apt-get update && apt-get install -y \
@@ -17,20 +17,20 @@ RUN apt-get update && apt-get install -y \
     dbus-x11 \
     && rm -rf /var/lib/apt/lists/*
 
-# Installation de XFCE et composants graphiques
+# Wayland + sway + Xwayland
 RUN apt-get update && apt-get install -y \
-    xfce4 \
-    xfce4-terminal \
-    xfce4-goodies \
-    xvfb \
-    x11-xserver-utils \
+    sway \
+    xwayland \
+    grim \
+    slurp \
     && rm -rf /var/lib/apt/lists/*
 
-# PulseAudio
+# PipeWire + WirePlumber (remplace PulseAudio)
 RUN apt-get update && apt-get install -y \
-    pulseaudio \
-    pulseaudio-utils \
-    pavucontrol \
+    pipewire \
+    pipewire-audio-client-libraries \
+    pipewire-pulse \
+    wireplumber \
     && rm -rf /var/lib/apt/lists/*
 
 # Activer proposed pour récupérer les libs NVIDIA 590
@@ -45,14 +45,6 @@ RUN apt-get update && apt-get install -y \
 # Désactiver proposed
 RUN rm /etc/apt/sources.list.d/proposed.list
 
-# VAAPI (optionnel)
-RUN apt-get update && apt-get install -y \
-    mesa-va-drivers \
-    libva2 \
-    libva-drm2 \
-    vainfo \
-    && rm -rf /var/lib/apt/lists/*
-
 # Installer Sunshine
 RUN wget -O sunshine.deb https://github.com/LizardByte/Sunshine/releases/download/v2025.923.33222/sunshine-ubuntu-24.04-amd64.deb && \
     apt-get update && \
@@ -61,10 +53,13 @@ RUN wget -O sunshine.deb https://github.com/LizardByte/Sunshine/releases/downloa
     rm -rf /var/lib/apt/lists/*
 
 # Dossiers runtime
-RUN mkdir -p /run/pulse /run/user/0 && \
+RUN mkdir -p /run/user/0 && \
     chmod 700 /run/user/0
 
 # Supervisor
+COPY start.sh start.sh
+RUN chmod +x start.sh
+
 COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
 EXPOSE 47984-47990/tcp 47984-47990/udp 48010/tcp
