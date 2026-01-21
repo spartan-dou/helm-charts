@@ -2,7 +2,9 @@ FROM nvidia/cuda:12.6.0-runtime-ubuntu24.04
 
 ENV DEBIAN_FRONTEND=noninteractive \
     DISPLAY=:99 \
-    PULSE_SERVER=unix:/run/pulse/native
+    XDG_RUNTIME_DIR=/run/user/0 \
+    NVIDIA_VISIBLE_DEVICES=all \
+    NVIDIA_DRIVER_CAPABILITIES=all
 
 # Installation des paquets de base et dépôts
 RUN apt-get update && apt-get install -y \
@@ -11,6 +13,7 @@ RUN apt-get update && apt-get install -y \
     curl \
     gnupg2 \
     supervisor \
+    dbus-x11 \
     && rm -rf /var/lib/apt/lists/*
 
 # Installation de XFCE et composants graphiques
@@ -18,14 +21,11 @@ RUN apt-get update && apt-get install -y \
     xfce4 \
     xfce4-terminal \
     xfce4-goodies \
-    xserver-xorg-core \
-    xserver-xorg-video-nvidia \
     xvfb \
     x11-xserver-utils \
-    dbus-x11 \
     && rm -rf /var/lib/apt/lists/*
 
-# Installation de Pipewire (remplace PulseAudio, plus moderne)
+# Pipewire
 RUN apt-get update && apt-get install -y \
     pipewire \
     pipewire-pulse \
@@ -34,17 +34,21 @@ RUN apt-get update && apt-get install -y \
     pavucontrol \
     && rm -rf /var/lib/apt/lists/*
 
-# Installation des drivers NVIDIA et dépendances
-RUN echo "deb http://archive.ubuntu.com/ubuntu/ noble-proposed multiverse" | sudo tee /etc/apt/sources.list.d/multiverse.list
+# Activer proposed pour récupérer les libs NVIDIA 590
+RUN echo "deb http://archive.ubuntu.com/ubuntu noble-proposed multiverse" > /etc/apt/sources.list.d/proposed.list
 
+# Installer les libs NVIDIA nécessaires (NVENC/NVDEC inclus dans libnvidia-compute-590)
 RUN apt-get update && apt-get install -y \
     libnvidia-encode-590 \
     libnvidia-decode-590 \
+    nvidia-utils-590 \
+    libnvidia-compute-590 \
     && rm -rf /var/lib/apt/lists/*
 
-RUN rm /etc/apt/sources.list.d/multiverse.list
+# Désactiver proposed après installation
+RUN rm /etc/apt/sources.list.d/proposed.list
 
-# Installation des dépendances
+# VAAPI (optionnel)
 RUN apt-get update && apt-get install -y \
     mesa-va-drivers \
     libva2 \
@@ -52,39 +56,21 @@ RUN apt-get update && apt-get install -y \
     vainfo \
     && rm -rf /var/lib/apt/lists/*
 
-# Installation de Sunshine
-# Note: Vérifier la dernière version sur https://github.com/LizardByte/Sunshine/releases
+# Installer Sunshine
 RUN wget -O sunshine.deb https://github.com/LizardByte/Sunshine/releases/download/v2025.923.33222/sunshine-ubuntu-24.04-amd64.deb && \
     apt-get update && \
     apt-get install -y ./sunshine.deb && \
     rm sunshine.deb && \
     rm -rf /var/lib/apt/lists/*
 
-# Installation d'applications utiles (optionnel)
-RUN apt-get update && apt-get install -y \
-    firefox \
-    nano \
-    htop \
-    && rm -rf /var/lib/apt/lists/*
-
-# Configuration de Pipewire
-RUN mkdir -p /run/pulse /run/pipewire && \
-    chmod 700 /run/pipewire
-
-# Création des répertoires nécessaires
-RUN mkdir -p /config /run/user/0 && \
+# Runtime dirs
+RUN mkdir -p /run/pulse /run/pipewire /run/user/0 && \
     chmod 700 /run/user/0
 
-# Configuration de Supervisor
+# Supervisor
 COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
-# Ports Sunshine
 EXPOSE 47984-47990/tcp 47984-47990/udp 48010/tcp
-
-# Variables d'environnement
-ENV XDG_RUNTIME_DIR=/run/user/0 \
-    NVIDIA_VISIBLE_DEVICES=all \
-    NVIDIA_DRIVER_CAPABILITIES=all
 
 WORKDIR /root
 
