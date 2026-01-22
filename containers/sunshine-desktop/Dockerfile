@@ -59,8 +59,8 @@ RUN mkdir -p /run/user/0 && \
     chmod 700 /run/user/0
 
 # Supervisor
-COPY start.sh start.sh
-RUN chmod +x start.sh
+COPY start.sh /usr/local/bin/start.sh
+RUN chmod +x /usr/local/bin/start.sh
 
 COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
