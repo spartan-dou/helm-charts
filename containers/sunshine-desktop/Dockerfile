@@ -1,4 +1,4 @@
-FROM nvidia/cuda:12.9.1-runtime-ubuntu24.04
+FROM nvidia/cuda:13.1.1-runtime-ubuntu24.04
 
 ARG VERSION=0.0.1
 
