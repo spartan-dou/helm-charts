@@ -25,5 +25,7 @@ sway --unsupported-gpu --config /etc/sway/config &
 # Attendre que Wayland soit prêt
 sleep 2
 
+echo "Wayland est prêt, lancement de Sunshine..."
+
 # Lancer Sunshine
 sunshine

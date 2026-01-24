@@ -19,7 +19,7 @@ RUN apt-get update && apt-get install -y \
     dbus-x11 \
     && rm -rf /var/lib/apt/lists/*
 
-# Wayland + sway + Xwayland
+# sway + Xwayland
 RUN apt-get update && apt-get install -y \
     sway \
     xwayland \
