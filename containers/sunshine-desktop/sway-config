@@ -1,0 +1,18 @@
+# Sway headless config pour Sunshine
+
+include /etc/sway/config.d/*
+
+# Écran virtuel
+output HEADLESS-1 resolution 1920x1080 position 0,0
+
+# Pas de bar, pas de wallpaper
+bar {
+    mode invisible
+}
+
+# Désactiver les bindings inutiles
+bindsym --to-code $mod+Return exec true
+bindsym --to-code $mod+d exec true
+
+# Xwayland
+xwayland enable

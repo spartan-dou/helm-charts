@@ -5,9 +5,11 @@ ARG VERSION=0.0.1
 ENV DEBIAN_FRONTEND=noninteractive \
     DISPLAY=:0 \
     XDG_RUNTIME_DIR=/run/user/0 \
+    WLR_BACKENDS=headless \
+    WLR_RENDERER=vulkan \
+    WLR_NO_HARDWARE_CURSORS=1 \
     NVIDIA_VISIBLE_DEVICES=all \
-    NVIDIA_DRIVER_CAPABILITIES=all \
-    WLR_BACKENDS=headless
+    NVIDIA_DRIVER_CAPABILITIES=all
 
 # Installation des paquets de base et dépôts
 RUN apt-get update && apt-get install -y \
@@ -26,7 +28,7 @@ RUN apt-get update && apt-get install -y \
     grim \
     slurp \
     && rm -rf /var/lib/apt/lists/*
-
+    
 # PipeWire + WirePlumber (remplace PulseAudio)
 RUN apt-get update && apt-get install -y \
     pipewire \
@@ -46,17 +48,19 @@ RUN apt-get update && apt-get install -y \
 
 # Désactiver proposed
 RUN rm /etc/apt/sources.list.d/proposed.list
-
-# Installer Sunshine
+# Sunshine
 RUN wget -O sunshine.deb https://github.com/LizardByte/Sunshine/releases/download/v2025.923.33222/sunshine-ubuntu-24.04-amd64.deb && \
-    apt-get update && \
-    apt-get install -y ./sunshine.deb && \
-    rm sunshine.deb && \
-    rm -rf /var/lib/apt/lists/*
+    apt-get update && apt-get install -y ./sunshine.deb && \
+    rm sunshine.deb && rm -rf /var/lib/apt/lists/*
 
-# Dossiers runtime
-RUN mkdir -p /run/user/0 && \
-    chmod 700 /run/user/0
+# Runtime dirs
+RUN mkdir -p /run/user/0 && chmod 700 /run/user/0
+
+# Config sway
+COPY sway-config /etc/sway/config
+
+# Config sunshine
+COPY sunshine.conf /root/.config/sunshine/sunshine.conf
 
 # Supervisor
 COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
@@ -65,4 +69,4 @@ EXPOSE 47984-47990/tcp 47984-47990/udp 48010/tcp
 
 WORKDIR /root
 
-CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/supervisord.conf"]
+CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]
