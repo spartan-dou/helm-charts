@@ -36,7 +36,8 @@ spec:
 
       {{ include "containers.securityContext" (dict "global" $.Values.global "securityContext" .securityContext) | nindent 6 }}
       {{- with .nodeSelector }}
-      nodeSelector: {{ . }}
+      nodeSelector: 
+        {{- toYaml . | nindent 8 }}
       {{- end }}
       {{- with .hostNetwork }}
       hostNetwork: {{ . }}
