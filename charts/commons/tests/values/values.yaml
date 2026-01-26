@@ -61,12 +61,13 @@ components:
       - schedule: '0 3 * * *'
         successfulJobsHistoryLimit: 3
         failedJobsHistoryLimit: 1
-        env:
-          - name: ENV
-            value: prod
-        image:
-          repository: nginx
-          tag: latest
+        containers:
+          - env:
+            - name: ENV
+              value: prod
+            image:
+              repository: nginx
+              tag: latest
     
     secrets:
       - name: toto
