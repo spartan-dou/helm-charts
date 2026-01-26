@@ -70,6 +70,7 @@ spec:
         {{- end }}
       {{- end }}
       containers:
+        {{- range $components.containers }}
         - name: {{ default $component.name .name }}
           image: {{ .image.repository }}:{{ .image.tag | default "latest" }}
           {{- with .command }}
@@ -80,11 +81,9 @@ spec:
           args:
             {{ toYaml . | nindent 12 }}
           {{- end }}
-          {{- if .container }}
-          {{- with .container.securityContext }}
+          {{- with .securityContext }}
           securityContext:
             {{- toYaml . | nindent 12 }}
-          {{- end }}
           {{- end }}
           
           {{- include "containers.envs" (dict "Values" $.Values "Chart" $.Chart "Release" $.Release "component" $component "env" .env) | nindent 10 }}
@@ -131,7 +130,7 @@ spec:
           resources:
              {{- toYaml . | nindent 12 }}
           {{- end }}
-        {{ include "containers.sidecars" (dict "component" $component "Values" $.Values) | nindent 8 }}
+        {{- end }}
       {{- with .volumes }}
       volumes:
         {{- range . }}

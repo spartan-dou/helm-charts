@@ -79,9 +79,6 @@ components:
         runAsUser: 80
         supplementalGroups:
           - 10
-      container:
-        securityContext:
-          runAsUser: 20
       initContainers:
         - name: setup-volume
           image:
@@ -94,67 +91,70 @@ components:
               mkdir -p /data
               chown -R 1000:1000 /data
               echo "Volume prêt."
-      image:
-        repository: nginx
-        tag: latest
-      additionalsPorts:
-        - name: http2
-          containerPort: 8080
-      env:
-        - name: ENV
-          value: prod
-        - name: POSTGRES_USERNAME
-          value: __components__postgres__username
-        - name: POSTGRES_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: __components__postgres__password_secret
-              key: password
-      livenessProbe:
-        httpGet:
-          path: /health
-          port: 8080
-        initialDelaySeconds: 10
-        periodSeconds: 5
-      readinessProbe:
-        httpGet:
-          path: /ready
-          port: 8080
-        initialDelaySeconds: 5
-        periodSeconds: 3
-      startupProbe:
-        httpGet:
-          path: /startup
-          port: 8080
-        failureThreshold: 30
-        periodSeconds: 10
-      volumeMounts:
-        - name: config
-          mountPath: /etc/config
-          subPath: data
-      volumes:
-        - name: data
-          pvc:
-            name: data-pvc
-            storage:
-              accessMode: ReadWriteOnce
-              size: 1Gi
-              storageClassName: local-path
-        - name: data-2
-          pvc:
-            name: data-2-pvc
-            useExisting: false
-            storage:
-              accessMode: ReadWriteOnce
-              size: 2Gi
-              storageClassName: local-path
-        - name: config
-          configMap:
-            data:
-              config.yaml: 'key: value'
-              toto.sh: |-
-                #!/bin/sh
-                echo "toto"
+      containers: 
+        - image:
+            repository: nginx
+            tag: latest
+          securityContext:
+            runAsUser: 20
+          additionalsPorts:
+            - name: http2
+              containerPort: 8080
+          env:
+            - name: ENV
+              value: prod
+            - name: POSTGRES_USERNAME
+              value: __components__postgres__username
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: __components__postgres__password_secret
+                  key: password
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8080
+            initialDelaySeconds: 10
+            periodSeconds: 5
+          readinessProbe:
+            httpGet:
+              path: /ready
+              port: 8080
+            initialDelaySeconds: 5
+            periodSeconds: 3
+          startupProbe:
+            httpGet:
+              path: /startup
+              port: 8080
+            failureThreshold: 30
+            periodSeconds: 10
+          volumeMounts:
+            - name: config
+              mountPath: /etc/config
+              subPath: data
+        volumes:
+          - name: data
+            pvc:
+              name: data-pvc
+              storage:
+                accessMode: ReadWriteOnce
+                size: 1Gi
+                storageClassName: local-path
+          - name: data-2
+            pvc:
+              name: data-2-pvc
+              useExisting: false
+              storage:
+                accessMode: ReadWriteOnce
+                size: 2Gi
+                storageClassName: local-path
+          - name: config
+            configMap:
+              data:
+                config.yaml: 'key: value'
+                toto.sh: |-
+                  #!/bin/sh
+                  echo "toto"
     service:
       type: ClusterIP
       annotations:
