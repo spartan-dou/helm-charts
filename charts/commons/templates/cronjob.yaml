@@ -87,8 +87,9 @@ spec:
               {{- end }}
             {{- end }}
           {{- end }}
+          {{- with .containers }}
           containers:
-            {{- range $component.containers }}
+            {{- range . }}
             - name: {{ default $component.name .name }}
               image: {{ .image.repository }}:{{ .image.tag | default "latest" }}
               {{- with .command }}
@@ -143,6 +144,7 @@ spec:
                 {{- toYaml . | nindent 16 }}
               {{- end }}
             {{- end }}
+          {{- end }}
           {{- with .volumes }}
           volumes:
             {{- range . }}
