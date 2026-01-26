@@ -132,29 +132,29 @@ components:
             - name: config
               mountPath: /etc/config
               subPath: data
-        volumes:
-          - name: data
-            pvc:
-              name: data-pvc
-              storage:
-                accessMode: ReadWriteOnce
-                size: 1Gi
-                storageClassName: local-path
-          - name: data-2
-            pvc:
-              name: data-2-pvc
-              useExisting: false
-              storage:
-                accessMode: ReadWriteOnce
-                size: 2Gi
-                storageClassName: local-path
-          - name: config
-            configMap:
-              data:
-                config.yaml: 'key: value'
-                toto.sh: |-
-                  #!/bin/sh
-                  echo "toto"
+      volumes:
+        - name: data
+          pvc:
+            name: data-pvc
+            storage:
+              accessMode: ReadWriteOnce
+              size: 1Gi
+              storageClassName: local-path
+        - name: data-2
+          pvc:
+            name: data-2-pvc
+            useExisting: false
+            storage:
+              accessMode: ReadWriteOnce
+              size: 2Gi
+              storageClassName: local-path
+        - name: config
+          configMap:
+            data:
+              config.yaml: 'key: value'
+              toto.sh: |-
+                #!/bin/sh
+                echo "toto"
     service:
       type: ClusterIP
       annotations:
