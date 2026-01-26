@@ -143,20 +143,22 @@
   {{- end }}
 
   {{- $defaults := dict
-    "name" "code-server"
-    "deployment" (dict
-      "image" (dict
-        "repository" .Values.addons.vscode.image.repository
-        "tag" (default "latest" .Values.addons.vscode.image.tag)
+      "name" "code-server"
+      "deployment" (dict
+        "containers" (list (dict
+            "image" (dict
+                "repository" .Values.addons.vscode.image.repository
+                "tag" (default "latest" .Values.addons.vscode.image.tag)
+            )
+            "env" (list (dict "name" "DEFAULT_WORKSPACE" "value" "/config/workspace"))
+            "volumeMounts" $volumeMounts
+        ))
+      "volumes" $volumes
       )
-      "env" (list (dict "name" "DEFAULT_WORKSPACE" "value" "/config/workspace"))
-      "volumeMounts" $volumeMounts
-      "volumes" $volumes 
-    )
-    "service" (dict
-      "type" (default "ClusterIP" .Values.addons.vscode.service.type)
-      "ports" (list (dict "name" "http" "port" .Values.addons.vscode.service.port))
-    )
+      "service" (dict
+          "type" (default "ClusterIP" .Values.addons.vscode.service.type)
+          "ports" (list (dict "name" "http" "port" .Values.addons.vscode.service.port))
+      )
   }}
 
   {{- if (default dict (default dict .Values.addons.vscode).ingress).enabled }}
@@ -185,33 +187,35 @@
   {{- $defaults := dict
     "name" "redis"
     "deployment" (dict
-      "image" (dict
-        "repository" .Values.addons.redis.image.repository
-        "tag" .Values.addons.redis.image.tag | default "latest"
-      )
-      "livenessProbe" (dict
-        "tcpSocket" (dict "port" .Values.addons.redis.port)
-        "initialDelaySeconds" 5
-        "periodSeconds" 10
-      )
-      "readinessProbe" (dict
-        "tcpSocket" (dict "port" .Values.addons.redis.port)
-        "initialDelaySeconds" 5
-        "periodSeconds" 10
-      )
-      "volumeMounts" (list (dict
-        "mountPath" (default "/data" (default dict .Values.addons.redis.storage).mountPath)
-        "name" "data"
+      "containers" (list (dict
+        "image" (dict
+            "repository" .Values.addons.redis.image.repository
+            "tag" .Values.addons.redis.image.tag | default "latest"
+        )
+        "livenessProbe" (dict
+          "tcpSocket" (dict "port" .Values.addons.redis.port)
+          "initialDelaySeconds" 5
+          "periodSeconds" 10
+        )
+        "readinessProbe" (dict
+          "tcpSocket" (dict "port" .Values.addons.redis.port)
+          "initialDelaySeconds" 5
+          "periodSeconds" 10
+        )
+        "volumeMounts" (list (dict
+          "mountPath" (default "/data" (default dict .Values.addons.redis.storage).mountPath)
+          "name" "data"
+        ))
       ))
-      "volumes" (list (dict
-        "name" "data"
-        "pvc" (dict 
-          "name" (printf "data")
-          "storage" (dict
-            "size" (default .Values.global.pvc.storage.size (default dict .Values.addons.redis.storage).size)
-            "storageClassName" (default .Values.global.pvc.storage.storageClassName (default dict .Values.addons.redis.storage).storageClassName)
-          ))
-      ))
+    "volumes" (list (dict
+      "name" "data"
+      "pvc" (dict 
+        "name" (printf "data")
+        "storage" (dict
+          "size" (default .Values.global.pvc.storage.size (default dict .Values.addons.redis.storage).size)
+          "storageClassName" (default .Values.global.pvc.storage.storageClassName (default dict .Values.addons.redis.storage).storageClassName)
+        ))
+    ))
     )
     "service" (dict
       "enabled" true
@@ -230,37 +234,39 @@
   {{- $defaults := dict
     "name" "pgadmin"
     "deployment" (dict
-      "image" (dict
-        "repository" .Values.addons.pgadmin.image.repository
-        "tag" (default "latest" .Values.addons.pgadmin.image.tag)
-      )
-      "env" (list
-        (dict "name" "PGPASS_FILE" "value" "/pgadmin4/pgpass")
-        (dict "name" "PGADMIN_DEFAULT_EMAIL" "value" .Values.addons.pgadmin.auth.email)
-        (dict "name" "PGADMIN_DEFAULT_PASSWORD" "value" .Values.addons.pgadmin.auth.password)
-      )
-      "securityContext" (dict
-        "runAsUser" 5050
-        "runAsGroup" 5050
-        "fsGroup" 5050
-        "runAsNonRoot" true
-        "readOnlyRootFilesystem" false
-      )
-      "livenessProbe" (dict
-        "tcpSocket" (dict "port" .Values.addons.pgadmin.service.port)
-        "initialDelaySeconds" 5
-        "periodSeconds" 10
-      )
-      "readinessProbe" (dict
-        "tcpSocket" (dict "port" .Values.addons.pgadmin.service.port)
-        "initialDelaySeconds" 5
-        "periodSeconds" 10
-      )
-      "volumeMounts" (list
+      "containers" (list (dict
+          "image" (dict
+              "repository" .Values.addons.pgadmin.image.repository
+              "tag" (default "latest" .Values.addons.pgadmin.image.tag)
+          )
+        "env" (list
+          (dict "name" "PGPASS_FILE" "value" "/pgadmin4/pgpass")
+          (dict "name" "PGADMIN_DEFAULT_EMAIL" "value" .Values.addons.pgadmin.auth.email)
+          (dict "name" "PGADMIN_DEFAULT_PASSWORD" "value" .Values.addons.pgadmin.auth.password)
+        )
+        "securityContext" (dict
+          "runAsUser" 5050
+          "runAsGroup" 5050
+          "fsGroup" 5050
+          "runAsNonRoot" true
+          "readOnlyRootFilesystem" false
+        )
+        "livenessProbe" (dict
+          "tcpSocket" (dict "port" .Values.addons.pgadmin.service.port)
+          "initialDelaySeconds" 5
+          "periodSeconds" 10
+        )
+        "readinessProbe" (dict
+          "tcpSocket" (dict "port" .Values.addons.pgadmin.service.port)
+          "initialDelaySeconds" 5
+          "periodSeconds" 10
+        )
+        "volumeMounts" (list
         (dict "mountPath" "/pgadmin4/servers.json" "subPath" "servers.json" "name" "config")
         (dict "mountPath" "/pgadmin4/pgpass" "subPath" "pgpass" "name" "config")
       )
-      "volumes" (list
+      ))
+    "volumes" (list
         (dict
           "name" "config"
           "configMap" (dict
