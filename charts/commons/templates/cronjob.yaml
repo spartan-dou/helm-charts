@@ -88,7 +88,7 @@ spec:
             {{- end }}
           {{- end }}
           containers:
-            {{- range $components.containers }}
+            {{- range $component.containers }}
             - name: {{ default $component.name .name }}
               image: {{ .image.repository }}:{{ .image.tag | default "latest" }}
               {{- with .command }}
