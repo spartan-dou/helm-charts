@@ -1,4 +1,4 @@
-FROM lizardbyte/sunshine:v2026.126.25908-ubuntu-24.04
+FROM lizardbyte/sunshine:v2026.127.213403-ubuntu-24.04
 
 ENV DEBIAN_FRONTEND=noninteractive
 
