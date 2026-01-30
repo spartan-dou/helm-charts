@@ -150,6 +150,11 @@
                 "repository" .Values.addons.vscode.image.repository
                 "tag" (default "latest" .Values.addons.vscode.image.tag)
             )
+            "securityContext" (dict
+              "runAsUser" (default 1000 .Values.addons.vscode.securityContext.runAsUser)
+              "runAsGroup" (default 1000 .Values.addons.vscode.securityContext.runAsGroup)
+              "fsGroup" (default 1000 .Values.addons.vscode.securityContext.fsGroup)
+            )
             "env" (list (dict "name" "DEFAULT_WORKSPACE" "value" "/config/workspace"))
             "volumeMounts" $volumeMounts
         ))
