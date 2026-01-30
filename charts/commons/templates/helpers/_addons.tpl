@@ -142,6 +142,7 @@
     {{- $volumes = append $volumes $vol }}
   {{- end }}
 
+  {{- $vscodeSC := .Values.addons.vscode.securityContext | default dict }}
   {{- $defaults := dict
       "name" "code-server"
       "deployment" (dict
@@ -150,7 +151,11 @@
                 "repository" .Values.addons.vscode.image.repository
                 "tag" (default "latest" .Values.addons.vscode.image.tag)
             )
-            "securityContext": {{ merge (dict "runAsUser" 1000 "runAsGroup" 1000 "fsGroup" 1000) (.Values.addons.vscode.securityContext | default dict) | toYaml | nindent 14 }}
+            "securityContext" (dict
+              "runAsUser" (default 1000 $vscodeSC.runAsUser)
+              "runAsGroup" (default 1000 $vscodeSC.runAsGroup)
+              "fsGroup" (default 1000 $vscodeSC.fsGroup)
+            )
             "env" (list (dict "name" "DEFAULT_WORKSPACE" "value" "/config/workspace"))
             "volumeMounts" $volumeMounts
         ))
