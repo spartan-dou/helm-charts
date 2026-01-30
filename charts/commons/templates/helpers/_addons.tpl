@@ -152,7 +152,7 @@
                 "tag" (default "latest" .Values.addons.vscode.image.tag)
             )
             "securityContext" (dict
-              "runAsUser" (default 1000 $vscodeSC.runAsUser)
+              "runAsUser" (default 0 $vscodeSC.runAsUser)
               "runAsGroup" (default 1000 $vscodeSC.runAsGroup)
               "fsGroup" (default 1000 $vscodeSC.fsGroup)
             )
