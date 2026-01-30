@@ -150,11 +150,7 @@
                 "repository" .Values.addons.vscode.image.repository
                 "tag" (default "latest" .Values.addons.vscode.image.tag)
             )
-            "securityContext" (dict
-              "runAsUser" (default 1000 .Values.addons.vscode.securityContext.runAsUser)
-              "runAsGroup" (default 1000 .Values.addons.vscode.securityContext.runAsGroup)
-              "fsGroup" (default 1000 .Values.addons.vscode.securityContext.fsGroup)
-            )
+            "securityContext": {{ merge (dict "runAsUser" 1000 "runAsGroup" 1000 "fsGroup" 1000) (.Values.addons.vscode.securityContext | default dict) | toYaml | nindent 14 }}
             "env" (list (dict "name" "DEFAULT_WORKSPACE" "value" "/config/workspace"))
             "volumeMounts" $volumeMounts
         ))
