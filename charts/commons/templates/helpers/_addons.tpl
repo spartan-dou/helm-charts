@@ -152,11 +152,15 @@
                 "tag" (default "latest" .Values.addons.vscode.image.tag)
             )
             "securityContext" (dict
-              "runAsUser" (default 0 $vscodeSC.runAsUser)
+              "runAsUser" (default 1000 $vscodeSC.runAsUser)
               "runAsGroup" (default 1000 $vscodeSC.runAsGroup)
               "fsGroup" (default 1000 $vscodeSC.fsGroup)
             )
-            "env" (list (dict "name" "DEFAULT_WORKSPACE" "value" "/config/workspace"))
+            "env" (list
+                    (dict "name" "DEFAULT_WORKSPACE" "value" "/config/workspace")
+                    (dict "name" "PUID" "value" (default 1000 $vscodeSC.runAsUser))
+                    (dict "name" "PGID" "value" (default 1000 $vscodeSC.runAsGroup))
+                  )
             "volumeMounts" $volumeMounts
         ))
       "volumes" $volumes
