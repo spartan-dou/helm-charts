@@ -69,9 +69,9 @@ echo "--- Récupération des données initiales ---"
 
 # On utilise -i dans curl si debug pour voir les headers, mais attention jq n'aime pas ça
 # On va donc logger les réponses brutes
-log_debug "Appel API : GET $IMMICH_URL/api/album"
-album_raw=$(curl -s -X GET "$IMMICH_URL/api/album" -H "x-api-key: $IMMICH_API_KEY")
-log_debug "Réponse API Album: $(echo "$album_raw" | head -c 100)..."
+log_debug "Appel API : GET $IMMICH_URL/api/albums"
+album_raw=$(curl -s -X GET "$IMMICH_URL/api/albums" -H "x-api-key: $IMMICH_API_KEY")
+log_debug "Réponse API Albums: $(echo "$album_raw" | head -c 100)..."
 
 album_data=$(echo "$album_raw" | jq -r '.[] | "\(.albumName)|\(.id)"')
 
@@ -84,6 +84,8 @@ if [ -n "$USER_EMAIL" ]; then
 fi
 
 echo "--- Début du traitement récursif ---"
+
+log_debug "Immich Directory: $IMMICH_DIR"
 
 # On boucle sur les dossiers contenant des fichiers images
 find "$IMMICH_DIR" -type d -not -path '*/.*' -print0 | while IFS= read -r -d '' current_folder; do
