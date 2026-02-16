@@ -84,7 +84,7 @@ if [ -n "$USER_EMAIL" ]; then
 fi
 
 echo "--- Début du traitement récursif ---"
-
+log_debug "$(ls -l /)"
 log_debug "Immich Directory: $IMMICH_DIR"
 
 # On boucle sur les dossiers contenant des fichiers images
