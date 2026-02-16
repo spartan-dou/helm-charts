@@ -6,8 +6,8 @@ IMMICH_URL=${IMMICH_URL:-"https://immich.app"}
 IMMICH_API_KEY=${IMMICH_API_KEY:-""}
 USER_EMAIL=${USER_EMAIL:-""}
 MAX_DIFF_SECONDS=${MAX_DIFF_SECONDS:-3456000}
-DRY_RUN=false
-DEBUG=false
+DRY_RUN=${DRY_RUN:-false}
+DEBUG=${DEBUG:-false}
 
 # --- Couleurs ---
 GREEN='\033[0;32m'
