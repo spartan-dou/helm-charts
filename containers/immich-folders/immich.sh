@@ -6,54 +6,40 @@ IMMICH_URL=${IMMICH_URL:-"https://immich.app"}
 IMMICH_API_KEY=${IMMICH_API_KEY:-""}
 USER_EMAIL=${USER_EMAIL:-"admin@example.com"}
 MAX_DIFF_SECONDS=${MAX_DIFF_SECONDS:-3456000}
+DRY_RUN=false
 
 # --- Analyse des arguments nommés ---
 while [ $# -gt 0 ]; do
   case "$1" in
-    -dir)
-      IMMICH_DIR="$2"
-      shift 2
-      ;;
-    -url)
-      IMMICH_URL="$2"
-      shift 2
-      ;;
-    -apiKey)
-      IMMICH_API_KEY="$2"
-      shift 2
-      ;;
-    -email)
-      USER_EMAIL="$2"
-      shift 2
-      ;;
-    -maxDiff)
-      MAX_DIFF_SECONDS="$2"
-      shift 2
-      ;;
+    -dir) IMMICH_DIR="$2"; shift 2 ;;
+    -url) IMMICH_URL="$2"; shift 2 ;;
+    -apiKey) IMMICH_API_KEY="$2"; shift 2 ;;
+    -email) USER_EMAIL="$2"; shift 2 ;;
+    -maxDiff) MAX_DIFF_SECONDS="$2"; shift 2 ;;
+    -dryRun) DRY_RUN=true; shift 1 ;;
     -h|--help)
-      echo "Usage: ./script.sh -dir [chemin] -url [url] -apiKey [clé] -email [email]"
+      echo "Usage: ./script.sh -dir [chemin] -url [url] -apiKey [clé] -email [email] [-dryRun]"
       exit 0
       ;;
-    *)
-      echo "❌ Argument inconnu : $1"
-      exit 1
-      ;;
+    *) echo "❌ Argument inconnu : $1"; exit 1 ;;
   esac
 done
 
 GREEN='\033[0;32m'
+YELLOW='\033[0;33m'
 BOLD='\033[1m'
 NC='\033[0m'
 
+if [ "$DRY_RUN" = true ]; then
+    echo -e "${YELLOW}${BOLD}⚠️ MODE DRY RUN ACTIVÉ : Aucune modification ne sera effectuée.${NC}\n"
+fi
+
 echo -e "${BOLD}--- Droits API requis ---${NC}"
-echo -e " ${GREEN}✔${NC} album.read"
-echo -e " ${GREEN}✔${NC} album.create"
-echo -e " ${GREEN}✔${NC} asset.read"
-echo -e " ${GREEN}✔${NC} user.read"
+echo -e " ${GREEN}✔${NC} album.read / album.create / asset.read / user.read"
 echo "--------------------------"
 
 # --- Vérifications de sécurité ---
-if [ "$IMMICH_API_KEY" == "Votre_Clé_Par_Défaut" ]; then
+if [ -z "$IMMICH_API_KEY" ]; then
     echo "❌ Erreur : La clé API n'est pas configurée."
     exit 1
 fi
@@ -106,7 +92,7 @@ find "$IMMICH_DIR" -type d -not -path '*/.*' -print0 | while IFS= read -r -d '' 
     diff_seconds=$(( ts_new - ts_old ))
 
     if [ "$diff_seconds" -gt "$MAX_DIFF_SECONDS" ]; then
-        echo "   ❌ Alerte : Écart de $((diff_seconds / 86400)) jours. Arrêt."
+        echo "   ❌ Alerte : Écart de $((diff_seconds / 86400)) jours. Arrêt pour ce dossier."
         continue
     fi
 
@@ -115,26 +101,32 @@ find "$IMMICH_DIR" -type d -not -path '*/.*' -print0 | while IFS= read -r -d '' 
     target_album_id=$(echo "$album_data" | grep "^$folder_basename|" | cut -d'|' -f2)
 
     if [ -z "$target_album_id" ]; then
-        echo "   🛠 Création de l'album : $folder_basename"
-        target_album_id=$(curl -s -X POST "$IMMICH_URL/api/album" \
-            -H "accept: application/json" \
-            -H "x-api-key: $IMMICH_API_KEY" \
-            -H "Content-Type: application/json" \
-            -d "{\"albumName\": \"$folder_basename\"}" | jq -r '.id')
-        
-        # Partage si nouvel album
-        if [ "$user_id" != "" ] && [ "$user_id" != "null" ]; then
-            curl -s -X POST "$IMMICH_URL/api/album/$target_album_id/user/$user_id" \
+        if [ "$DRY_RUN" = true ]; then
+            echo "   [DRY-RUN] 🛠 Création de l'album : $folder_basename"
+            target_album_id="ID-FICTIF-DRY-RUN"
+        else
+            echo "   🛠 Création de l'album : $folder_basename"
+            target_album_id=$(curl -s -X POST "$IMMICH_URL/api/album" \
                 -H "accept: application/json" \
                 -H "x-api-key: $IMMICH_API_KEY" \
                 -H "Content-Type: application/json" \
-                -d "{\"role\": \"editor\"}" > /dev/null
-            echo "   👥 Partagé avec $USER_EMAIL"
+                -d "{\"albumName\": \"$folder_basename\"}" | jq -r '.id')
+            
+            # Partage si nouvel album
+            if [ "$user_id" != "" ] && [ "$user_id" != "null" ]; then
+                curl -s -X POST "$IMMICH_URL/api/album/$target_album_id/user/$user_id" \
+                    -H "accept: application/json" \
+                    -H "x-api-key: $IMMICH_API_KEY" \
+                    -H "Content-Type: application/json" \
+                    -d "{\"role\": \"editor\"}" > /dev/null
+                echo "   👥 Partagé avec $USER_EMAIL"
+            fi
         fi
+    else
+        echo "   ✅ Album existant trouvé : $folder_basename (ID: $target_album_id)"
     fi
 
-    # Récupération des IDs d'assets sur Immich
-    # On utilise le format YYYY-MM-DD pour l'API
+    # Recherche des assets
     clean_date_oldest=$(echo "$old_fmt" | awk '{print $1}')
     clean_date_newest=$(echo "$new_fmt" | awk '{print $1}')
 
@@ -145,20 +137,24 @@ find "$IMMICH_DIR" -type d -not -path '*/.*' -print0 | while IFS= read -r -d '' 
     photos_ids=$(echo "$response" | jq -r '.assets.items[].id // empty')
     
     if [ -z "$photos_ids" ]; then
-        echo "   ⚠️ Aucune photo correspondante sur le serveur Immich."
+        echo "   ⚠️ Aucune photo correspondante sur le serveur."
         continue
     fi
 
+    count=$(echo "$photos_ids" | wc -l)
+    
     # Ajout groupé
-    json_ids=$(echo "$photos_ids" | jq -R . | jq -s -c '{"ids": .}')
-
-    curl -s -X PUT "$IMMICH_URL/api/album/$target_album_id/assets" \
-        -H "x-api-key: $IMMICH_API_KEY" \
-        -H "Content-Type: application/json" \
-        -d "$json_ids" > /dev/null
-
-    echo "   ✅ Assets synchronisés dans l'album."
+    if [ "$DRY_RUN" = true ]; then
+        echo "   [DRY-RUN] 🚀 Ajout de $count assets à l'album $target_album_id"
+    else
+        json_ids=$(echo "$photos_ids" | jq -R . | jq -s -c '{"ids": .}')
+        curl -s -X PUT "$IMMICH_URL/api/album/$target_album_id/assets" \
+            -H "x-api-key: $IMMICH_API_KEY" \
+            -H "Content-Type: application/json" \
+            -d "$json_ids" > /dev/null
+        echo "   ✅ $count assets synchronisés."
+    fi
 
 done
 
-echo "--- Fin du traitement ---"
+echo -e "\n--- Fin du traitement ---"
