@@ -19,9 +19,9 @@ jobs:
     strategy:
       matrix:
         include:
-          - name: sunshine-desktop
-            context: ./containers/sunshine-desktop
-            dockerfile: ./containers/sunshine-desktop/Dockerfile
+          - name: immich-folders
+            context: ./containers/immich-folders
+            dockerfile: ./containers/immich-folders/Dockerfile
 
     steps:
       - name: Checkout repository
