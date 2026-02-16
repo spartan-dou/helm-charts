@@ -4,21 +4,21 @@
 IMMICH_DIR=${IMMICH_DIR:-"./photos"}
 IMMICH_URL=${IMMICH_URL:-"https://immich.app"}
 IMMICH_API_KEY=${IMMICH_API_KEY:-""}
-USER_EMAIL=${USER_EMAIL:-"admin@example.com"}
+USER_EMAIL=${USER_EMAIL:-""}
 MAX_DIFF_SECONDS=${MAX_DIFF_SECONDS:-3456000}
 DRY_RUN=false
 
 # --- Analyse des arguments nommés ---
 while [ $# -gt 0 ]; do
   case "$1" in
-    -dir) IMMICH_DIR="$2"; shift 2 ;;
-    -url) IMMICH_URL="$2"; shift 2 ;;
-    -apiKey) IMMICH_API_KEY="$2"; shift 2 ;;
-    -email) USER_EMAIL="$2"; shift 2 ;;
-    -maxDiff) MAX_DIFF_SECONDS="$2"; shift 2 ;;
-    -dryRun) DRY_RUN=true; shift 1 ;;
+    --dir) IMMICH_DIR="$2"; shift 2 ;;
+    --url) IMMICH_URL="$2"; shift 2 ;;
+    --apiKey) IMMICH_API_KEY="$2"; shift 2 ;;
+    --email) USER_EMAIL="$2"; shift 2 ;;
+    --maxDiff) MAX_DIFF_SECONDS="$2"; shift 2 ;;
+    --dryRun) DRY_RUN=true; shift 1 ;;
     -h|--help)
-      echo "Usage: ./script.sh -dir [chemin] -url [url] -apiKey [clé] -email [email] [-dryRun]"
+      echo "Usage: ./immich-folders.sh --dir [chemin] --url [url] --apiKey [clé] --email [email] [--dryRun]"
       exit 0
       ;;
     *) echo "❌ Argument inconnu : $1"; exit 1 ;;
