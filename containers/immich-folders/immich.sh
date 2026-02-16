@@ -1,17 +1,62 @@
 #!/bin/bash
 
-# --- Configuration ---
-IMMICH_DIR="ton/chemin/ici"
-IMMICH_URL="https://ton-instance-immich.app"
-IMMICH_API_KEY="TaCleApi"
-USER_EMAIL="email@partage.com"
-MAX_DIFF_SECONDS=3456000
+# --- Valeurs par défaut ---
+IMMICH_DIR=${IMMICH_DIR:-"./photos"}
+IMMICH_URL=${IMMICH_URL:-"https://immich.app"}
+IMMICH_API_KEY=${IMMICH_API_KEY:-""}
+USER_EMAIL=${USER_EMAIL:-"admin@example.com"}
+MAX_DIFF_SECONDS=${MAX_DIFF_SECONDS:-3456000}
 
-echo "--- Pré-requis ---"
-echo "album.read"
-echo "album.create"
-echo "asset.read"
-echo "user.read"
+# --- Analyse des arguments nommés ---
+while [ $# -gt 0 ]; do
+  case "$1" in
+    -dir)
+      IMMICH_DIR="$2"
+      shift 2
+      ;;
+    -url)
+      IMMICH_URL="$2"
+      shift 2
+      ;;
+    -apiKey)
+      IMMICH_API_KEY="$2"
+      shift 2
+      ;;
+    -email)
+      USER_EMAIL="$2"
+      shift 2
+      ;;
+    -maxDiff)
+      MAX_DIFF_SECONDS="$2"
+      shift 2
+      ;;
+    -h|--help)
+      echo "Usage: ./script.sh -dir [chemin] -url [url] -apiKey [clé] -email [email]"
+      exit 0
+      ;;
+    *)
+      echo "❌ Argument inconnu : $1"
+      exit 1
+      ;;
+  esac
+done
+
+GREEN='\033[0;32m'
+BOLD='\033[1m'
+NC='\033[0m'
+
+echo -e "${BOLD}--- Droits API requis ---${NC}"
+echo -e " ${GREEN}✔${NC} album.read"
+echo -e " ${GREEN}✔${NC} album.create"
+echo -e " ${GREEN}✔${NC} asset.read"
+echo -e " ${GREEN}✔${NC} user.read"
+echo "--------------------------"
+
+# --- Vérifications de sécurité ---
+if [ "$IMMICH_API_KEY" == "Votre_Clé_Par_Défaut" ]; then
+    echo "❌ Erreur : La clé API n'est pas configurée."
+    exit 1
+fi
 
 if ! command -v exiftool &> /dev/null || ! command -v jq &> /dev/null; then
     echo "Erreur : 'exiftool' ou 'jq' manquant."
