@@ -78,8 +78,9 @@ album_data=$(echo "$album_raw" | jq -r '.[] | "\(.albumName)|\(.id)"')
 if [ -n "$USER_EMAIL" ]; then
     # Récupération de l'ID du destinataire du partage
     log_debug "Recherche de l'ID utilisateur pour : $USER_EMAIL"
-    user_id=$(curl -s -X GET "$IMMICH_URL/api/user" -H "x-api-key: $IMMICH_API_KEY" | \
-        jq -r ".[] | select(.email == \"$USER_EMAIL\") | .id")
+    user_raw=$(curl -s -X GET "$IMMICH_URL/api/user" -H "x-api-key: $IMMICH_API_KEY")
+    log_debug "Réponse API User: $(echo "$user_raw" | head -c 300)..."
+    user_id=$(echo "$user_raw" | jq -r ".[] | select(.email == \"$USER_EMAIL\") | .id")
     log_debug "User ID trouvé : ${user_id:-"AUCUN"}"
 fi
 
@@ -154,11 +155,21 @@ find "$IMMICH_DIR" -type d -not -path '*/.*' -print0 | while IFS= read -r -d '' 
     clean_date_oldest=$(echo "$old_fmt" | awk '{print $1}')
     clean_date_newest=$(echo "$new_fmt" | awk '{print $1}')
     
-    search_url="$IMMICH_URL/api/search/metadata?takenAfter=${clean_date_oldest}T00:00:00Z&takenBefore=${clean_date_newest}T23:59:59Z"
-    log_debug "Recherche assets : $search_url"
+    search_payload=$(jq -n \
+        --arg after "${clean_date_oldest}T00:00:00.000Z" \
+        --arg before "${clean_date_newest}T23:59:59.999Z" \
+        '{takenAfter: $after, takenBefore: $before}')
 
-    response=$(curl -s -X GET "$search_url" -H "x-api-key: $IMMICH_API_KEY")
+    log_debug "Recherche assets via POST sur $IMMICH_URL/api/search/metadata"
+    log_debug "Payload recherche : $search_payload"
+
+    response=$(curl -s -X POST "$IMMICH_URL/api/search/metadata" \
+        -H "x-api-key: $IMMICH_API_KEY" \
+        -H "Content-Type: application/json" \
+        -d "$search_payload")
+
     log_debug "Réponse API Search: $(echo "$response" | head -c 300)..."
+    # Extraction des IDs
     photos_ids=$(echo "$response" | jq -r '.assets.items[].id // empty')
     
     if [ -z "$photos_ids" ]; then
