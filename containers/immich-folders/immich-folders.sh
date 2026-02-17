@@ -107,7 +107,7 @@ while IFS= read -r -d '' current_folder; do
         -iname "*.jpg" -o -iname "*.jpeg" -o -iname "*.tif" -o \
         -iname "*.mp4" -o -iname "*.mov" -o -iname "*.avi" -o -iname "*.mkv" \
         \) -print0 | \
-        xargs -0 exiftool -T -DateTimeOriginal -n | grep -v "^-" | sort)
+        xargs -0 exiftool -fast2 -ee -T -DateTimeOriginal -n | grep -v "^-" | sort)
 
     if [ -z "$temp_list" ]; then
         echo "    ⏩ Pas de photos avec EXIF ici, on passe."
