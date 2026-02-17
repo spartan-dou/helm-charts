@@ -100,9 +100,14 @@ while IFS= read -r -d '' current_folder; do
         continue
     fi
 
-    # Extraction des métadonnées
-    temp_list=$(find "$current_folder" -maxdepth 1 -type f \( -iname "*.jpg" -o -iname "*.jpeg" -o -iname "*.png" \) -print0 | \
-        xargs -0 exiftool -T -DateTimeOriginal -n | grep -v "^-" | sort)
+    # Extraction des métadonnées (Photos + Vidéos)
+    log_debug "Exécution exiftool pour photos et vidéos dans $current_folder"
+    
+    temp_list=$(find "$current_folder" -maxdepth 1 -type f \( \
+        -iname "*.jpg" -o -iname "*.jpeg" -o -iname "*.png" -o \
+        -iname "*.mp4" -o -iname "*.mov" -o -iname "*.avi" -o -iname "*.mkv" \
+        \) -print0 | \
+        xargs -0 exiftool -T -CommonDate -n | grep -v "^-" | sort)
 
     if [ -z "$temp_list" ]; then
         echo "    ⏩ Pas de photos avec EXIF ici, on passe."
