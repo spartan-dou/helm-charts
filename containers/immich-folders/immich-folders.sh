@@ -71,7 +71,7 @@ echo "--- Récupération des données initiales ---"
 # On va donc logger les réponses brutes
 log_debug "Appel API : GET $IMMICH_URL/api/albums"
 album_raw=$(curl -s -X GET "$IMMICH_URL/api/albums" -H "x-api-key: $IMMICH_API_KEY")
-log_debug "Réponse API Albums: $(echo "$album_raw" | head -c 100)..."
+log_debug "Réponse API Albums: $(echo "$album_raw" | head -c 300)..."
 
 album_data=$(echo "$album_raw" | jq -r '.[] | "\(.albumName)|\(.id)"')
 
@@ -84,7 +84,7 @@ if [ -n "$USER_EMAIL" ]; then
 fi
 
 echo "--- Début du traitement récursif ---"
-log_debug "$(ls -l /)"
+
 log_debug "Immich Directory: $IMMICH_DIR"
 
 # On boucle sur les dossiers contenant des fichiers images
@@ -158,6 +158,7 @@ find "$IMMICH_DIR" -type d -not -path '*/.*' -print0 | while IFS= read -r -d '' 
     log_debug "Recherche assets : $search_url"
 
     response=$(curl -s -X GET "$search_url" -H "x-api-key: $IMMICH_API_KEY")
+    log_debug "Réponse API Search: $(echo "$response" | head -c 300)..."
     photos_ids=$(echo "$response" | jq -r '.assets.items[].id // empty')
     
     if [ -z "$photos_ids" ]; then
