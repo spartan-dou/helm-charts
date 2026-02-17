@@ -78,7 +78,7 @@ album_data=$(echo "$album_raw" | jq -r '.[] | "\(.albumName)|\(.id)"')
 if [ -n "$USER_EMAIL" ]; then
     # Récupération de l'ID du destinataire du partage
     log_debug "Recherche de l'ID utilisateur pour : $USER_EMAIL"
-    user_raw=$(curl -s -X GET "$IMMICH_URL/api/user" -H "x-api-key: $IMMICH_API_KEY")
+    user_raw=$(curl -s -X GET "$IMMICH_URL/api/users" -H "x-api-key: $IMMICH_API_KEY")
     log_debug "Réponse API User: $(echo "$user_raw" | head -c 300)..."
     user_id=$(echo "$user_raw" | jq -r ".[] | select(.email == \"$USER_EMAIL\") | .id")
     log_debug "User ID trouvé : ${user_id:-"AUCUN"}"
@@ -94,6 +94,12 @@ find "$IMMICH_DIR" -type d -not -path '*/.*' -print0 | while IFS= read -r -d '' 
     # On ignore le dossier racine s'il est vide de photos directes
     folder_basename=$(basename "$current_folder")
     echo "📂 Dossier : $current_folder"
+
+    # --- Filtre .NOIMMICH ---
+    if [ -f "$current_folder/.NOIMMICH" ]; then
+        echo "   🚫 Dossier ignoré (présence de .NOIMMICH)"
+        continue
+    fi
 
     # Extraction des métadonnées des photos du dossier EN COURS
     log_debug "Exécution exiftool dans $current_folder"
@@ -124,15 +130,16 @@ find "$IMMICH_DIR" -type d -not -path '*/.*' -print0 | while IFS= read -r -d '' 
 
     # Gestion de l'Album
     # On cherche si l'album (nom du dossier) existe déjà
-    target_album_id=$(echo "$album_data" | grep "^$folder_basename|" | cut -d'|' -f2)
+    album_name=$(echo "$folder_basename" | sed -E 's/^[0-9]{4}\.[0-9]{2}\.[0-9]{2} //')
+    target_album_id=$(echo "$album_data" | grep "^$album_name|" | cut -d'|' -f2)
 
     if [ -z "$target_album_id" ]; then
         if [ "$DRY_RUN" = true ]; then
-            echo "   [DRY-RUN] 🛠 Création de l'album : $folder_basename"
+            echo "   [DRY-RUN] 🛠 Création de l'album : $album_name"
             target_album_id="ID-FICTIF"
         else
-            echo "   🛠 Création de l'album : $folder_basename"
-            payload="{\"albumName\": \"$folder_basename\"}"
+            echo "   🛠 Création de l'album : $album_name"
+            payload="{\"albumName\": \"$album_name\"}"
             log_debug "Payload POST Album : $payload"
             target_album_id=$(curl -s -X POST "$IMMICH_URL/api/album" \
                 -H "x-api-key: $IMMICH_API_KEY" \
