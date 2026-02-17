@@ -9,9 +9,13 @@ MAX_DIFF_SECONDS=${MAX_DIFF_SECONDS:-3456000}
 DRY_RUN=${DRY_RUN:-false}
 DEBUG=${DEBUG:-false}
 
+# Fichier temporaire pour stocker le récapitulatif (plus fiable que les variables dans une boucle pipe)
+RECAP_FILE=$(mktemp)
+
 # --- Couleurs ---
 GREEN='\033[0;32m'
 YELLOW='\033[0;33m'
+RED='\033[0;31m'
 CYAN='\033[0;36m'
 BOLD='\033[1m'
 NC='\033[0m'
@@ -44,11 +48,6 @@ done
 if [ "$DEBUG" = true ]; then echo -e "${CYAN}${BOLD}🔧 MODE DEBUG ACTIVÉ${NC}"; fi
 if [ "$DRY_RUN" = true ]; then echo -e "${YELLOW}${BOLD}⚠️ MODE DRY RUN ACTIVÉ${NC}\n"; fi
 
-GREEN='\033[0;32m'
-YELLOW='\033[0;33m'
-BOLD='\033[1m'
-NC='\033[0m'
-
 echo -e "${BOLD}--- Droits API requis ---${NC}"
 echo -e " ${GREEN}✔${NC} album.read / album.create / album.update / asset.read / user.read"
 echo "--------------------------"
@@ -71,7 +70,7 @@ echo "--- Récupération des données initiales ---"
 # On va donc logger les réponses brutes
 log_debug "Appel API : GET $IMMICH_URL/api/albums"
 album_raw=$(curl -s -X GET "$IMMICH_URL/api/albums" -H "x-api-key: $IMMICH_API_KEY")
-log_debug "Réponse API Albums: $(echo "$album_raw" | head -c 300)..."
+log_debug "Réponse API Albums: $(echo "$album_raw" | head -c 1000)..."
 
 album_data=$(echo "$album_raw" | jq -r '.[] | "\(.albumName)|\(.id)"')
 
@@ -79,17 +78,16 @@ if [ -n "$USER_EMAIL" ]; then
     # Récupération de l'ID du destinataire du partage
     log_debug "Recherche de l'ID utilisateur pour : $USER_EMAIL"
     user_raw=$(curl -s -X GET "$IMMICH_URL/api/users" -H "x-api-key: $IMMICH_API_KEY")
-    log_debug "Réponse API User: $(echo "$user_raw" | head -c 300)..."
+    log_debug "Réponse API User: $(echo "$user_raw" | head -c 1000)..."
     user_id=$(echo "$user_raw" | jq -r ".[] | select(.email == \"$USER_EMAIL\") | .id")
     log_debug "User ID trouvé : ${user_id:-"AUCUN"}"
 fi
 
 echo "--- Début du traitement récursif ---"
 
-log_debug "Immich Directory: $IMMICH_DIR"
-
-# On boucle sur les dossiers contenant des fichiers images
-find "$IMMICH_DIR" -type d -not -path '*/.*' -print0 | while IFS= read -r -d '' current_folder; do
+# Utilisation d'une substitution de processus < <(...) pour éviter le subshell du pipe
+# et permettre de modifier des variables si nécessaire (bien qu'on utilise un fichier ici)
+while IFS= read -r -d '' current_folder; do
     
     # On ignore le dossier racine s'il est vide de photos directes
     folder_basename=$(basename "$current_folder")
@@ -97,23 +95,22 @@ find "$IMMICH_DIR" -type d -not -path '*/.*' -print0 | while IFS= read -r -d '' 
 
     # --- Filtre .NOIMMICH ---
     if [ -f "$current_folder/.NOIMMICH" ]; then
-        echo "   🚫 Dossier ignoré (présence de .NOIMMICH)"
+        echo "    🚫 Dossier ignoré (présence de .NOIMMICH)"
+        echo -e "${folder_basename}|Fichier .NOIMMICH présent" >> "$RECAP_FILE"
         continue
     fi
 
-    # Extraction des métadonnées des photos du dossier EN COURS
-    log_debug "Exécution exiftool dans $current_folder"
+    # Extraction des métadonnées
     temp_list=$(find "$current_folder" -maxdepth 1 -type f \( -iname "*.jpg" -o -iname "*.jpeg" -o -iname "*.png" \) -print0 | \
         xargs -0 exiftool -T -DateTimeOriginal -n | grep -v "^-" | sort)
 
     if [ -z "$temp_list" ]; then
-        echo "   ⏩ Pas de photos avec EXIF ici, on passe."
+        echo "    ⏩ Pas de photos avec EXIF ici, on passe."
         continue
     fi
 
     oldest_raw=$(echo "$temp_list" | head -n 1)
     newest_raw=$(echo "$temp_list" | tail -n 1)
-    log_debug "Dates brutes : Old=$oldest_raw | New=$newest_raw"
 
     old_fmt=$(echo "$oldest_raw" | sed 's/:/-/1;s/:/-/1')
     new_fmt=$(echo "$newest_raw" | sed 's/:/-/1;s/:/-/1')
@@ -121,10 +118,10 @@ find "$IMMICH_DIR" -type d -not -path '*/.*' -print0 | while IFS= read -r -d '' 
     ts_old=$(date -d "$old_fmt" +%s)
     ts_new=$(date -d "$new_fmt" +%s)
     diff_seconds=$(( ts_new - ts_old ))
-    log_debug "Calcul écart : $diff_seconds secondes ($((diff_seconds / 86400)) jours)"
 
     if [ "$diff_seconds" -gt "$MAX_DIFF_SECONDS" ]; then
-        echo "   ❌ Alerte : Écart de $((diff_seconds / 86400)) jours. Arrêt pour ce dossier."
+        echo "    ❌ Alerte : Écart trop important."
+        echo -e "${folder_basename}|Écart temporel trop grand ($((diff_seconds / 86400)) jours)" >> "$RECAP_FILE"
         continue
     fi
 
@@ -135,12 +132,11 @@ find "$IMMICH_DIR" -type d -not -path '*/.*' -print0 | while IFS= read -r -d '' 
 
     if [ -z "$target_album_id" ]; then
         if [ "$DRY_RUN" = true ]; then
-            echo "   [DRY-RUN] 🛠 Création de l'album : $album_name"
+            echo "    [DRY-RUN] 🛠 Création de l'album : $album_name"
             target_album_id="ID-FICTIF"
         else
-            echo "   🛠 Création de l'album : $album_name"
+            echo "    🛠 Création de l'album : $album_name"
             payload="{\"albumName\": \"$album_name\"}"
-            log_debug "Payload POST Album : $payload"
             target_album_id=$(curl -s -X POST "$IMMICH_URL/api/album" \
                 -H "x-api-key: $IMMICH_API_KEY" \
                 -H "Content-Type: application/json" \
@@ -148,12 +144,11 @@ find "$IMMICH_DIR" -type d -not -path '*/.*' -print0 | while IFS= read -r -d '' 
             
             # Partage si nouvel album
             if [ -n "$user_id" ] && [ "$user_id" != "null" ]; then
-                log_debug "Partage de l'album $target_album_id avec $user_id"
                 curl -s -X POST "$IMMICH_URL/api/album/$target_album_id/user/$user_id" \
                     -H "x-api-key: $IMMICH_API_KEY" \
                     -H "Content-Type: application/json" \
                     -d "{\"role\": \"editor\"}" > /dev/null
-                echo "   👥 Partagé avec $USER_EMAIL"
+                echo "    👥 Partagé avec $USER_EMAIL"
             fi
         fi
     fi
@@ -175,29 +170,50 @@ find "$IMMICH_DIR" -type d -not -path '*/.*' -print0 | while IFS= read -r -d '' 
         -H "Content-Type: application/json" \
         -d "$search_payload")
 
-    log_debug "Réponse API Search: $(echo "$response" | head -c 300)..."
+    log_debug "Réponse API Search: $(echo "$response" | head -c 1000)..."
     # Extraction des IDs
     photos_ids=$(echo "$response" | jq -r '.assets.items[].id // empty')
     
     if [ -z "$photos_ids" ]; then
-        echo "   ⚠️ Aucune photo trouvée sur Immich pour ces dates."
+        echo "    ⚠️ Aucune photo trouvée sur Immich pour ces dates."
+        echo -e "${folder_basename}|Photos présentes localement mais introuvables sur Immich" >> "$RECAP_FILE"
         continue
     fi
 
     count=$(echo "$photos_ids" | wc -l)
     
     if [ "$DRY_RUN" = true ]; then
-        echo "   [DRY-RUN] 🚀 $count assets à ajouter."
+        echo "    [DRY-RUN] 🚀 $count assets à ajouter."
     else
         json_ids=$(echo "$photos_ids" | jq -R . | jq -s -c '{"ids": .}')
-        log_debug "Payload PUT Assets (extrait) : $(echo "$json_ids" | head -c 50)..."
+        log_debug "Payload PUT Assets (extrait) : $(echo "$json_ids" | head -c 1000)..."
         curl -s -X PUT "$IMMICH_URL/api/album/$target_album_id/assets" \
             -H "x-api-key: $IMMICH_API_KEY" \
             -H "Content-Type: application/json" \
             -d "$json_ids" > /dev/null
-        echo "   ✅ $count assets synchronisés."
+        echo "    ✅ $count assets synchronisés."
     fi
 
-done
+done < <(find "$IMMICH_DIR" -type d -not -path '*/.*' -print0)
+
+# --- Affichage du Récapitulatif Final ---
+echo -e "\n${BOLD}===========================================${NC}"
+echo -e "${BOLD}         RÉCAPITULATIF DES ALERTES         ${NC}"
+echo -e "${BOLD}===========================================${NC}"
+
+if [ ! -s "$RECAP_FILE" ]; then
+    echo -e "${GREEN}✨ Tous les dossiers ont été traités avec succès !${NC}"
+else
+    echo -e "${YELLOW}Les dossiers suivants ont été ignorés :${NC}\n"
+    printf "${BOLD}%-30s | %-s${NC}\n" "DOSSIER" "RAISON"
+    echo "-----------------------------------------------------------"
+    while IFS='|' read -r dossier raison; do
+        printf "${CYAN}%-30s${NC} | ${RED}%-s${NC}\n" "$dossier" "$raison"
+    done < "$RECAP_FILE"
+fi
+echo -e "${BOLD}===========================================${NC}"
+
+# Nettoyage
+rm -f "$RECAP_FILE"
 
 echo -e "\n--- Fin du traitement ---"
