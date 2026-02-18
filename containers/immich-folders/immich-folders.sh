@@ -157,13 +157,13 @@ while IFS= read -r -d '' current_folder; do
             
             # Partage si nouvel album
             if [ -n "$user_id" ] && [ "$user_id" != "null" ]; then
-                response_json=$(curl $param_curl -X POST "$IMMICH_URL/api/album/$target_album_id/user/$user_id" \
+                response_json=$(curl $param_curl -X POST "$IMMICH_URL/api/albums/$target_album_id/user/$user_id" \
                     -H "x-api-key: $IMMICH_API_KEY" \
                     -H "Content-Type: application/json" \
                     -d "{\"role\": \"editor\"}")
 
                 log_debug "Réponse API Partage Album: $response_json"
-                
+
                 echo "    👥 Partagé avec $USER_EMAIL"
             fi
         fi
@@ -203,7 +203,7 @@ while IFS= read -r -d '' current_folder; do
     else
         json_ids=$(echo "$photos_ids" | jq -R . | jq -s -c '{"ids": .}')
         log_debug "Payload PUT Assets (extrait) : $(echo "$json_ids" | head -c 1000)..."
-        curl $param_curl -X PUT "$IMMICH_URL/api/album/$target_album_id/assets" \
+        curl $param_curl -X PUT "$IMMICH_URL/api/albums/$target_album_id/assets" \
             -H "x-api-key: $IMMICH_API_KEY" \
             -H "Content-Type: application/json" \
             -d "$json_ids" > /dev/null
