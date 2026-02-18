@@ -164,31 +164,30 @@ while IFS= read -r -d '' current_folder; do
         fi
     fi
 
-    # On vérifie d'abord si on a un utilisateur valide pour éviter de tester inutilement
+    # On vérifie d'abord si on a un utilisateur valide
     if [ -n "$user_id" ] && [ "$user_id" != "null" ]; then
 
         if [ ! -f "$current_folder/.NOIMMICHSHARE" ]; then
-            # AJOUT / MISE À JOUR DU PARTAGE
             log_debug "Tentative de partage de l'album $target_album_id avec $user_id"
+            
+            share_payload="{\"role\": \"editor\"}"
             
             response_share=$(curl $param_curl -X PUT "$IMMICH_URL/api/albums/$target_album_id/user/$user_id" \
                 -H "x-api-key: $IMMICH_API_KEY" \
                 -H "Content-Type: application/json" \
-                -d "{\"role\": \"editor\"}")
+                -d "$share_payload")
 
             echo "    👥 Partagé avec $USER_EMAIL"
-            log_debug "Réponse API Partage: $(echo "$response_share" | head -c 1000)..."
+            log_debug "Réponse API Partage (Ajout): $response_share"
 
         elif [ -f "$current_folder/.NOIMMICHSHARE" ]; then
-            # SUPPRESSION DU PARTAGE
             log_debug "Suppression du partage pour l'album $target_album_id"
             
             response_share=$(curl $param_curl -X DELETE "$IMMICH_URL/api/albums/$target_album_id/user/$user_id" \
-                -H "x-api-key: $IMMICH_API_KEY" \
-                -H "Content-Type: application/json")
+                -H "x-api-key: $IMMICH_API_KEY")
 
             echo "    🗑️ Partage retiré pour $USER_EMAIL"
-            log_debug "Réponse API Partage: $(echo "$response_share" | head -c 1000)..."
+            log_debug "Réponse API Partage (Suppression): $response_share"
         fi
     fi
 
@@ -230,7 +229,7 @@ while IFS= read -r -d '' current_folder; do
         response_assets=$(curl $param_curl -X PUT "$IMMICH_URL/api/albums/$target_album_id/assets" \
             -H "x-api-key: $IMMICH_API_KEY" \
             -H "Content-Type: application/json" \
-            -d "$json_ids" > /dev/null)
+            -d "$json_ids")
         
         log_debug "Réponse API Ajout Assets: $(echo "$response_assets" | head -c 1000)..."
         
