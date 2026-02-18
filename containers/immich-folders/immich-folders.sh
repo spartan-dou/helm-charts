@@ -145,17 +145,25 @@ while IFS= read -r -d '' current_folder; do
         else
             echo "    🛠 Création de l'album : $album_name"
             payload="{\"albumName\": \"$album_name\"}"
-            target_album_id=$(curl $param_curl -w \n%{http_code} -X POST "$IMMICH_URL/api/album" \
+
+            response_json=$(curl $param_curl -X POST "$IMMICH_URL/api/albums" \
                 -H "x-api-key: $IMMICH_API_KEY" \
                 -H "Content-Type: application/json" \
-                -d "$payload" | jq -r '.id')
+                -d "$payload")
+
+            log_debug "Réponse API Création Album: $response_json"
+
+            target_album_id=$(echo "$response_json" | jq -r '.id // empty')
             
             # Partage si nouvel album
             if [ -n "$user_id" ] && [ "$user_id" != "null" ]; then
-                curl $param_curl -w \n%{http_code} -X POST "$IMMICH_URL/api/album/$target_album_id/user/$user_id" \
+                response_json=$(curl $param_curl -X POST "$IMMICH_URL/api/album/$target_album_id/user/$user_id" \
                     -H "x-api-key: $IMMICH_API_KEY" \
                     -H "Content-Type: application/json" \
-                    -d "{\"role\": \"editor\"}" > /dev/null
+                    -d "{\"role\": \"editor\"}")
+
+                log_debug "Réponse API Partage Album: $response_json"
+                
                 echo "    👥 Partagé avec $USER_EMAIL"
             fi
         fi
