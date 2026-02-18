@@ -154,19 +154,26 @@ while IFS= read -r -d '' current_folder; do
             log_debug "Réponse API Création Album: $response_json"
 
             target_album_id=$(echo "$response_json" | jq -r '.id // empty')
-            
-            # Partage si nouvel album
-            if [ -n "$user_id" ] && [ "$user_id" != "null" ]; then
-                response_json=$(curl $param_curl -X POST "$IMMICH_URL/api/albums/$target_album_id/user/$user_id" \
-                    -H "x-api-key: $IMMICH_API_KEY" \
-                    -H "Content-Type: application/json" \
-                    -d "{\"role\": \"editor\"}")
-
-                log_debug "Réponse API Partage Album: $response_json"
-
-                echo "    👥 Partagé avec $USER_EMAIL"
-            fi
         fi
+    fi
+
+    if [ -n "$user_id" ] && [ "$user_id" != "null" ] && [ ! -f "$current_folder/.NOIMMICHSHARE" ]; then
+        response_json=$(curl $param_curl -X PUT "$IMMICH_URL/api/albums/$target_album_id/user/$user_id" \
+            -H "x-api-key: $IMMICH_API_KEY" \
+            -H "Content-Type: application/json" \
+            -d "{\"role\": \"editor\"}")
+
+        log_debug "Réponse API Partage Album: $response_json"
+
+        echo "    👥 Partagé avec $USER_EMAIL"
+    elif [ -n "$user_id" ] && [ "$user_id" != "null" ] && [ -f "$current_folder/.NOIMMICHSHARE" ]; then
+        response_json=$(curl $param_curl -X DELETE "$IMMICH_URL/api/albums/$target_album_id/user/$user_id" \
+            -H "x-api-key: $IMMICH_API_KEY" \
+            -H "Content-Type: application/json")
+
+        log_debug "Réponse API Supression Partage Album: $response_json"
+
+        echo "    👥 Partage supprimé avec $USER_EMAIL"
     fi
 
     # Recherche des assets
