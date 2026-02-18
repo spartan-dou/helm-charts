@@ -154,6 +154,13 @@ while IFS= read -r -d '' current_folder; do
             log_debug "Réponse API Création Album: $response_json"
 
             target_album_id=$(echo "$response_json" | jq -r '.id // empty')
+
+            # --- MISE À JOUR DE LA LISTE DE DÉPART ---
+            if [ -n "$target_album_id" ] && [ "$target_album_id" != "null" ]; then
+                # On ajoute le nouvel album à la variable locale pour les prochaines itérations
+                album_data+=$'\n'"$album_name|$target_album_id"
+                log_debug "Album ajouté à la base locale : $album_name ($target_album_id)"
+            fi
         fi
     fi
 
@@ -170,6 +177,7 @@ while IFS= read -r -d '' current_folder; do
                 -d "{\"role\": \"editor\"}")
 
             echo "    👥 Partagé avec $USER_EMAIL"
+            log_debug "Réponse API Partage: $response_json"
 
         elif [ -f "$current_folder/.NOIMMICHSHARE" ]; then
             # SUPPRESSION DU PARTAGE
@@ -180,9 +188,8 @@ while IFS= read -r -d '' current_folder; do
                 -H "Content-Type: application/json")
 
             echo "    🗑️ Partage retiré pour $USER_EMAIL"
+            log_debug "Réponse API Partage: $response_json"
         fi
-        
-        log_debug "Réponse API Partage: $response_json"
     fi
 
     # Recherche des assets
