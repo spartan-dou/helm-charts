@@ -151,7 +151,7 @@ while IFS= read -r -d '' current_folder; do
                 -H "Content-Type: application/json" \
                 -d "$payload")
 
-            log_debug "Réponse API Création Album: $response_json"
+            log_debug "Réponse API Création Album: $(echo "$response_json" | head -c 1000)..."
 
             target_album_id=$(echo "$response_json" | jq -r '.id // empty')
 
@@ -177,7 +177,7 @@ while IFS= read -r -d '' current_folder; do
                 -d "{\"role\": \"editor\"}")
 
             echo "    👥 Partagé avec $USER_EMAIL"
-            log_debug "Réponse API Partage: $response_json"
+            log_debug "Réponse API Partage: $(echo "$response_json" | head -c 1000)..."
 
         elif [ -f "$current_folder/.NOIMMICHSHARE" ]; then
             # SUPPRESSION DU PARTAGE
@@ -188,7 +188,7 @@ while IFS= read -r -d '' current_folder; do
                 -H "Content-Type: application/json")
 
             echo "    🗑️ Partage retiré pour $USER_EMAIL"
-            log_debug "Réponse API Partage: $response_json"
+            log_debug "Réponse API Partage: $(echo "$response_json" | head -c 1000)..."
         fi
     fi
 
@@ -232,7 +232,7 @@ while IFS= read -r -d '' current_folder; do
             -H "Content-Type: application/json" \
             -d "$json_ids" > /dev/null)
         
-        log_debug "Réponse API Ajout Assets: $response_json"
+        log_debug "Réponse API Ajout Assets: $(echo "$response_json" | head -c 1000)..."
         
         echo "    ✅ $count assets synchronisés."
     fi
