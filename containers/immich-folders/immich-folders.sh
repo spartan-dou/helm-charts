@@ -145,14 +145,14 @@ while IFS= read -r -d '' current_folder; do
         else
             echo "    🛠 Création de l'album : $album_name"
             payload="{\"albumName\": \"$album_name\"}"
-            target_album_id=$(curl $param_curl -X POST "$IMMICH_URL/api/album" \
+            target_album_id=$(curl $param_curl -w \n%{http_code} -X POST "$IMMICH_URL/api/album" \
                 -H "x-api-key: $IMMICH_API_KEY" \
                 -H "Content-Type: application/json" \
                 -d "$payload" | jq -r '.id')
             
             # Partage si nouvel album
             if [ -n "$user_id" ] && [ "$user_id" != "null" ]; then
-                curl $param_curl -X POST "$IMMICH_URL/api/album/$target_album_id/user/$user_id" \
+                curl $param_curl -w \n%{http_code} -X POST "$IMMICH_URL/api/album/$target_album_id/user/$user_id" \
                     -H "x-api-key: $IMMICH_API_KEY" \
                     -H "Content-Type: application/json" \
                     -d "{\"role\": \"editor\"}" > /dev/null
