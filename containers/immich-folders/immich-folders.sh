@@ -146,14 +146,14 @@ while IFS= read -r -d '' current_folder; do
             echo "    🛠 Création de l'album : $album_name"
             payload="{\"albumName\": \"$album_name\"}"
 
-            response_json=$(curl $param_curl -X POST "$IMMICH_URL/api/albums" \
+            response_album=$(curl $param_curl -X POST "$IMMICH_URL/api/albums" \
                 -H "x-api-key: $IMMICH_API_KEY" \
                 -H "Content-Type: application/json" \
                 -d "$payload")
 
-            log_debug "Réponse API Création Album: $(echo "$response_json" | head -c 1000)..."
+            log_debug "Réponse API Création Album: $(echo "$response_album" | head -c 1000)..."
 
-            target_album_id=$(echo "$response_json" | jq -r '.id // empty')
+            target_album_id=$(echo "$response_album" | jq -r '.id // empty')
 
             # --- MISE À JOUR DE LA LISTE DE DÉPART ---
             if [ -n "$target_album_id" ] && [ "$target_album_id" != "null" ]; then
@@ -171,24 +171,24 @@ while IFS= read -r -d '' current_folder; do
             # AJOUT / MISE À JOUR DU PARTAGE
             log_debug "Tentative de partage de l'album $target_album_id avec $user_id"
             
-            response_json=$(curl $param_curl -X PUT "$IMMICH_URL/api/albums/$target_album_id/user/$user_id" \
+            response_share=$(curl $param_curl -X PUT "$IMMICH_URL/api/albums/$target_album_id/user/$user_id" \
                 -H "x-api-key: $IMMICH_API_KEY" \
                 -H "Content-Type: application/json" \
                 -d "{\"role\": \"editor\"}")
 
             echo "    👥 Partagé avec $USER_EMAIL"
-            log_debug "Réponse API Partage: $(echo "$response_json" | head -c 1000)..."
+            log_debug "Réponse API Partage: $(echo "$response_share" | head -c 1000)..."
 
         elif [ -f "$current_folder/.NOIMMICHSHARE" ]; then
             # SUPPRESSION DU PARTAGE
             log_debug "Suppression du partage pour l'album $target_album_id"
             
-            response_json=$(curl $param_curl -X DELETE "$IMMICH_URL/api/albums/$target_album_id/user/$user_id" \
+            response_share=$(curl $param_curl -X DELETE "$IMMICH_URL/api/albums/$target_album_id/user/$user_id" \
                 -H "x-api-key: $IMMICH_API_KEY" \
                 -H "Content-Type: application/json")
 
             echo "    🗑️ Partage retiré pour $USER_EMAIL"
-            log_debug "Réponse API Partage: $(echo "$response_json" | head -c 1000)..."
+            log_debug "Réponse API Partage: $(echo "$response_share" | head -c 1000)..."
         fi
     fi
 
@@ -227,12 +227,12 @@ while IFS= read -r -d '' current_folder; do
         json_ids=$(echo "$photos_ids" | jq -R . | jq -s -c '{"ids": .}')
         log_debug "Payload PUT Assets (extrait) : $(echo "$json_ids" | head -c 1000)..."
         
-        response_json=$(curl $param_curl -X PUT "$IMMICH_URL/api/albums/$target_album_id/assets" \
+        response_assets=$(curl $param_curl -X PUT "$IMMICH_URL/api/albums/$target_album_id/assets" \
             -H "x-api-key: $IMMICH_API_KEY" \
             -H "Content-Type: application/json" \
             -d "$json_ids" > /dev/null)
         
-        log_debug "Réponse API Ajout Assets: $(echo "$response_json" | head -c 1000)..."
+        log_debug "Réponse API Ajout Assets: $(echo "$response_assets" | head -c 1000)..."
         
         echo "    ✅ $count assets synchronisés."
     fi
