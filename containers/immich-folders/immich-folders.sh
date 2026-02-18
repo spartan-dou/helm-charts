@@ -20,10 +20,12 @@ CYAN='\033[0;36m'
 BOLD='\033[1m'
 NC='\033[0m'
 
+param_curl="-sS"
 # --- Fonction de logging ---
 log_debug() {
     if [ "$DEBUG" = true ]; then
         echo -e "${CYAN}[DEBUG]${NC} $1"
+        param_curl="-sS"
     fi
 }
 
@@ -69,7 +71,7 @@ echo "--- Récupération des données initiales ---"
 # On utilise -i dans curl si debug pour voir les headers, mais attention jq n'aime pas ça
 # On va donc logger les réponses brutes
 log_debug "Appel API : GET $IMMICH_URL/api/albums"
-album_raw=$(curl -s -X GET "$IMMICH_URL/api/albums" -H "x-api-key: $IMMICH_API_KEY")
+album_raw=$(curl $param_curl -X GET "$IMMICH_URL/api/albums" -H "x-api-key: $IMMICH_API_KEY")
 log_debug "Réponse API Albums: $(echo "$album_raw" | head -c 1000)..."
 
 album_data=$(echo "$album_raw" | jq -r '.[] | "\(.albumName)|\(.id)"')
@@ -77,7 +79,7 @@ album_data=$(echo "$album_raw" | jq -r '.[] | "\(.albumName)|\(.id)"')
 if [ -n "$USER_EMAIL" ]; then
     # Récupération de l'ID du destinataire du partage
     log_debug "Recherche de l'ID utilisateur pour : $USER_EMAIL"
-    user_raw=$(curl -s -X GET "$IMMICH_URL/api/users" -H "x-api-key: $IMMICH_API_KEY")
+    user_raw=$(curl $param_curl -X GET "$IMMICH_URL/api/users" -H "x-api-key: $IMMICH_API_KEY")
     log_debug "Réponse API User: $(echo "$user_raw" | head -c 1000)..."
     user_id=$(echo "$user_raw" | jq -r ".[] | select(.email == \"$USER_EMAIL\") | .id")
     log_debug "User ID trouvé : ${user_id:-"AUCUN"}"
@@ -134,6 +136,7 @@ while IFS= read -r -d '' current_folder; do
     # On cherche si l'album (nom du dossier) existe déjà
     album_name=$(echo "$folder_basename" | sed -E 's/^[0-9]{4}\.[0-9]{2}\.[0-9]{2} //')
     target_album_id=$(echo "$album_data" | grep "^$album_name|" | cut -d'|' -f2)
+    log_debug "Recherche d'album : $album_name -> ID trouvé : ${target_album_id:-"AUCUN"}"
 
     if [ -z "$target_album_id" ]; then
         if [ "$DRY_RUN" = true ]; then
@@ -142,14 +145,14 @@ while IFS= read -r -d '' current_folder; do
         else
             echo "    🛠 Création de l'album : $album_name"
             payload="{\"albumName\": \"$album_name\"}"
-            target_album_id=$(curl -s -X POST "$IMMICH_URL/api/album" \
+            target_album_id=$(curl $param_curl -X POST "$IMMICH_URL/api/album" \
                 -H "x-api-key: $IMMICH_API_KEY" \
                 -H "Content-Type: application/json" \
                 -d "$payload" | jq -r '.id')
             
             # Partage si nouvel album
             if [ -n "$user_id" ] && [ "$user_id" != "null" ]; then
-                curl -s -X POST "$IMMICH_URL/api/album/$target_album_id/user/$user_id" \
+                curl $param_curl -X POST "$IMMICH_URL/api/album/$target_album_id/user/$user_id" \
                     -H "x-api-key: $IMMICH_API_KEY" \
                     -H "Content-Type: application/json" \
                     -d "{\"role\": \"editor\"}" > /dev/null
@@ -170,7 +173,7 @@ while IFS= read -r -d '' current_folder; do
     log_debug "Recherche assets via POST sur $IMMICH_URL/api/search/metadata"
     log_debug "Payload recherche : $search_payload"
 
-    response=$(curl -s -X POST "$IMMICH_URL/api/search/metadata" \
+    response=$(curl $param_curl -X POST "$IMMICH_URL/api/search/metadata" \
         -H "x-api-key: $IMMICH_API_KEY" \
         -H "Content-Type: application/json" \
         -d "$search_payload")
@@ -192,7 +195,7 @@ while IFS= read -r -d '' current_folder; do
     else
         json_ids=$(echo "$photos_ids" | jq -R . | jq -s -c '{"ids": .}')
         log_debug "Payload PUT Assets (extrait) : $(echo "$json_ids" | head -c 1000)..."
-        curl -s -X PUT "$IMMICH_URL/api/album/$target_album_id/assets" \
+        curl $param_curl -X PUT "$IMMICH_URL/api/album/$target_album_id/assets" \
             -H "x-api-key: $IMMICH_API_KEY" \
             -H "Content-Type: application/json" \
             -d "$json_ids" > /dev/null
