@@ -157,23 +157,32 @@ while IFS= read -r -d '' current_folder; do
         fi
     fi
 
-    if [ -n "$user_id" ] && [ "$user_id" != "null" ] && [ ! -f "$current_folder/.NOIMMICHSHARE" ]; then
-        response_json=$(curl $param_curl -X PUT "$IMMICH_URL/api/albums/$target_album_id/user/$user_id" \
-            -H "x-api-key: $IMMICH_API_KEY" \
-            -H "Content-Type: application/json" \
-            -d "{\"role\": \"editor\"}")
+    # On vérifie d'abord si on a un utilisateur valide pour éviter de tester inutilement
+    if [ -n "$user_id" ] && [ "$user_id" != "null" ]; then
 
-        log_debug "Réponse API Partage Album: $response_json"
+        if [ ! -f "$current_folder/.NOIMMICHSHARE" ]; then
+            # AJOUT / MISE À JOUR DU PARTAGE
+            log_debug "Tentative de partage de l'album $target_album_id avec $user_id"
+            
+            response_json=$(curl $param_curl -X PUT "$IMMICH_URL/api/albums/$target_album_id/user/$user_id" \
+                -H "x-api-key: $IMMICH_API_KEY" \
+                -H "Content-Type: application/json" \
+                -d "{\"role\": \"editor\"}")
 
-        echo "    👥 Partagé avec $USER_EMAIL"
-    elif [ -n "$user_id" ] && [ "$user_id" != "null" ] && [ -f "$current_folder/.NOIMMICHSHARE" ]; then
-        response_json=$(curl $param_curl -X DELETE "$IMMICH_URL/api/albums/$target_album_id/user/$user_id" \
-            -H "x-api-key: $IMMICH_API_KEY" \
-            -H "Content-Type: application/json")
+            echo "    👥 Partagé avec $USER_EMAIL"
 
-        log_debug "Réponse API Supression Partage Album: $response_json"
+        elif [ -f "$current_folder/.NOIMMICHSHARE" ]; then
+            # SUPPRESSION DU PARTAGE
+            log_debug "Suppression du partage pour l'album $target_album_id"
+            
+            response_json=$(curl $param_curl -X DELETE "$IMMICH_URL/api/albums/$target_album_id/user/$user_id" \
+                -H "x-api-key: $IMMICH_API_KEY" \
+                -H "Content-Type: application/json")
 
-        echo "    👥 Partage supprimé avec $USER_EMAIL"
+            echo "    🗑️ Partage retiré pour $USER_EMAIL"
+        fi
+        
+        log_debug "Réponse API Partage: $response_json"
     fi
 
     # Recherche des assets
