@@ -1,12 +1,11 @@
-FROM alpine:latest
+FROM alpine:3.19
 
-# Installation des outils
-RUN apk add --no-cache bash curl jq exiftool tzdata
+# Installation des outils (exiv2 est beaucoup plus léger)
+RUN apk add --no-cache bash curl jq exiv2 tzdata && \
+    rm -rf /var/cache/apk/*
 
 WORKDIR /app
 COPY immich-folders.sh .
 RUN chmod +x immich-folders.sh
 
-# On utilise CMD pour que le script se lance par défaut au démarrage
-# Cela permet aux variables d'environnement (ENV) d'être lues automatiquement
-CMD ["/bin/bash", "/app/immich-folders.sh"]
+ENTRYPOINT ["/bin/bash", "/app/immich-folders.sh"]
