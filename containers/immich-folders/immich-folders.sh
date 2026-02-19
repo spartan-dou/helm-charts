@@ -31,7 +31,19 @@ log_debug() {
 
 # Fonction pour normaliser les noms (minuscules + sans accents + sans apostrophes)
 clean_name() {
-    echo "$1" | tr '[:upper:]' '[:lower:]' | iconv -f UTF-8 -t ASCII//TRANSLIT 2>/dev/null | sed "s/'//g"
+    local input="$1"
+    # 1. On passe en minuscule
+    # 2. On tente iconv (avec LD_PRELOAD dans le Dockerfile c'est mieux)
+    # 3. On supprime tout ce qui n'est pas alphanumérique (sécurité totale)
+    local cleaned=$(echo "$input" | tr '[:upper:]' '[:lower:]' | iconv -f UTF-8 -t ASCII//TRANSLIT 2>/dev/null | sed "s/[^a-z0-9]//g")
+    
+    debug "Nettoyage du nom : '$input' -> '$cleaned'"
+
+    # Si iconv a tout vidé, on garde au moins le texte original en minuscule sans espaces
+    if [ -z "$cleaned" ]; then
+        cleaned=$(echo "$input" | tr '[:upper:]' '[:lower:]' | sed "s/[^a-z0-9]//g")
+    fi
+    echo "$cleaned"
 }
 
 # --- Analyse des arguments ---
@@ -138,18 +150,25 @@ while IFS= read -r -d '' current_folder; do
 
     # Gestion de l'Album
     # On cherche si l'album (nom du dossier) existe déjà
-    album_name=$(echo "$folder_basename" | sed -E 's/^[0-9]{4}\.[0-9]{2}\.[0-9]{2} //')
-    album_name_clean=$(clean_name "$album_name")
-    
-    target_album_id=$(echo "$album_data" | while read -r line; do
-        line_name=$(echo "$line" | cut -d'|' -f1)
-        line_clean=$(clean_name "$line_name")
+    log_debug "Nom dossier brut : '$folder_basename'"
+    log_debug "Nom album extrait : '$album_name'"
+    log_debug "Nom album nettoyé : '$album_name_clean'"
+
+    target_album_id=""
+    while IFS='|' read -r remote_name remote_id; do
+        remote_name_clean=$(clean_name "$remote_name")
         
-        if [ "$line_clean" = "$album_name_clean" ]; then
-            echo "$line" | cut -d'|' -f2
+        # Log détaillé pour comprendre pourquoi il choisit un mauvais album
+        if [ "$DEBUG" = true ]; then
+             echo -e "${CYAN}[DEBUG]${NC} Comparaison : '$album_name_clean' == '$remote_name_clean' ?"
+        fi
+
+        if [ "$album_name_clean" = "$remote_name_clean" ] && [ -n "$album_name_clean" ]; then
+            target_album_id="$remote_id"
+            log_debug "MATCH TROUVÉ ! ID: $target_album_id"
             break
         fi
-    done | head -n 1)
+    done <<< "$album_data"
 
     log_debug "Recherche d'album : $album_name -> ID trouvé : ${target_album_id:-"AUCUN"}"
 
@@ -187,7 +206,7 @@ while IFS= read -r -d '' current_folder; do
             
             share_payload="{\"albumUsers\": [{\"role\": \"editor\", \"userId\": \"$user_id\"}]}"
             
-            response_share=$(curl $param_curl -X PUT "$IMMICH_URL/api/albums/$target_album_id/users" \
+            response_share=$(curl $param_curl -w "%{http_code}" -X PUT "$IMMICH_URL/api/albums/$target_album_id/users" \
                 -H "x-api-key: $IMMICH_API_KEY" \
                 -H "Content-Type: application/json" \
                 -d "$share_payload")
@@ -198,7 +217,7 @@ while IFS= read -r -d '' current_folder; do
         else
             log_debug "Retrait du partage pour l'album $target_album_id"
             
-            response_share=$(curl $param_curl -X DELETE "$IMMICH_URL/api/albums/$target_album_id/user/$user_id" \
+            response_share=$(curl $param_curl -w "%{http_code}" -X DELETE "$IMMICH_URL/api/albums/$target_album_id/user/$user_id" \
                 -H "x-api-key: $IMMICH_API_KEY")
 
             echo "    🗑️ Partage retiré (ou déjà absent) pour $USER_EMAIL"
