@@ -65,9 +65,9 @@ if [ -z "$IMMICH_API_KEY" ]; then
     exit 1
 fi
 
-log_debug "Vérification des outils : exiv2, jq..."
-if ! command -v exiv2 &> /dev/null || ! command -v jq &> /dev/null || ! command -v iconv &> /dev/null; then
-    echo "❌ Erreur : 'exiv2' ou 'jq' ou 'iconv' manquant."
+log_debug "Vérification des outils : exiftool, jq..."
+if ! command -v exiftool &> /dev/null || ! command -v jq &> /dev/null || ! command -v iconv &> /dev/null; then
+    echo "❌ Erreur : 'exiftool' ou 'jq' ou 'iconv' manquant."
     exit 1
 fi
 
@@ -113,8 +113,7 @@ while IFS= read -r -d '' current_folder; do
     temp_list=$(find "$current_folder" -maxdepth 1 -type f \( \
         -iname "*.jpg" -o -iname "*.jpeg" -o -iname "*.tif" -o \
         -iname "*.mp4" -o -iname "*.mov" -o -iname "*.avi" -o -iname "*.mkv" \
-        \) -print0 | \
-        xargs -0 exiv2 -g Exif.Photo.DateTimeOriginal -P v 2>/dev/null | grep -E '^[0-9]{4}:' | sort)
+        \) -print0 | xargs -0 exiftool -fast2 -T -DateTimeOriginal -n 2>/dev/null | grep -v "^-" | sort)
 
     if [ -z "$temp_list" ]; then
         echo "    ⏩ Pas de photos avec EXIF ici, on passe."
