@@ -51,7 +51,7 @@ if [ "$DEBUG" = true ]; then echo -e "${CYAN}${BOLD}🔧 MODE DEBUG ACTIVÉ${NC}
 if [ "$DRY_RUN" = true ]; then echo -e "${YELLOW}${BOLD}⚠️ MODE DRY RUN ACTIVÉ${NC}\n"; fi
 
 echo -e "${BOLD}--- Droits API requis ---${NC}"
-echo -e " ${GREEN}✔${NC} album.read / album.create / albumUser.update /  albumAsset.create / asset.read / user.read"
+echo -e " ${GREEN}✔${NC} album.read / album.create / albumUser.create / albumUser.delete /  albumAsset.create / asset.read / user.read"
 echo "--------------------------"
 
 # --- Vérifications de sécurité ---
@@ -170,9 +170,9 @@ while IFS= read -r -d '' current_folder; do
         if [ ! -f "$current_folder/.NOIMMICHSHARE" ]; then
             log_debug "Tentative de partage de l'album $target_album_id avec $user_id"
             
-            share_payload="{\"role\": \"editor\"}"
+            share_payload="{\"albumUsers\": [{\"role\": \"editor\", \"userId\": \"$user_id\"}]}"
             
-            response_share=$(curl $param_curl -X PUT "$IMMICH_URL/api/albums/$target_album_id/user/$user_id" \
+            response_share=$(curl $param_curl -X PUT "$IMMICH_URL/api/albums/$target_album_id/users" \
                 -H "x-api-key: $IMMICH_API_KEY" \
                 -H "Content-Type: application/json" \
                 -d "$share_payload")
