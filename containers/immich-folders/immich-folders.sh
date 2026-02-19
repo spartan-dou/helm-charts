@@ -29,23 +29,6 @@ log_debug() {
     fi
 }
 
-# Fonction pour normaliser les noms (minuscules + sans accents + sans apostrophes)
-clean_name() {
-    local input="$1"
-    # 1. On passe en minuscule
-    # 2. On tente iconv (avec LD_PRELOAD dans le Dockerfile c'est mieux)
-    # 3. On supprime tout ce qui n'est pas alphanumérique (sécurité totale)
-    local cleaned=$(echo "$input" | tr '[:upper:]' '[:lower:]' | iconv -f UTF-8 -t ASCII//TRANSLIT 2>/dev/null | sed "s/[^a-z0-9]//g")
-    
-    log_debug "Nettoyage du nom : '$input' -> '$cleaned'"
-
-    # Si iconv a tout vidé, on garde au moins le texte original en minuscule sans espaces
-    if [ -z "$cleaned" ]; then
-        cleaned=$(echo "$input" | tr '[:upper:]' '[:lower:]' | sed "s/[^a-z0-9]//g")
-    fi
-    echo "$cleaned"
-}
-
 # --- Analyse des arguments ---
 while [ $# -gt 0 ]; do
   case "$1" in
@@ -148,27 +131,12 @@ while IFS= read -r -d '' current_folder; do
         continue
     fi
 
-    # Gestion de l'Album
-    # On cherche si l'album (nom du dossier) existe déjà
-    log_debug "Nom dossier brut : '$folder_basename'"
-    log_debug "Nom album extrait : '$album_name'"
-    log_debug "Nom album nettoyé : '$album_name_clean'"
+    # Nettoyage du nom pour l'album (enlève la date YYYY.MM.DD au début si elle existe)
+    album_name=$(echo "$folder_basename" | sed -E 's/^[0-9]{4}\.[0-9]{2}\.[0-9]{2} //')
 
-    target_album_id=""
-    while IFS='|' read -r remote_name remote_id; do
-        remote_name_clean=$(clean_name "$remote_name")
-        
-        # Log détaillé pour comprendre pourquoi il choisit un mauvais album
-        if [ "$DEBUG" = true ]; then
-             echo -e "${CYAN}[DEBUG]${NC} Comparaison : '$album_name_clean' == '$remote_name_clean' ?"
-        fi
-
-        if [ "$album_name_clean" = "$remote_name_clean" ] && [ -n "$album_name_clean" ]; then
-            target_album_id="$remote_id"
-            log_debug "MATCH TROUVÉ ! ID: $target_album_id"
-            break
-        fi
-    done <<< "$album_data"
+    # --- RECHERCHE DE L'ID (Le fameux grep -i) ---
+    # On cherche le nom de l'album dans la liste, sans tenir compte de la casse
+    target_album_id=$(echo "$album_data" | grep -i "^$album_name|" | cut -d'|' -f2)
 
     log_debug "Recherche d'album : $album_name -> ID trouvé : ${target_album_id:-"AUCUN"}"
 

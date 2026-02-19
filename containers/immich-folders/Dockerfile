@@ -1,10 +1,8 @@
 FROM alpine:3.19
 
 # Installation des outils (exiv2 est beaucoup plus léger)
-RUN apk add --no-cache bash curl jq exiftool tzdata gnu-libiconv && \
+RUN apk add --no-cache bash curl jq exiftool tzdata && \
     rm -rf /var/cache/apk/*
-
-ENV LD_PRELOAD /usr/lib/preloadable_libiconv.so
 
 WORKDIR /app
 COPY immich-folders.sh .
