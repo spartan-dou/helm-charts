@@ -1,7 +1,7 @@
 FROM alpine:3.19
 
 # Installation des outils (exiv2 est beaucoup plus léger)
-RUN apk add --no-cache bash curl jq exiv2 tzdata && \
+RUN apk add --no-cache bash curl jq exiv2 tzdata gnu-libiconv && \
     rm -rf /var/cache/apk/*
 
 WORKDIR /app

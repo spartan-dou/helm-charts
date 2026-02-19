@@ -29,6 +29,11 @@ log_debug() {
     fi
 }
 
+# Fonction pour normaliser les noms (minuscules + sans accents + sans apostrophes)
+clean_name() {
+    echo "$1" | tr '[:upper:]' '[:lower:]' | iconv -f UTF-8 -t ASCII//TRANSLIT | sed "s/'//g" 2>/dev/null
+}
+
 # --- Analyse des arguments ---
 while [ $# -gt 0 ]; do
   case "$1" in
@@ -51,7 +56,7 @@ if [ "$DEBUG" = true ]; then echo -e "${CYAN}${BOLD}🔧 MODE DEBUG ACTIVÉ${NC}
 if [ "$DRY_RUN" = true ]; then echo -e "${YELLOW}${BOLD}⚠️ MODE DRY RUN ACTIVÉ${NC}\n"; fi
 
 echo -e "${BOLD}--- Droits API requis ---${NC}"
-echo -e " ${GREEN}✔${NC} album.read / album.create / albumUser.create / albumUser.delete /  albumAsset.create / asset.read / user.read"
+echo -e " ${GREEN}✔${NC} album.read / album.create / albumUser.create / albumUser.update / albumUser.delete /  albumAsset.create / asset.read / user.read"
 echo "--------------------------"
 
 # --- Vérifications de sécurité ---
@@ -61,8 +66,8 @@ if [ -z "$IMMICH_API_KEY" ]; then
 fi
 
 log_debug "Vérification des outils : exiv2, jq..."
-if ! command -v exiv2 &> /dev/null || ! command -v jq &> /dev/null; then
-    echo "❌ Erreur : 'exiv2' ou 'jq' manquant."
+if ! command -v exiv2 &> /dev/null || ! command -v jq &> /dev/null || ! command -v iconv &> /dev/null; then
+    echo "❌ Erreur : 'exiv2' ou 'jq' ou 'iconv' manquant."
     exit 1
 fi
 
@@ -135,7 +140,18 @@ while IFS= read -r -d '' current_folder; do
     # Gestion de l'Album
     # On cherche si l'album (nom du dossier) existe déjà
     album_name=$(echo "$folder_basename" | sed -E 's/^[0-9]{4}\.[0-9]{2}\.[0-9]{2} //')
-    target_album_id=$(echo "$album_data" | grep "^$album_name|" | cut -d'|' -f2)
+    album_name_clean=$(clean_name "$album_name")
+    
+    target_album_id=$(echo "$album_data" | while read -r line; do
+        line_name=$(echo "$line" | cut -d'|' -f1)
+        line_clean=$(clean_name "$line_name")
+        
+        if [ "$line_clean" = "$album_name_clean" ]; then
+            echo "$line" | cut -d'|' -f2
+            break
+        fi
+    done | head -n 1)
+
     log_debug "Recherche d'album : $album_name -> ID trouvé : ${target_album_id:-"AUCUN"}"
 
     if [ -z "$target_album_id" ]; then
