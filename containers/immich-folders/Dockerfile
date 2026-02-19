@@ -4,6 +4,8 @@ FROM alpine:3.19
 RUN apk add --no-cache bash curl jq exiftool tzdata gnu-libiconv && \
     rm -rf /var/cache/apk/*
 
+ENV LD_PRELOAD /usr/lib/preloadable_libiconv.so
+
 WORKDIR /app
 COPY immich-folders.sh .
 RUN chmod +x immich-folders.sh

@@ -31,7 +31,7 @@ log_debug() {
 
 # Fonction pour normaliser les noms (minuscules + sans accents + sans apostrophes)
 clean_name() {
-    echo "$1" | tr '[:upper:]' '[:lower:]' | iconv -f UTF-8 -t ASCII//TRANSLIT | sed "s/'//g" 2>/dev/null
+    echo "$1" | tr '[:upper:]' '[:lower:]' | iconv -f UTF-8 -t ASCII//TRANSLIT 2>/dev/null | sed "s/'//g"
 }
 
 # --- Analyse des arguments ---
@@ -108,7 +108,7 @@ while IFS= read -r -d '' current_folder; do
     fi
 
     # Extraction des métadonnées (Photos + Vidéos)
-    log_debug "Exécution exiv2 pour photos et vidéos dans $current_folder"
+    log_debug "Exécution exiftool pour photos et vidéos dans $current_folder"
     
     temp_list=$(find "$current_folder" -maxdepth 1 -type f \( \
         -iname "*.jpg" -o -iname "*.jpeg" -o -iname "*.tif" -o \
