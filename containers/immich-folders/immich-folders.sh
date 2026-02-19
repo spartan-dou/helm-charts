@@ -60,9 +60,9 @@ if [ -z "$IMMICH_API_KEY" ]; then
     exit 1
 fi
 
-log_debug "Vérification des outils : exiftool, jq..."
-if ! command -v exiftool &> /dev/null || ! command -v jq &> /dev/null; then
-    echo "Erreur : 'exiftool' ou 'jq' manquant."
+log_debug "Vérification des outils : exiv2, jq..."
+if ! command -v exiv2 &> /dev/null || ! command -v jq &> /dev/null; then
+    echo "❌ Erreur : 'exiv2' ou 'jq' manquant."
     exit 1
 fi
 
