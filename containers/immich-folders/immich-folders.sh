@@ -37,7 +37,7 @@ clean_name() {
     # 3. On supprime tout ce qui n'est pas alphanumérique (sécurité totale)
     local cleaned=$(echo "$input" | tr '[:upper:]' '[:lower:]' | iconv -f UTF-8 -t ASCII//TRANSLIT 2>/dev/null | sed "s/[^a-z0-9]//g")
     
-    debug "Nettoyage du nom : '$input' -> '$cleaned'"
+    log_debug "Nettoyage du nom : '$input' -> '$cleaned'"
 
     # Si iconv a tout vidé, on garde au moins le texte original en minuscule sans espaces
     if [ -z "$cleaned" ]; then
