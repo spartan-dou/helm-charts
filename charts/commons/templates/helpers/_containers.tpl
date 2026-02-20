@@ -86,12 +86,15 @@ startupProbe:
 {{- end }}
 {{- end }}
 
-{{- define "containers.securityContext" }}
-{{- $sc := .securityContext | default (dict) }}
-{{- $gsc := .global.securityContext | default (dict) }}
-{{- $merged := mergeOverwrite (deepCopy $gsc) (deepCopy $sc) }}
-{{- if gt (len $merged) 0 }}
+{{- define "containers.securityContext" -}}
+{{- $sc := .securityContext | default dict -}}
+{{- $gsc := dict -}}
+{{- if .global -}}
+  {{- $gsc = .global.securityContext | default dict -}}
+{{- end -}}
+{{- $merged := mergeOverwrite (deepCopy $gsc) (deepCopy $sc) -}}
+{{- if $merged -}}
 securityContext:
   {{- toYaml $merged | nindent 2 }}
-{{- end }}
-{{- end }}
+{{- end -}}
+{{- end -}}

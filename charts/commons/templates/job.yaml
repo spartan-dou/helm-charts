@@ -16,6 +16,7 @@ spec:
       automountServiceAccountToken: true
       {{- end }}
 
+      {{ include "containers.securityContext" (dict "global" $.Values.global "securityContext" .securityContext) | nindent 10 }}
       {{- with .nodeSelector }}
       nodeSelector: 
         {{- toYaml . | nindent 12 }}
