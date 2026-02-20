@@ -60,6 +60,7 @@ components:
     cronjobs:
       - schedule: '0 3 * * *'
         successfulJobsHistoryLimit: 3
+        runOnStartup: true
         failedJobsHistoryLimit: 1
         containers:
           - env:
