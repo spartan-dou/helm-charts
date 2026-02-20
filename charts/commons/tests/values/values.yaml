@@ -56,18 +56,6 @@ global:
           - get
           - list
 components:
-  - name: cron
-    cronjobs:
-      - schedule: '0 3 * * *'
-        successfulJobsHistoryLimit: 3
-        failedJobsHistoryLimit: 1
-        containers:
-          - env:
-            - name: ENV
-              value: prod
-            image:
-              repository: nginx
-              tag: latest
 
   - name: nginx
     cronjobs:

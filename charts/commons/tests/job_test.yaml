@@ -1,0 +1,19 @@
+suite: Test CronJob template
+values:
+  - ./values/values.yaml
+templates:
+  - templates/job.yaml
+release:
+  name: test
+tests:
+  - it: Vérifie le cron
+    documentSelector:
+      path: metadata.name
+      value: test-nginx
+    asserts:
+      - equal:
+          path: kind
+          value: Job
+      - equal:
+          path: spec.jobTemplate.spec.containers[0].image
+          value: "nginx:latest"
