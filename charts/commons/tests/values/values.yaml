@@ -56,6 +56,18 @@ global:
           - get
           - list
 components:
+  - name: toto
+    cronjobs:
+      - schedule: '0 3 * * *'
+        successfulJobsHistoryLimit: 3
+        failedJobsHistoryLimit: 1
+        containers:
+          - env:
+            - name: ENV
+              value: prod
+            image:
+              repository: nginx-toto
+              tag: latest
   - name: nginx
     cronjobs:
       - schedule: '0 3 * * *'

@@ -91,7 +91,6 @@ spec:
           args:
             {{- toYaml . | nindent 12 }}
           {{- end }}
-          {{- /* Ici on peut aussi utiliser le helper si besoin, sinon on reste en toYaml */ -}}
           {{- with .securityContext }}
           securityContext:
             {{- toYaml . | nindent 12 }}
