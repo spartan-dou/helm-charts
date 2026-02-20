@@ -12,6 +12,7 @@ spec:
     spec:
       restartPolicy: {{ default "Never" .restartPolicy }}
 
+      {{ include "containers.securityContext" (dict "global" $.Values.global "securityContext" .securityContext) | nindent 10 }}
       {{- with .nodeSelector }}
       nodeSelector: 
         {{- toYaml . | nindent 12 }}
