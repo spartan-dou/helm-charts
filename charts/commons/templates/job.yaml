@@ -2,7 +2,7 @@
 {{- range $components }}
 {{- $component := . }}
 {{- range $component.cronjobs }}
-{{- if and .runOnStartup enabled}}
+{{- if and .runOnStartup .enabled}}
 apiVersion: batch/v1
 kind: Job
 metadata:
