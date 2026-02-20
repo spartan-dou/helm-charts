@@ -8,6 +8,7 @@ kind: Job
 metadata:
   name: {{ include "commons.fullname" (dict "Chart" $.Chart "Values" $.Values "Release" $.Release "name" .name "component" $component) }}
 spec:
+  ttlSecondsAfterFinished: 60
   template:
     spec:
       restartPolicy: {{ default "Never" .restartPolicy }}
