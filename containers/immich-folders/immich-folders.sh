@@ -200,7 +200,7 @@ while IFS= read -r -d '' current_folder; do
     search_payload=$(jq -n \
         --arg after "${clean_date_oldest}T00:00:00.000Z" \
         --arg before "${clean_date_newest}T23:59:59.999Z" \
-        '{takenAfter: $after, takenBefore: $before}')
+        '{takenAfter: $after, takenBefore: $before, withStack: true}')
 
     log_debug "Recherche assets via POST sur $IMMICH_URL/api/search/metadata"
     log_debug "Payload recherche : $search_payload"
@@ -212,7 +212,7 @@ while IFS= read -r -d '' current_folder; do
 
     log_debug "Réponse API Search: $(echo "$response" | head -c 1000)..."
     # Extraction des IDs
-    photos_ids=$(echo "$response" | jq -r '.assets.items[].id // empty')
+    photos_ids=$(echo "$response" | jq -r '.assets.items[] | map(select(.stack == null)) | .id // empty')
     
     if [ -z "$photos_ids" ]; then
         echo "    ⚠️ Aucune photo trouvée sur Immich pour ces dates."
