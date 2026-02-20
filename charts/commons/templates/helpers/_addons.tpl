@@ -3,6 +3,10 @@
 {{- $result := list }}
 
 {{- range $i, $c := $base }}
+  {{- if not (hasKey $c "deployment") }}
+    {{- $_ := set $c "deployment" (dict "initContainers" list) }}
+  {{- end }}
+
   {{- $existing := $c.deployment.initContainers | default list }}
   {{- $merged := list }}
   {{- range $existing }}
@@ -108,14 +112,11 @@
 
 {{/* === Addon VSCode === */}}
 {{- if .Values.addons.vscode.enabled }}
-
-  {{/* VolumeMounts */}}
   {{- $volumeMounts := list (dict "name" "vscode-config" "mountPath" "/config") }}
   {{- range .Values.addons.vscode.volumes }}
-  {{- $volumeMounts = append $volumeMounts (dict "name" .name "mountPath" (print "/config/workspace/" .name) ) }}
+    {{- $volumeMounts = append $volumeMounts (dict "name" .name "mountPath" (print "/config/workspace/" .name) ) }}
   {{- end }}
 
-  {{/* Volumes */}}
   {{- $volumes := list (dict
     "name" "vscode-config"
     "pvc" (dict
@@ -172,20 +173,12 @@
   }}
 
   {{- if (default dict (default dict .Values.addons.vscode).ingress).enabled }}
-  {{- /* dictionnaire ingress par défaut */ -}}
-  {{- $ingressDefaults := dict
-      "enabled" true
-  }}
-
-  {{- /* valeurs utilisateur depuis values.yaml */ -}}
-  {{- $ingressOverrides := default dict .Values.addons.vscode.ingress }}
-
-  {{- /* on enlève la clé enabled pour ne pas écraser la condition */ -}}
-  {{- $ingressOverrides := omit $ingressOverrides "enabled" }}
-
-  {{- /* fusion defaults + overrides */ -}}
+    {{- $ingressDefaults := dict "enabled" true }}
+    {{- $ingressOverrides := default dict .Values.addons.vscode.ingress }}
+    {{- $ingressOverrides := omit $ingressOverrides "enabled" }}
     {{- $_ := set $defaults "ingress" (merge $ingressDefaults $ingressOverrides) }}
   {{- end }}
+
   {{- $raw := .Values.addons.vscode | default dict }}
   {{- $overrides := omit $raw "enabled" }}
   {{- $vscode := merge $defaults $overrides }}
