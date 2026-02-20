@@ -3,6 +3,11 @@
 {{- $result := list }}
 
 {{- range $i, $c := $base }}
+  {{- /* Protection : On s'assure que deployment existe et est un dict */ -}}
+  {{- if not (hasKey $c "deployment") }}
+    {{- $_ := set $c "deployment" dict }}
+  {{- end }}
+  
   {{- $merged := $c.deployment.initContainers | default list }}
 
   {{- if $.Values.addons.redis.enabled }}
@@ -86,7 +91,7 @@
   {{- range .Values.addons.vscode.volumes }}
     {{- $vol := dict "name" .name }}
     {{- with .pvc }}
-      {{- $storage := dict "size" (default $.Values.global.pvc.storage.size .storage.size) "storageClassName" (default $.Values.global.pvc.storage.storageClassName $.Values.addons.vscode.storageClassName) }}
+      {{- $storage := dict "size" (default $.Values.global.pvc.storage.size (default dict .storage).size) "storageClassName" (default $.Values.global.pvc.storage.storageClassName $.Values.addons.vscode.storageClassName) }}
       {{- $vol = merge $vol (dict "pvc" (dict "name" .name "useExisting" (default true .useExisting) "storage" $storage)) }}
     {{- end }}
     {{- $volumes = append $volumes $vol }}
@@ -99,7 +104,7 @@
         "containers" (list (dict
             "image" (dict "repository" .Values.addons.vscode.image.repository "tag" (default "latest" .Values.addons.vscode.image.tag))
             "securityContext" (dict "runAsUser" (default 1000 $vscodeSC.runAsUser) "runAsGroup" (default 1000 $vscodeSC.runAsGroup) "fsGroup" (default 1000 $vscodeSC.fsGroup))
-            "env" (list (dict "name" "DEFAULT_WORKSPACE" "value" "/config/workspace") (dict "name" "PUID" "value" (default "1000" (print (default 1000 $vscodeSC.runAsUser)))) (dict "name" "PGID" "value" (default "1000" (print (default 1000 $vscodeSC.runAsGroup)))))
+            "env" (list (dict "name" "DEFAULT_WORKSPACE" "value" "/config/workspace") (dict "name" "PUID" "value" (print (default 1000 $vscodeSC.runAsUser))) (dict "name" "PGID" "value" (print (default 1000 $vscodeSC.runAsGroup))))
             "volumeMounts" $volumeMounts
         ))
         "volumes" $volumes
@@ -110,7 +115,7 @@
   {{- if (default dict .Values.addons.vscode.ingress).enabled }}
     {{- $_ := set $defaults "ingress" (merge (omit .Values.addons.vscode.ingress "enabled") (dict "enabled" true)) }}
   {{- end }}
-  {{- $addons = append $addons (merge $defaults (omit .Values.addons.vscode "enabled")) }}
+  {{- $addons = append $addons (merge $defaults (omit .Values.addons.vscode | default dict "enabled")) }}
 {{- end }}
 
 {{- if .Values.addons.redis.enabled }}
@@ -119,15 +124,15 @@
     "deployment" (dict
       "containers" (list (dict
         "image" (dict "repository" .Values.addons.redis.image.repository "tag" (.Values.addons.redis.image.tag | default "latest"))
-        "livenessProbe" (dict "tcpSocket" (dict "port" .Values.addons.redis.port) "initialDelaySeconds" 5 "periodSeconds" 10)
-        "readinessProbe" (dict "tcpSocket" (dict "port" .Values.addons.redis.port) "initialDelaySeconds" 5 "periodSeconds" 10)
-        "volumeMounts" (list (dict "mountPath" (default "/data" .Values.addons.redis.storage.mountPath) "name" "data"))
+        "livenessProbe" (dict "tcpSocket" (dict "port" (int .Values.addons.redis.port)) "initialDelaySeconds" 5 "periodSeconds" 10)
+        "readinessProbe" (dict "tcpSocket" (dict "port" (int .Values.addons.redis.port)) "initialDelaySeconds" 5 "periodSeconds" 10)
+        "volumeMounts" (list (dict "mountPath" (default "/data" (default dict .Values.addons.redis.storage).mountPath) "name" "data"))
       ))
-      "volumes" (list (dict "name" "data" "pvc" (dict "name" "data" "storage" (dict "size" (default .Values.global.pvc.storage.size .Values.addons.redis.storage.size) "storageClassName" (default .Values.global.pvc.storage.storageClassName .Values.addons.redis.storage.storageClassName)))))
+      "volumes" (list (dict "name" "data" "pvc" (dict "name" "data" "storage" (dict "size" (default .Values.global.pvc.storage.size (default dict .Values.addons.redis.storage).size) "storageClassName" (default .Values.global.pvc.storage.storageClassName (default dict .Values.addons.redis.storage).storageClassName)))))
     )
-    "service" (dict "enabled" true "type" "ClusterIP" "ports" (list (dict "name" "redis" "port" .Values.addons.redis.port)))
+    "service" (dict "enabled" true "type" "ClusterIP" "ports" (list (dict "name" "redis" "port" (int .Values.addons.redis.port))))
   }}
-  {{- $addons = append $addons (merge $defaults (omit .Values.addons.redis "enabled" "name")) }}
+  {{- $addons = append $addons (merge $defaults (omit .Values.addons.redis | default dict "enabled" "name")) }}
 {{- end }}
 
 {{- if .Values.addons.pgadmin.enabled }}
@@ -138,16 +143,16 @@
           "image" (dict "repository" .Values.addons.pgadmin.image.repository "tag" (default "latest" .Values.addons.pgadmin.image.tag))
           "env" (list (dict "name" "PGPASS_FILE" "value" "/pgadmin4/pgpass") (dict "name" "PGADMIN_DEFAULT_EMAIL" "value" .Values.addons.pgadmin.auth.email) (dict "name" "PGADMIN_DEFAULT_PASSWORD" "value" .Values.addons.pgadmin.auth.password))
           "securityContext" (dict "runAsUser" 5050 "runAsGroup" 5050 "fsGroup" 5050 "runAsNonRoot" true "readOnlyRootFilesystem" false)
-          "livenessProbe" (dict "tcpSocket" (dict "port" .Values.addons.pgadmin.service.port) "initialDelaySeconds" 5 "periodSeconds" 10)
-          "readinessProbe" (dict "tcpSocket" (dict "port" .Values.addons.pgadmin.service.port) "initialDelaySeconds" 5 "periodSeconds" 10)
+          "livenessProbe" (dict "tcpSocket" (dict "port" (int .Values.addons.pgadmin.service.port)) "initialDelaySeconds" 5 "periodSeconds" 10)
+          "readinessProbe" (dict "tcpSocket" (dict "port" (int .Values.addons.pgadmin.service.port)) "initialDelaySeconds" 5 "periodSeconds" 10)
           "volumeMounts" (list (dict "mountPath" "/pgadmin4/servers.json" "subPath" "servers.json" "name" "config") (dict "mountPath" "/pgadmin4/pgpass" "subPath" "pgpass" "name" "config"))
       ))
       "volumes" (list (dict "name" "config" "configMap" (dict "name" "pg-config" "data" (dict "servers.json" (trim (include "pgadmin.servers" $)) "pgpass" (trim (include "pgadmin.pgpass" $))))))
     )
-    "service" (dict "enabled" true "type" .Values.addons.pgadmin.service.type "ports" (list (dict "name" "pgadmin" "port" .Values.addons.pgadmin.service.port)))
+    "service" (dict "enabled" true "type" .Values.addons.pgadmin.service.type "ports" (list (dict "name" "pgadmin" "port" (int .Values.addons.pgadmin.service.port))))
     "ingress" .Values.addons.pgadmin.ingress
   }}
-  {{- $addons = append $addons (merge $defaults (omit .Values.addons.pgadmin "enabled" "name")) }}
+  {{- $addons = append $addons (merge $defaults (omit .Values.addons.pgadmin | default dict "enabled" "name")) }}
 {{- end }}
 
 {{- concat $result $addons | toYaml }}
