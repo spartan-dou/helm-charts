@@ -15,5 +15,5 @@ tests:
           path: kind
           value: Job
       - equal:
-          path: spec.jobTemplate.spec.containers[0].image
+          path: spec.template.spec.containers[0].image
           value: "nginx:latest"
