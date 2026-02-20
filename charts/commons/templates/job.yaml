@@ -16,83 +16,35 @@ spec:
       automountServiceAccountToken: true
       {{- end }}
 
-      {{ include "containers.securityContext" (dict "global" $.Values.global "securityContext" .securityContext) | nindent 10 }}
+      {{- include "containers.securityContext" (dict "global" $.Values.global "securityContext" .securityContext) | nindent 6 }}
+
       {{- with .nodeSelector }}
-      nodeSelector: 
-        {{- toYaml . | nindent 12 }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
       {{- end }}
+
       {{- with .initContainers }}
       initContainers:
         {{- range . }}
         - name: {{ .name | default $component.name }}
-          {{- if .container }}
-          {{- with .container.securityContext }}
-          securityContext:
-            {{- toYaml . | nindent 16 }}
-          {{- end }}
-          {{- with .container.capabilities }}
-          capabilities:
-            {{- toYaml . | nindent 16 }}
-          {{- end }}
-          {{- end }}
-          image: {{ .image.repository }}:{{ .image.tag | default "latest"  }}
-          {{- with .command }}
-          command:
-            {{ toYaml . | nindent 16 }}
-          {{- end }}
-          {{- with .args }}
-          args:
-            {{ toYaml . | nindent 16 }}
-          {{- end }}
-          {{- with .env }}
-          env:
-            - name: TZ
-              value: {{ $.Values.global.timezone | quote }}
-            {{- range . }}
-            - name: {{ .name }}
-              {{- with .value }}
-              value: {{ include "commons.getValue" (dict "Values" $.Values "Chart" $.Chart "Release" $.Release "component" $component "value" .) | quote }}
-              {{- end }}
-              {{- with .valueFrom }}
-              valueFrom:
-                {{- if .secretKeyRef }}
-                secretKeyRef:
-                  name: {{ include "commons.getValue" (dict "Values" $.Values "Chart" $.Chart "Release" $.Release "component" $component "value" .secretKeyRef.name) }}
-                  key: {{ .secretKeyRef.key }}
-                {{- else }}
-                {{- toYaml . | nindent 20 }}
-                {{- end }}
-              {{- end }}
-            {{- end }}
-          {{- end }}
-          {{- with .volumeMounts }}
-          volumeMounts:
-            {{- range . }}
-            - name: {{ .name }}
-              mountPath: {{ .mountPath }}
-              {{- with .subPath }}
-              subPath: {{ . }}
-              {{- end }}
-            {{- end }}
-          {{- end }}
-        {{- end }}
-      {{- end }}
-      {{- with .containers }}
-      containers:
-        {{- range . }}
-        - name: {{ default $component.name .name }}
           image: {{ .image.repository }}:{{ .image.tag | default "latest" }}
+          {{- if .container }}
+            {{- with .container.securityContext }}
+          securityContext:
+            {{- toYaml . | nindent 12 }}
+            {{- end }}
+            {{- with .container.capabilities }}
+          capabilities:
+            {{- toYaml . | nindent 12 }}
+            {{- end }}
+          {{- end }}
           {{- with .command }}
           command:
-            {{ toYaml . | nindent 16 }}
+            {{- toYaml . | nindent 12 }}
           {{- end }}
           {{- with .args }}
           args:
-            {{ toYaml . | nindent 16 }}
-          {{- end }}
-          {{- with .securityContext }}
-          securityContext:
-            {{- toYaml . | nindent 16 }}
+            {{- toYaml . | nindent 12 }}
           {{- end }}
           env:
             - name: TZ
@@ -109,13 +61,63 @@ spec:
                   name: {{ include "commons.getValue" (dict "Values" $.Values "Chart" $.Chart "Release" $.Release "component" $component "value" .secretKeyRef.name) }}
                   key: {{ .secretKeyRef.key }}
                 {{- else }}
-                {{- toYaml . | nindent 20 }}
+                {{- toYaml . | nindent 16 }}
+                {{- end }}
+              {{- end }}
+            {{- end }}
+          {{- with .volumeMounts }}
+          volumeMounts:
+            {{- range . }}
+            - name: {{ .name }}
+              mountPath: {{ .mountPath }}
+              {{- with .subPath }}
+              subPath: {{ . }}
+              {{- end }}
+            {{- end }}
+          {{- end }}
+        {{- end }}
+      {{- end }}
+
+      {{- with .containers }}
+      containers:
+        {{- range . }}
+        - name: {{ default $component.name .name }}
+          image: {{ .image.repository }}:{{ .image.tag | default "latest" }}
+          {{- with .command }}
+          command:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .args }}
+          args:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- /* Ici on peut aussi utiliser le helper si besoin, sinon on reste en toYaml */ -}}
+          {{- with .securityContext }}
+          securityContext:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          env:
+            - name: TZ
+              value: {{ $.Values.global.timezone | quote }}
+            {{- range .env }}
+            - name: {{ .name }}
+              {{- with .value }}
+              value: {{ include "commons.getValue" (dict "Values" $.Values "Chart" $.Chart "Release" $.Release "component" $component "value" .) | quote }}
+              {{- end }}
+              {{- with .valueFrom }}
+              valueFrom:
+                {{- if .secretKeyRef }}
+                secretKeyRef:
+                  name: {{ include "commons.getValue" (dict "Values" $.Values "Chart" $.Chart "Release" $.Release "component" $component "value" .secretKeyRef.name) }}
+                  key: {{ .secretKeyRef.key }}
+                {{- else }}
+                {{- toYaml . | nindent 16 }}
                 {{- end }}
               {{- end }}
             {{- end }}
           {{- with .lifecycle }}
           lifecycle:
-          {{- toYaml . | nindent 16 }}
+            {{- toYaml . | nindent 12 }}
           {{- end }}
           {{- with .volumeMounts }}
           volumeMounts:
@@ -127,18 +129,17 @@ spec:
               {{- end }}
             {{- end }}
           {{- end }}
-          
-
           {{- with .resources }}
           resources:
-            {{- toYaml . | nindent 16 }}
+            {{- toYaml . | nindent 12 }}
           {{- end }}
         {{- end }}
       {{- end }}
+
       {{- with .volumes }}
       volumes:
         {{- range . }}
-        {{- if .configMap }}
+          {{- if .configMap }}
         - name: {{ .name }}
           configMap:
             {{- if .configMap.useExisting }}
@@ -149,7 +150,7 @@ spec:
             {{- with .configMap.readOnly }}
             readOnly: {{ . }}
             {{- end }}
-        {{- else if .pvc }}
+          {{- else if .pvc }}
         - name: {{ .name }}
           persistentVolumeClaim:
             {{- if .pvc.useExisting }}
@@ -160,12 +161,11 @@ spec:
             {{- with .pvc.readOnly }}
             readOnly: {{ . }}
             {{- end }}
-        {{- else }}
-        - {{ toYaml . | nindent 14 | trim }}
+          {{- else }}
+        - {{ toYaml . | nindent 10 | trim }}
           {{- end }}
         {{- end }}
       {{- end }}
----
 {{- end }}
 {{- end }}
 {{- end }}
