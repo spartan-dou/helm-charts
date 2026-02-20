@@ -11,71 +11,10 @@ spec:
   template:
     spec:
       restartPolicy: {{ default "Never" .restartPolicy }}
-      {{- if $.Values.global.rbac.enabled }}
-      serviceAccountName: {{ $.Values.global.rbac.serviceAccountName }}
-      automountServiceAccountToken: true
-      {{- end }}
 
-      {{ include "containers.securityContext" (dict "global" $.Values.global "securityContext" .securityContext) | nindent 10 }}
       {{- with .nodeSelector }}
       nodeSelector: 
         {{- toYaml . | nindent 12 }}
-      {{- end }}
-      {{- with .initContainers }}
-      initContainers:
-        {{- range . }}
-        - name: {{ .name | default $component.name }}
-          {{- if .container }}
-          {{- with .container.securityContext }}
-          securityContext:
-            {{- toYaml . | nindent 16 }}
-          {{- end }}
-          {{- with .container.capabilities }}
-          capabilities:
-            {{- toYaml . | nindent 16 }}
-          {{- end }}
-          {{- end }}
-          image: {{ .image.repository }}:{{ .image.tag | default "latest"  }}
-          {{- with .command }}
-          command:
-            {{ toYaml . | nindent 16 }}
-          {{- end }}
-          {{- with .args }}
-          args:
-            {{ toYaml . | nindent 16 }}
-          {{- end }}
-          {{- with .env }}
-          env:
-            - name: TZ
-              value: {{ $.Values.global.timezone | quote }}
-            {{- range . }}
-            - name: {{ .name }}
-              {{- with .value }}
-              value: {{ include "commons.getValue" (dict "Values" $.Values "Chart" $.Chart "Release" $.Release "component" $component "value" .) | quote }}
-              {{- end }}
-              {{- with .valueFrom }}
-              valueFrom:
-                {{- if .secretKeyRef }}
-                secretKeyRef:
-                  name: {{ include "commons.getValue" (dict "Values" $.Values "Chart" $.Chart "Release" $.Release "component" $component "value" .secretKeyRef.name) }}
-                  key: {{ .secretKeyRef.key }}
-                {{- else }}
-                {{- toYaml . | nindent 20 }}
-                {{- end }}
-              {{- end }}
-            {{- end }}
-          {{- end }}
-          {{- with .volumeMounts }}
-          volumeMounts:
-            {{- range . }}
-            - name: {{ .name }}
-              mountPath: {{ .mountPath }}
-              {{- with .subPath }}
-              subPath: {{ . }}
-              {{- end }}
-            {{- end }}
-          {{- end }}
-        {{- end }}
       {{- end }}
       {{- with .containers }}
       containers:
@@ -94,25 +33,6 @@ spec:
           securityContext:
             {{- toYaml . | nindent 16 }}
           {{- end }}
-          env:
-            - name: TZ
-              value: {{ $.Values.global.timezone | quote }}
-            {{- range .env }}
-            - name: {{ .name }}
-              {{- with .value }}
-              value: {{ include "commons.getValue" (dict "Values" $.Values "Chart" $.Chart "Release" $.Release "component" $component "value" .) | quote }}
-              {{- end }}
-              {{- with .valueFrom }}
-              valueFrom:
-                {{- if .secretKeyRef }}
-                secretKeyRef:
-                  name: {{ include "commons.getValue" (dict "Values" $.Values "Chart" $.Chart "Release" $.Release "component" $component "value" .secretKeyRef.name) }}
-                  key: {{ .secretKeyRef.key }}
-                {{- else }}
-                {{- toYaml . | nindent 20 }}
-                {{- end }}
-              {{- end }}
-            {{- end }}
           {{- with .lifecycle }}
           lifecycle:
           {{- toYaml . | nindent 16 }}
@@ -132,36 +52,6 @@ spec:
           {{- with .resources }}
           resources:
             {{- toYaml . | nindent 16 }}
-          {{- end }}
-        {{- end }}
-      {{- end }}
-      {{- with .volumes }}
-      volumes:
-        {{- range . }}
-        {{- if .configMap }}
-        - name: {{ .name }}
-          configMap:
-            {{- if .configMap.useExisting }}
-            name: {{ include "commons.getValue" (dict "Values" $.Values "Chart" $.Chart "Release" $.Release "component" $component "value" .configMap.name) }}
-            {{- else }}
-            name: {{ include "commons.fullname" (dict "Chart" $.Chart "Values" $.Values "Release" $.Release "name" (default .name .configMap.name) "component" $component) }}
-            {{- end }}
-            {{- with .configMap.readOnly }}
-            readOnly: {{ . }}
-            {{- end }}
-        {{- else if .pvc }}
-        - name: {{ .name }}
-          persistentVolumeClaim:
-            {{- if .pvc.useExisting }}
-            claimName: {{ include "commons.getValue" (dict "Values" $.Values "Chart" $.Chart "Release" $.Release "component" $component "value" .pvc.name) }}
-            {{- else }}
-            claimName: {{ include "commons.fullname" (dict "Chart" $.Chart "Values" $.Values "Release" $.Release "name" (default .name .pvc.name) "component" $component) }}
-            {{- end }}
-            {{- with .pvc.readOnly }}
-            readOnly: {{ . }}
-            {{- end }}
-        {{- else }}
-        - {{ toYaml . | nindent 14 | trim }}
           {{- end }}
         {{- end }}
       {{- end }}
