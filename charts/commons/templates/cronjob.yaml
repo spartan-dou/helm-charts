@@ -2,6 +2,7 @@
 {{- range $components }}
 {{- $component := . }}
 {{- range $component.cronjobs }}
+{{- if .enabled}}
 apiVersion: batch/v1
 kind: CronJob
 metadata:
@@ -179,5 +180,6 @@ spec:
             {{- end }}
           {{- end }}
 ---
+{{- end }}
 {{- end }}
 {{- end }}

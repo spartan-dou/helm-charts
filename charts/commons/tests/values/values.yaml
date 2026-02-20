@@ -61,6 +61,7 @@ components:
       - schedule: '0 3 * * *'
         successfulJobsHistoryLimit: 3
         failedJobsHistoryLimit: 1
+        enabled: true
         containers:
           - env:
             - name: ENV
@@ -73,6 +74,7 @@ components:
       - schedule: '0 3 * * *'
         successfulJobsHistoryLimit: 3
         runOnStartup: true
+        enabled: true
         failedJobsHistoryLimit: 1
         containers:
           - env:
