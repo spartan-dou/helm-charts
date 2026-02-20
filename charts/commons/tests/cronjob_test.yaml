@@ -6,7 +6,7 @@ templates:
 release:
   name: test
 tests:
-  - it: Vérifie le Deployment web
+  - it: Vérifie le cronjob
     documentSelector:
       path: metadata.name
       value: test-nginx
@@ -22,4 +22,16 @@ tests:
           value: 3
       - equal:
           path: spec.jobTemplate.spec.template.spec.containers[0].image
+          value: "nginx:latest"
+
+  - it: Vérifie le cron
+    documentSelector:
+      path: metadata.name
+      value: test-nginx
+    asserts:
+      - equal:
+          path: kind
+          value: Job
+      - equal:
+          path: spec.jobTemplate.spec.containers[0].image
           value: "nginx:latest"
