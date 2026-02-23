@@ -150,31 +150,31 @@
 
   {{- $vscodeSC := .Values.addons.vscode.securityContext | default dict }}
   {{- $defaults := dict
-      "name" "code-server"
-      "deployment" (dict
-        "containers" (list (dict
-            "image" (dict
-                "repository" .Values.addons.vscode.image.repository
-                "tag" (default "latest" .Values.addons.vscode.image.tag)
-            )
-            "securityContext" (dict
-              "runAsUser" (default 0 $vscodeSC.runAsUser)
-              "runAsGroup" (default 1000 $vscodeSC.runAsGroup)
-              "fsGroup" (default 1000 $vscodeSC.fsGroup)
-            )
-            "env" (list
-                    (dict "name" "PUID" "value" (default 0 $vscodeSC.runAsUser))
-                    (dict "name" "PGID" "value" (default 1000 $vscodeSC.runAsGroup))
-                    (dict "name" "DEFAULT_WORKSPACE" "value" "/config/workspace")
-                  )
-            "volumeMounts" $volumeMounts
+        "name" "code-server"
+        "deployment" (dict
+          "containers" (list (dict
+              "image" (dict
+                  "repository" .Values.addons.vscode.image.repository
+                  "tag" (default "latest" .Values.addons.vscode.image.tag)
+              )
+              "securityContext" (dict
+                "runAsUser" (default 0 (get $vscodeSC "runAsUser"))
+                "runAsGroup" (default 1000 (get $vscodeSC "runAsGroup"))
+                "fsGroup" (default 1000 (get $vscodeSC "fsGroup"))
+              )
+              "env" (list
+                      (dict "name" "PUID" "value" (default 0 (get $vscodeSC "runAsUser")))
+                      (dict "name" "PGID" "value" (default 1000 (get $vscodeSC "runAsGroup")))
+                      (dict "name" "DEFAULT_WORKSPACE" "value" "/config/workspace")
+                    )
+              "volumeMounts" $volumeMounts
         ))
-      "volumes" $volumes
-      )
-      "service" (dict
-          "type" (default "ClusterIP" .Values.addons.vscode.service.type)
-          "ports" (list (dict "name" "http" "port" .Values.addons.vscode.service.port))
-      )
+        "volumes" $volumes
+        )
+        "service" (dict
+            "type" (default "ClusterIP" .Values.addons.vscode.service.type)
+            "ports" (list (dict "name" "http" "port" .Values.addons.vscode.service.port))
+        )
   }}
 
   {{- if (default dict (default dict .Values.addons.vscode).ingress).enabled }}
