@@ -23,7 +23,7 @@ jobs:
           version: v4.0.5
 
       - name: Install helm-unittest plugin
-        run: helm plugin install https://github.com/helm-unittest/helm-unittest --verify=false
+        run: helm plugin install https://github.com/helm-unittest/helm-unittest --verify=false --version v1.0.3
 
       - name: Run Helm lint
         run: helm lint charts/commons
