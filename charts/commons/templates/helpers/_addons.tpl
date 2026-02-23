@@ -163,9 +163,9 @@
               "fsGroup" (default 1000 $vscodeSC.fsGroup)
             )
             "env" (list
-                    (dict "name" "DEFAULT_WORKSPACE" "value" "/config/workspace")
                     (dict "name" "PUID" "value" (default 0 $vscodeSC.runAsUser))
                     (dict "name" "PGID" "value" (default 1000 $vscodeSC.runAsGroup))
+                    (dict "name" "DEFAULT_WORKSPACE" "value" "/config/workspace")
                   )
             "volumeMounts" $volumeMounts
         ))

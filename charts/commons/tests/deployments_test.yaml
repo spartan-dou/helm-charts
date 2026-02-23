@@ -109,7 +109,7 @@ tests:
           path: spec.template.spec.containers[0].securityContext.runAsUser
           value: 0
       - equal:
-          path: spec.template.spec.containers[0].env[2].value
+          path: spec.template.spec.containers[0].env[1].value
           value: 0
       - equal:
           path: spec.template.spec.containers[0].image
