@@ -134,7 +134,7 @@ while IFS= read -r -d '' current_folder; do
     # Nettoyage du nom pour l'album (enlève la date YYYY.MM.DD au début si elle existe)
     album_name=$(echo "$folder_basename" | sed -E 's/^[0-9]{4}\.[0-9]{2}\.[0-9]{2} //')
 
-    # --- RECHERCHE DE L'ID (Le fameux grep -i) ---
+    # --- RECHERCHE DE L'ID ---
     # On cherche le nom de l'album dans la liste, sans tenir compte de la casse
     target_album_id=$(echo "$album_data" | grep -i "^$album_name|" | cut -d'|' -f2)
 
@@ -200,7 +200,7 @@ while IFS= read -r -d '' current_folder; do
     search_payload=$(jq -n \
         --arg after "${clean_date_oldest}T00:00:00.000Z" \
         --arg before "${clean_date_newest}T23:59:59.999Z" \
-        '{takenAfter: $after, takenBefore: $before, withStack: true}')
+        '{takenAfter: $after, takenBefore: $before, withStacked: true}')
 
     log_debug "Recherche assets via POST sur $IMMICH_URL/api/search/metadata"
     log_debug "Payload recherche : $search_payload"
@@ -211,15 +211,42 @@ while IFS= read -r -d '' current_folder; do
         -d "$search_payload")
 
     log_debug "Réponse API Search: $(echo "$response" | head -c 1000)..."
-    # Extraction des IDs
-    photos_ids=$(echo "$response" | jq -r '.assets.items[] | map(select(.stack == null)) | .id // empty')
     
-    if [ -z "$photos_ids" ]; then
+    # Extraction initiale des IDs depuis la recherche
+    initial_ids=$(echo "$response" | jq -r '.assets.items[].id // empty')
+    
+    if [ -z "$initial_ids" ]; then
         echo "    ⚠️ Aucune photo trouvée sur Immich pour ces dates."
         echo -e "${folder_basename}|Photos présentes localement mais introuvables sur Immich" >> "$RECAP_FILE"
         continue
     fi
 
+    echo "    🔍 Vérification des stacks (empilements)..."
+    final_ids_list=""
+
+    # Boucle pour chaque ID afin de vérifier le stack
+    while read -r asset_id; do
+        [ -z "$asset_id" ] && continue
+        
+        log_debug "Vérification asset : $asset_id"
+        # Appel à l'API Asset Detail
+        asset_info=$(curl $param_curl -X GET "$IMMICH_URL/api/assets/$asset_id" -H "x-api-key: $IMMICH_API_KEY")
+        
+        # On regarde si 'stack' existe et n'est pas nul
+        stack_id=$(echo "$asset_info" | jq -r '.stack.primaryAssetId // empty')
+
+        if [ -n "$stack_id" ] && [ "$stack_id" != "null" ]; then
+            log_debug " -> Stack trouvé ! Utilisation du primaryAssetId : $stack_id"
+            final_ids_list+="$stack_id"$'\n'
+        else
+            log_debug " -> Pas de stack. Utilisation de l'id original."
+            final_ids_list+="$asset_id"$1'\n'
+        fi
+    done <<< "$initial_ids"
+
+    # Nettoyage des doublons (si plusieurs photos d'un même dossier appartiennent au même stack)
+    photos_ids=$(echo "$final_ids_list" | sort -u | grep -v '^$')
+    log_debug "IDs finaux à ajouter : $(echo "$photos_ids" | head -c 1000)..."
     count=$(echo "$photos_ids" | wc -l)
     
     if [ "$DRY_RUN" = true ]; then
