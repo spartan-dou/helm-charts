@@ -237,17 +237,24 @@ while IFS= read -r -d '' current_folder; do
 
         if [ -n "$stack_id" ] && [ "$stack_id" != "null" ]; then
             log_debug " -> Stack trouvé ! Utilisation du primaryAssetId : $stack_id"
-            final_ids_list+="$stack_id"$'\n'
+            final_ids_list+="${stack_id}"$'\n'
         else
             log_debug " -> Pas de stack. Utilisation de l'id original."
-            final_ids_list+="$asset_id"$1'\n'
+            final_ids_list+="${asset_id}"$'\n'
         fi
     done <<< "$initial_ids"
 
-    # Nettoyage des doublons (si plusieurs photos d'un même dossier appartiennent au même stack)
-    photos_ids=$(echo "$final_ids_list" | sort -u | grep -v '^$')
-    log_debug "IDs finaux à ajouter : $(echo "$photos_ids" | head -c 1000)..."
-    count=$(echo "$photos_ids" | wc -l)
+    photos_ids=$(echo "$final_ids_list" | grep -v '^$' | sort -u)
+
+    if [ -z "$photos_ids" ]; then
+        echo "    ⚠️ Aucun ID valide après analyse des stacks."
+        continue
+    fi
+
+    # Génération propre du JSON
+    # On transforme la liste de lignes en tableau JSON proprement
+    json_payload=$(echo "$photos_ids" | jq -R . | jq -s -c '{"ids": .}')
+    count=$(echo "$json_payload" | jq '.ids | length')
     
     if [ "$DRY_RUN" = true ]; then
         echo "    [DRY-RUN] 🚀 $count assets à ajouter."
