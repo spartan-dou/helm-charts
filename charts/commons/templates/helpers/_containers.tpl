@@ -86,11 +86,11 @@ startupProbe:
 {{- end }}
 {{- end }}
 
-{{- define "containers.securityContext" -}}
+{{- define "pod.securityContext" -}}
 {{- $sc := .securityContext | default dict -}}
 {{- $gsc := dict -}}
-{{- if .global -}}
-  {{- $gsc = .global.securityContext | default dict -}}
+{{- if $.Values.global  -}}
+  {{- $gsc = $.Values.global .securityContext | default dict -}}
 {{- end -}}
 {{- $merged := mergeOverwrite (deepCopy $gsc) (deepCopy $sc) -}}
 {{- if $merged -}}

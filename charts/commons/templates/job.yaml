@@ -17,7 +17,7 @@ spec:
       automountServiceAccountToken: true
       {{- end }}
 
-      {{- include "containers.securityContext" (dict "global" $.Values.global "securityContext" .securityContext) | nindent 6 }}
+      {{- include "pod.securityContext" (dict "securityContext" .securityContext) | nindent 6 }}
 
       {{- with .nodeSelector }}
       nodeSelector:
