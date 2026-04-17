@@ -34,7 +34,7 @@ spec:
       automountServiceAccountToken: true
       {{- end }}
 
-      {{ include "pod.securityContext" (dict "securityContext" "global" $.Values.global .securityContext) | nindent 6 }}
+      {{ include "pod.securityContext" (dict "global" $.Values.global "securityContext" .securityContext) | nindent 6 }}
       {{- with .nodeSelector }}
       nodeSelector: 
         {{- toYaml . | nindent 8 }}
