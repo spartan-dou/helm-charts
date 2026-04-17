@@ -9,9 +9,6 @@ global:
     className: traefik
   rbac:
     enabled: false
-  securityContext:
-    runAsUser: 1000
-    runAsGroup: 1000
 
 addons:
   vscode:
