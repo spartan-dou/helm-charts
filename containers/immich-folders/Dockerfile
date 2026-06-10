@@ -1,4 +1,4 @@
-FROM alpine:3.23
+FROM alpine:3.24
 
 # Installation des outils (exiv2 est beaucoup plus léger)
 RUN apk add --no-cache bash curl jq exiftool tzdata && \
