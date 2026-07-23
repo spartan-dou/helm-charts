@@ -1,4 +1,20 @@
 apiVersion: v2
 name: commons
-description: Commons chart
+description: Generic "à la carte" Helm chart to deploy one or several lightweight applications (Deployment/Service/Ingress/CronJob) from a single values file, with optional Redis, PostgreSQL (CloudNativePG), pgAdmin and code-server addons.
+type: application
 version: 0.7.16
+keywords:
+  - generic
+  - library
+  - postgres
+  - cloudnative-pg
+  - redis
+  - pgadmin
+  - vscode
+  - code-server
+home: https://github.com/spartan-dou/helm-charts
+sources:
+  - https://github.com/spartan-dou/helm-charts
+maintainers:
+  - name: spartan-dou
+    url: https://github.com/spartan-dou
