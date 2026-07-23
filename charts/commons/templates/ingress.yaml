@@ -14,7 +14,7 @@ metadata:
     {{- toYaml . | nindent 4 }}
   {{- end }}
 spec:
-  {{- with .className }}
+  {{- with (default $.Values.global.ingress.className .className) }}
   ingressClassName: {{ . }}
   {{- end }}
   rules:

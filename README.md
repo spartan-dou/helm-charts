@@ -93,7 +93,7 @@ Voir `charts/commons/tests/values/values.yaml` pour un exemple complet couvrant 
 | `global.rbac.clusterRoleName` | — | Requis si `rbac.enabled: true`. |
 | `global.rbac.rules` | — | Liste de `PolicyRule` (format RBAC Kubernetes standard) pour le `ClusterRole`. |
 | `global.var` | `{}` | Espace de clé/valeur libre, accessible depuis n'importe quelle `env[].value` via `__global__<clé>` (voir [`commons.getValue`](#variables-denvironnement-et-commonsgetvalue)). |
-| `global.ingress.className` | `traefik` | ⚠️ Défini dans les valeurs par défaut mais **non consommé** par les templates actuels : chaque `ingress` (component ou addon) doit fixer son propre `className`. |
+| `global.ingress.className` | `traefik` | `ingressClassName` par défaut pour tout `ingress` (component ou addon, y compris `addons.pgadmin.ingress`) qui ne définit pas explicitement son propre `className`. |
 
 ### Un `component`
 
@@ -233,7 +233,7 @@ Chaque entrée de `deployment.volumes[]` (et `cronjobs[].initContainers[]/contai
 | Clé | Défaut | Description |
 |---|---|---|
 | `enabled` | `false` | |
-| `className` | — | |
+| `className` | `global.ingress.className` | |
 | `annotations` | — | |
 | `hosts[].host` | — | |
 | `hosts[].paths[].path` | `/` | |
@@ -383,6 +383,5 @@ Le workflow GitHub Actions `helm-tests.yml` exécute les deux commandes ci-dessu
 
 ### Points d'attention connus
 
-- `global.ingress.className` n'est actuellement lu par aucun template : chaque `ingress` (component ou addon) doit définir son propre `className`.
 - `addons.redis.password` n'est pas câblé côté template (pas d'authentification Redis).
 - Si `service.ports` est renseigné, ses ports sont dupliqués sur **tous** les conteneurs d'un `deployment` multi-conteneurs (pas seulement le conteneur principal).
