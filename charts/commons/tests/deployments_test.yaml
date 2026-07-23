@@ -155,6 +155,21 @@ tests:
       - equal:
           path: spec.template.spec.containers[0].image
           value: redis:8.2.1
+      - equal:
+          path: spec.template.spec.containers[0].command
+          value:
+            - redis-server
+            - --requirepass
+            - $(REDIS_PASSWORD)
+      - equal:
+          path: spec.template.spec.containers[0].env[1].name
+          value: REDIS_PASSWORD
+      - equal:
+          path: spec.template.spec.containers[0].env[1].valueFrom.secretKeyRef.name
+          value: test-redis-auth
+      - equal:
+          path: spec.template.spec.containers[0].env[1].valueFrom.secretKeyRef.key
+          value: password
 
   - it: ne doit pas créer le Service Redis si désactivé
     set:
