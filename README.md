@@ -26,4 +26,4 @@ To uninstall the chart:
 helm delete my-<chart-name>
 ```
 
-![Helm Unit Tests](https://github.com/spartan-dou/helm-charts/actions/workflows/helm-tests.yaml/badge.svg)
+![Helm Unit Tests](https://github.com/spartan-dou/helm-charts/actions/workflows/helm-tests.yml/badge.svg)

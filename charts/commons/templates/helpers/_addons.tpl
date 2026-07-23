@@ -206,7 +206,7 @@
       "containers" (list (dict
         "image" (dict
             "repository" .Values.addons.redis.image.repository
-            "tag" .Values.addons.redis.image.tag | default "latest"
+            "tag" (default "latest" .Values.addons.redis.image.tag)
         )
         "livenessProbe" (dict
           "tcpSocket" (dict "port" .Values.addons.redis.port)
