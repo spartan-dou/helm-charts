@@ -153,7 +153,7 @@ app: {{ .Release.Name }}
 */}}
 {{- define "postgres.database" -}}
 {{- if .Values.addons.postgres.enabled -}}
-{{- include "commons.getValue" (dict "Values" $.Values "Chart" $.Chart "Release" $.Release "component" $.Values.addons.postgres "value" "__addons__postgres__databasse") }}
+{{- include "commons.getValue" (dict "Values" $.Values "Chart" $.Chart "Release" $.Release "component" $.Values.addons.postgres "value" "__addons__postgres__database") }}
 {{- end }}
 {{- end }}
 
@@ -166,6 +166,7 @@ app: {{ .Release.Name }}
 {{- end -}}
 {{- end }}
 
+{{/*
   Fonction pour recuépérer le host postgres global
 */}}
 {{- define "postgres.host" -}}
