@@ -10,21 +10,37 @@ env:
   REGISTRY: ghcr.io
 
 jobs:
+  discover:
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.discover.outputs.matrix }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+
+      - name: Discover container images
+        id: discover
+        run: |
+          matrix=$(
+            for dockerfile in containers/*/Dockerfile; do
+              dir=$(dirname "$dockerfile")
+              name=$(basename "$dir")
+              jq -n --arg name "$name" --arg context "./$dir" --arg dockerfile "./$dockerfile" \
+                '{name: $name, context: $context, dockerfile: $dockerfile}'
+            done | jq -s -c '{include: .}'
+          )
+          echo "Discovered matrix: $matrix"
+          echo "matrix=$matrix" >> "$GITHUB_OUTPUT"
+
   build-matrix:
+    needs: discover
     runs-on: ubuntu-latest
     permissions:
       contents: read
       packages: write
 
     strategy:
-      matrix:
-        include:
-          - name: immich-folders
-            context: ./containers/immich-folders
-            dockerfile: ./containers/immich-folders/Dockerfile
-          - name: sunshine-desktop
-            context: ./containers/sunshine-desktop
-            dockerfile: ./containers/sunshine-desktop/Dockerfile
+      matrix: ${{ fromJson(needs.discover.outputs.matrix) }}
 
     steps:
       - name: Checkout repository
