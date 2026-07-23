@@ -27,6 +27,7 @@ addons:
       repository: redis
       tag: 8.8.0-alpine
     port: 6379
+    password: ""
   pgadmin:
     enabled: false
     image:

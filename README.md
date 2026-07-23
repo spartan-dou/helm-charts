@@ -151,9 +151,11 @@ Toutes les valeurs de `env[].value` et `env[].valueFrom.secretKeyRef.name` passe
 | `__addons__postgres__password_secret` | Nom du Secret `<release>-postgres-secret` |
 | `__components__postgres__host` / `__username__` / `__password__` / `__database__` / `__password_secret__` | Idem mais sur le cluster CloudNativePG **embarqué dans le component courant** (`component.postgres.*`) |
 | `__addons__redis__host` / `__addons__redis__port` | Host / port du service Redis partagé (`addons.redis`) |
+| `__addons__redis__password` | `addons.redis.password` en clair |
+| `__addons__redis__password_secret` | Nom du Secret contenant le mot de passe Redis (clé `password`) |
 | `__<nom-de-component>__pvc__<nom-du-pvc>` | Nom Kubernetes complet du PVC `<nom-du-pvc>` défini sur le component `<nom-de-component>` (ex : `__nginx__pvc__data-2-pvc`) |
 | `__components__pvc__<nom-du-pvc>` | Idem, mais sur le component courant |
-| `__<nom>__configmap__<nom>` / `__<nom>__service__<nom>` | Même principe pour un ConfigMap ou un Service |
+| `__<nom>__configmap__<nom>` / `__<nom>__service__<nom>` / `__<nom>__secret__<nom>` | Même principe pour un ConfigMap, un Service ou un Secret |
 | `__global__<clé>` | `global.var.<clé>` |
 
 Exemple (tiré des tests) :
@@ -325,8 +327,9 @@ Instance Redis (Deployment + Service + PVC `1Gi` par défaut). Quand elle est ac
 | `image.tag` | `8.8.0-alpine` |
 | `port` | `6379` |
 | `storage.size` / `storage.storageClassName` | repli sur `global.pvc.storage.*` |
+| `password` | `""` |
 
-> Aucune authentification n'est configurée par la chart actuellement (pas de `requirepass`) : Redis est déployé sans mot de passe même si un champ `password` est renseigné dans les values, il n'est pas encore consommé par les templates.
+Si `password` est renseigné, un Secret `<release>-redis-auth` est généré, Redis démarre avec `--requirepass`, et l'initContainer `wait-for-redis` (injecté partout) ainsi que les consommateurs peuvent récupérer le mot de passe via `__addons__redis__password` / `__addons__redis__password_secret` (voir [`commons.getValue`](#variables-denvironnement-et-commonsgetvalue)). Laissé vide (défaut), Redis reste sans authentification, comme avant.
 
 #### `addons.pgadmin`
 
@@ -383,5 +386,4 @@ Le workflow GitHub Actions `helm-tests.yml` exécute les deux commandes ci-dessu
 
 ### Points d'attention connus
 
-- `addons.redis.password` n'est pas câblé côté template (pas d'authentification Redis).
 - Si `service.ports` est renseigné, ses ports sont dupliqués sur **tous** les conteneurs d'un `deployment` multi-conteneurs (pas seulement le conteneur principal).

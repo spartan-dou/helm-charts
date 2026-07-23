@@ -17,13 +17,15 @@
 
   {{- if $.Values.addons.redis.enabled }}
     {{ $host := include "commons.getValue" (dict "Values" $.Values "Chart" $.Chart "Release" $.Release "value" "__addons__redis__host") }}
+    {{- $redisAuth := ne (default "" $.Values.addons.redis.password) "" }}
     {{- $redisInit := dict
       "name" "wait-for-redis"
       "image" (dict
         "repository" $.Values.addons.redis.image.repository
         "tag" $.Values.addons.redis.image.tag
       )
-      "command" (list "sh" "-c" (printf "until redis-cli -h %s ping | grep PONG; do echo waiting for redis; sleep 2; done" $host))
+      "env" (ternary (list (dict "name" "REDIS_PASSWORD" "valueFrom" (dict "secretKeyRef" (dict "name" "__addons__redis__password_secret" "key" "password")))) (list) $redisAuth)
+      "command" (list "sh" "-c" (printf "until redis-cli -h %s %s ping | grep PONG; do echo waiting for redis; sleep 2; done" $host (ternary "-a \"$REDIS_PASSWORD\"" "" $redisAuth)))
     }}
     {{- $merged = append $merged $redisInit }}
   {{- end }}
@@ -76,13 +78,15 @@
 
       {{- if $.Values.addons.redis.enabled }}
         {{ $host := include "commons.getValue" (dict "Values" $.Values "Chart" $.Chart "Release" $.Release "value" "__addons__redis__host") }}
+        {{- $redisAuth := ne (default "" $.Values.addons.redis.password) "" }}
         {{- $redisInit := dict
           "name" "wait-for-redis"
           "image" (dict
             "repository" $.Values.addons.redis.image.repository
             "tag" $.Values.addons.redis.image.tag
           )
-          "command" (list "sh" "-c" (printf "until redis-cli -h %s ping | grep PONG; do echo waiting for redis; sleep 2; done" $host))
+          "env" (ternary (list (dict "name" "REDIS_PASSWORD" "valueFrom" (dict "secretKeyRef" (dict "name" "__addons__redis__password_secret" "key" "password")))) (list) $redisAuth)
+          "command" (list "sh" "-c" (printf "until redis-cli -h %s %s ping | grep PONG; do echo waiting for redis; sleep 2; done" $host (ternary "-a \"$REDIS_PASSWORD\"" "" $redisAuth)))
         }}
         {{- $mergedCronjob = append $mergedCronjob $redisInit }}
       {{- end }}
@@ -200,14 +204,18 @@
 
 {{/* === Addon Redis === */}}
 {{- if .Values.addons.redis.enabled }}
+  {{- $redisAuth := ne (default "" .Values.addons.redis.password) "" }}
   {{- $defaults := dict
     "name" "redis"
+    "secrets" (ternary (list (dict "name" "auth" "data" (dict "password" .Values.addons.redis.password))) (list) $redisAuth)
     "deployment" (dict
       "containers" (list (dict
         "image" (dict
             "repository" .Values.addons.redis.image.repository
             "tag" (default "latest" .Values.addons.redis.image.tag)
         )
+        "command" (ternary (list "redis-server" "--requirepass" "$(REDIS_PASSWORD)") (list) $redisAuth)
+        "env" (ternary (list (dict "name" "REDIS_PASSWORD" "valueFrom" (dict "secretKeyRef" (dict "name" "__addons__redis__password_secret" "key" "password")))) (list) $redisAuth)
         "livenessProbe" (dict
           "tcpSocket" (dict "port" .Values.addons.redis.port)
           "initialDelaySeconds" 5
@@ -225,7 +233,7 @@
       ))
     "volumes" (list (dict
       "name" "data"
-      "pvc" (dict 
+      "pvc" (dict
         "name" (printf "data")
         "storage" (dict
           "size" (default .Values.global.pvc.storage.size (default dict .Values.addons.redis.storage).size)
@@ -240,7 +248,7 @@
     )
   }}
   {{- $raw := .Values.addons.redis | default dict }}
-  {{- $overrides := omit $raw "enabled" "name" }}
+  {{- $overrides := omit $raw "enabled" "name" "password" }}
   {{- $redis := merge $defaults $overrides }}
   {{- $addons = append $addons $redis }}
 {{- end }}

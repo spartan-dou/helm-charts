@@ -121,8 +121,12 @@ app: {{ .Release.Name }}
       {{- $value = include "commons.fullname" (dict "Chart" $.Chart "Values" $.Values "Release" $.Release "component" (dict "name" .Values.addons.redis.name)) }}
     {{- else if eq $field "port" }}
       {{- $value = .Values.addons.redis.port }}
+    {{- else if eq $field "password" }}
+      {{- $value = .Values.addons.redis.password }}
+    {{- else if eq $field "password_secret" }}
+      {{- $value = include "commons.fullname" (dict "Chart" $.Chart "Values" $.Values "Release" $.Release "name" "auth" "component" (dict "name" .Values.addons.redis.name)) }}
     {{- end }}
-  {{- else if or (eq $type "pvc") (eq $type "configmap") (eq $type "service") }}
+  {{- else if or (eq $type "pvc") (eq $type "configmap") (eq $type "service") (eq $type "secret") }}
     {{- $c := dict }}
     {{- if not (eq $source "components") }}
       {{- $c = (dict "name" $source) }}
