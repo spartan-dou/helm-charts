@@ -25,6 +25,7 @@ Charts Helm maison de `spartan-dou`, packagées et publiées via `chart-releaser
     - [`addons.pgadmin`](#addonspgadmin)
     - [`addons.postgres`](#addonspostgres)
   - [Nommage des ressources](#nommage-des-ressources)
+  - [Validation des values](#validation-des-values)
   - [Tests](#tests)
   - [Points d'attention connus](#points-dattention-connus)
 
@@ -363,6 +364,10 @@ Les noms de ressources sont générés par le helper `commons.fullname`, qui con
 | Ressource globale (pas de component) | `<release>` |
 | Ressources propres à un component (Deployment, Service, Ingress…) | `<release>-<component>` |
 | Sous-ressource nommée d'un component (PVC, ConfigMap…) | `<release>-<component>-<nom-de-la-sous-ressource>` |
+
+### Validation des values
+
+`charts/commons/values.schema.json` valide la structure de `values.yaml` (types, champs requis) à chaque `helm install`/`upgrade`/`template`/`lint`. En particulier, il impose les champs requis quand un addon ou le RBAC est activé (ex : `global.rbac.enabled: true` sans `serviceAccountName`/`clusterRoleName`, ou `addons.pgadmin.enabled: true` sans `auth.email`/`auth.password`, échouent la validation avant même le rendu des templates). Le contenu libre de `components[]` n'est volontairement pas contraint au-delà de `name` (requis), pour ne pas bloquer les usages non documentés.
 
 ### Tests
 
