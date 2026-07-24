@@ -381,4 +381,4 @@ helm lint charts/commons
 helm unittest charts/commons
 ```
 
-Le workflow GitHub Actions `helm-tests.yml` exécute les deux commandes ci-dessus sur chaque pull request touchant `charts/**`.
+Le workflow GitHub Actions `helm-tests.yml` exécute ces commandes sur chaque pull request touchant `charts/**`. Il valide aussi le YAML rendu (`helm template`, valeurs par défaut et valeurs de test) contre le schéma Kubernetes officiel via [`kubeconform`](https://github.com/yannh/kubeconform), en ignorant la ressource `Cluster` de CloudNativePG (CRD sans schéma local disponible). Cela attrape des erreurs de structure (champ inconnu, type invalide) que les assertions `helm-unittest` ne couvrent pas forcément.
