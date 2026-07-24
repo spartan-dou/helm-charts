@@ -35,6 +35,10 @@ tests:
               - image:
                   repository: nginx
                   tag: latest
+          service:
+            ports:
+              - name: http
+                port: 80
           ingress:
             enabled: true
             hosts:
