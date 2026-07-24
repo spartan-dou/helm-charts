@@ -1,3 +1,43 @@
+{{/*
+  initContainer commun "wait-for-redis", injecté dans les deployments et
+  cronjobs quand addons.redis.enabled. Prend le contexte racine ($) en entrée.
+*/}}
+{{- define "commons.waitForRedisInitContainer" -}}
+{{- $host := include "commons.getValue" (dict "Values" .Values "Chart" .Chart "Release" .Release "value" "__addons__redis__host") -}}
+{{- $redisAuth := ne (default "" .Values.addons.redis.password) "" -}}
+{{- $redisInit := dict
+  "name" "wait-for-redis"
+  "image" (dict
+    "repository" .Values.addons.redis.image.repository
+    "tag" .Values.addons.redis.image.tag
+  )
+  "env" (ternary (list (dict "name" "REDIS_PASSWORD" "valueFrom" (dict "secretKeyRef" (dict "name" "__addons__redis__password_secret" "key" "password")))) (list) $redisAuth)
+  "command" (list "sh" "-c" (printf "until redis-cli -h %s %s ping | grep PONG; do echo waiting for redis; sleep 2; done" $host (ternary "-a \"$REDIS_PASSWORD\"" "" $redisAuth)))
+-}}
+{{- toYaml $redisInit -}}
+{{- end -}}
+
+{{/*
+  initContainer commun "wait-for-postgres", pour le cluster CloudNativePG
+  partagé (addons.postgres), injecté dans les deployments et cronjobs quand
+  addons.postgres.enabled. Prend le contexte racine ($) en entrée.
+*/}}
+{{- define "commons.waitForSharedPostgresInitContainer" -}}
+{{- $postgresInit := dict
+  "name" "wait-for-postgres"
+  "image" (dict
+    "repository" .Values.addons.postgres.image.repository
+    "tag" .Values.addons.postgres.image.tag
+  )
+  "command" (list "sh" "-c" (printf "until pg_isready -h %s -p %s -U %s; do echo \"Waiting for Postgres to be ready...\"; sleep 2; done" (include "postgres.host" .) "5432" (include "postgres.username" .)))
+  "resources" (dict
+    "requests" (dict "cpu" "10m" "memory" "16Mi")
+    "limits"   (dict "cpu" "50m" "memory" "32Mi")
+  )
+-}}
+{{- toYaml $postgresInit -}}
+{{- end -}}
+
 {{- define "commons.withAddons" }}
 {{- $rawComponents := .Values.components | default list -}}
 {{- $base := list -}}
@@ -16,34 +56,11 @@
   {{- end }}
 
   {{- if $.Values.addons.redis.enabled }}
-    {{ $host := include "commons.getValue" (dict "Values" $.Values "Chart" $.Chart "Release" $.Release "value" "__addons__redis__host") }}
-    {{- $redisAuth := ne (default "" $.Values.addons.redis.password) "" }}
-    {{- $redisInit := dict
-      "name" "wait-for-redis"
-      "image" (dict
-        "repository" $.Values.addons.redis.image.repository
-        "tag" $.Values.addons.redis.image.tag
-      )
-      "env" (ternary (list (dict "name" "REDIS_PASSWORD" "valueFrom" (dict "secretKeyRef" (dict "name" "__addons__redis__password_secret" "key" "password")))) (list) $redisAuth)
-      "command" (list "sh" "-c" (printf "until redis-cli -h %s %s ping | grep PONG; do echo waiting for redis; sleep 2; done" $host (ternary "-a \"$REDIS_PASSWORD\"" "" $redisAuth)))
-    }}
-    {{- $merged = append $merged $redisInit }}
+    {{- $merged = append $merged (include "commons.waitForRedisInitContainer" $ | fromYaml) }}
   {{- end }}
 
   {{- if $.Values.addons.postgres.enabled }}
-    {{- $postgresInit := dict
-      "name" "wait-for-postgres"
-      "image" (dict
-        "repository" $.Values.addons.postgres.image.repository
-        "tag" $.Values.addons.postgres.image.tag
-      )
-      "command" (list "sh" "-c" (printf "until pg_isready -h %s -p %s -U %s; do echo \"Waiting for Postgres to be ready...\"; sleep 2; done" (include "postgres.host" $) "5432" (include "postgres.username" $)))
-      "resources" (dict
-        "requests" (dict "cpu" "10m" "memory" "16Mi")
-        "limits"   (dict "cpu" "50m" "memory" "32Mi")
-      )
-    }}
-    {{- $merged = append $merged $postgresInit }}
+    {{- $merged = append $merged (include "commons.waitForSharedPostgresInitContainer" $ | fromYaml) }}
   {{- end }}
 
   {{- if and $c.postgres $c.postgres.enabled }}
@@ -77,34 +94,11 @@
       {{- end }}
 
       {{- if $.Values.addons.redis.enabled }}
-        {{ $host := include "commons.getValue" (dict "Values" $.Values "Chart" $.Chart "Release" $.Release "value" "__addons__redis__host") }}
-        {{- $redisAuth := ne (default "" $.Values.addons.redis.password) "" }}
-        {{- $redisInit := dict
-          "name" "wait-for-redis"
-          "image" (dict
-            "repository" $.Values.addons.redis.image.repository
-            "tag" $.Values.addons.redis.image.tag
-          )
-          "env" (ternary (list (dict "name" "REDIS_PASSWORD" "valueFrom" (dict "secretKeyRef" (dict "name" "__addons__redis__password_secret" "key" "password")))) (list) $redisAuth)
-          "command" (list "sh" "-c" (printf "until redis-cli -h %s %s ping | grep PONG; do echo waiting for redis; sleep 2; done" $host (ternary "-a \"$REDIS_PASSWORD\"" "" $redisAuth)))
-        }}
-        {{- $mergedCronjob = append $mergedCronjob $redisInit }}
+        {{- $mergedCronjob = append $mergedCronjob (include "commons.waitForRedisInitContainer" $ | fromYaml) }}
       {{- end }}
 
       {{- if $.Values.addons.postgres.enabled }}
-        {{- $postgresInit := dict
-          "name" "wait-for-postgres"
-          "image" (dict
-            "repository" $.Values.addons.postgres.image.repository
-            "tag" $.Values.addons.postgres.image.tag
-          )
-          "command" (list "sh" "-c" (printf "until pg_isready -h %s -p %s -U %s; do echo \"Waiting for Postgres to be ready...\"; sleep 2; done" (include "postgres.host" $) "5432" (include "postgres.username" $)))
-          "resources" (dict
-            "requests" (dict "cpu" "10m" "memory" "16Mi")
-            "limits"   (dict "cpu" "50m" "memory" "32Mi")
-          )
-        }}
-        {{- $mergedCronjob = append $mergedCronjob $postgresInit }}
+        {{- $mergedCronjob = append $mergedCronjob (include "commons.waitForSharedPostgresInitContainer" $ | fromYaml) }}
       {{- end }}
 
       {{- $_ := set $cj "initContainers" $mergedCronjob }}
