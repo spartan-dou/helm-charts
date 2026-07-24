@@ -187,3 +187,32 @@ tests:
     asserts:
       - hasDocuments:
           count: 3
+
+  - it: n'ajoute les ports du Service que sur le premier conteneur d'un deployment multi-conteneurs
+    set:
+      components:
+        - name: multi
+          deployment:
+            containers:
+              - image:
+                  repository: primary
+                  tag: latest
+              - image:
+                  repository: sidecar
+                  tag: latest
+          service:
+            ports:
+              - name: http
+                port: 8081
+    documentSelector:
+      path: metadata.name
+      value: test-multi
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[0].ports[0].name
+          value: http
+      - equal:
+          path: spec.template.spec.containers[0].ports[0].containerPort
+          value: 8081
+      - notExists:
+          path: spec.template.spec.containers[1].ports
