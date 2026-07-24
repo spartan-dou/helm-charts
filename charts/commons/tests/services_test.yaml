@@ -109,3 +109,29 @@ tests:
     asserts:
       - hasDocuments:
           count: 3
+
+  - it: applique le nodePort quand le Service est de type NodePort
+    set:
+      components:
+        - name: nodeport-app
+          deployment:
+            containers:
+              - image:
+                  repository: nginx
+                  tag: latest
+          service:
+            type: NodePort
+            ports:
+              - name: http
+                port: 80
+                nodePort: 30080
+    documentSelector:
+      path: metadata.name
+      value: test-nodeport-app
+    asserts:
+      - equal:
+          path: spec.type
+          value: NodePort
+      - equal:
+          path: spec.ports[0].nodePort
+          value: 30080

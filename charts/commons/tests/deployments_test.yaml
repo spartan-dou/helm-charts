@@ -216,3 +216,54 @@ tests:
           value: 8081
       - notExists:
           path: spec.template.spec.containers[1].ports
+
+  - it: référence un PVC et un ConfigMap déjà existants (useExisting)
+    set:
+      components:
+        - name: existing-refs
+          deployment:
+            containers:
+              - image:
+                  repository: nginx
+                  tag: latest
+            volumes:
+              - name: data
+                pvc:
+                  useExisting: true
+                  name: my-existing-pvc
+              - name: config
+                configMap:
+                  useExisting: true
+                  name: my-existing-configmap
+    documentSelector:
+      path: metadata.name
+      value: test-existing-refs
+    asserts:
+      - equal:
+          path: spec.template.spec.volumes[0].persistentVolumeClaim.claimName
+          value: my-existing-pvc
+      - equal:
+          path: spec.template.spec.volumes[1].configMap.name
+          value: my-existing-configmap
+
+  - it: passe un volume brut (ni configMap ni pvc) tel quel
+    set:
+      components:
+        - name: raw-volume-app
+          deployment:
+            containers:
+              - image:
+                  repository: nginx
+                  tag: latest
+            volumes:
+              - name: cache
+                emptyDir: {}
+    documentSelector:
+      path: metadata.name
+      value: test-raw-volume-app
+    asserts:
+      - equal:
+          path: spec.template.spec.volumes[0]
+          value:
+            name: cache
+            emptyDir: {}

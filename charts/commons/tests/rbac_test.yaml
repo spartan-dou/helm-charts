@@ -71,3 +71,17 @@ tests:
       - equal:
           path: subjects[0].name
           value: homepage
+
+  - it: ne crée aucune ressource RBAC quand désactivé
+    set:
+      global:
+        rbac:
+          enabled: false
+    templates:
+      - templates/rbac/secret.yaml
+      - templates/rbac/serviceaccount.yaml
+      - templates/rbac/clusterrole.yaml
+      - templates/rbac/clusterrolebinding.yaml
+    asserts:
+      - hasDocuments:
+          count: 0

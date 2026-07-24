@@ -25,3 +25,26 @@ tests:
       - equal:
           path: spec.ingressClassName
           value: traefik
+
+  - it: utilise le className global quand non défini sur le component
+    set:
+      components:
+        - name: no-classname-app
+          deployment:
+            containers:
+              - image:
+                  repository: nginx
+                  tag: latest
+          ingress:
+            enabled: true
+            hosts:
+              - host: noclassname.local
+                paths:
+                  - path: /
+    documentSelector:
+      path: metadata.name
+      value: test-no-classname-app
+    asserts:
+      - equal:
+          path: spec.ingressClassName
+          value: traefik
