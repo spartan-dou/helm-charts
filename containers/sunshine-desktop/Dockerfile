@@ -1,5 +1,7 @@
 FROM lizardbyte/sunshine:v2026.426.150436-ubuntu-24.04
 
+USER root
+
 ENV DEBIAN_FRONTEND=noninteractive
 
 # Install Xorg, XFCE, audio, and basic tools
