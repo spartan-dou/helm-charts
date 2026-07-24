@@ -156,9 +156,8 @@ tests:
           path: spec.template.spec.containers[0].image
           value: redis:8.2.1
       - equal:
-          path: spec.template.spec.containers[0].command
+          path: spec.template.spec.containers[0].args
           value:
-            - redis-server
             - --requirepass
             - $(REDIS_PASSWORD)
       - equal:
