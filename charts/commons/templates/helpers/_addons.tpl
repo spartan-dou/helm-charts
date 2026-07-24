@@ -156,6 +156,9 @@
   {{- $defaults := dict
         "name" "code-server"
         "deployment" (dict
+          "securityContext" (dict
+            "fsGroup" (default 1000 (get $vscodeSC "fsGroup"))
+          )
           "containers" (list (dict
               "image" (dict
                   "repository" .Values.addons.vscode.image.repository
@@ -164,7 +167,6 @@
               "securityContext" (dict
                 "runAsUser" (default 0 (get $vscodeSC "runAsUser"))
                 "runAsGroup" (default 1000 (get $vscodeSC "runAsGroup"))
-                "fsGroup" (default 1000 (get $vscodeSC "fsGroup"))
               )
               "env" (list
                       (dict "name" "DEFAULT_WORKSPACE" "value" "/config/workspace")
@@ -258,6 +260,9 @@
   {{- $defaults := dict
     "name" "pgadmin"
     "deployment" (dict
+      "securityContext" (dict
+        "fsGroup" 5050
+      )
       "containers" (list (dict
           "image" (dict
               "repository" .Values.addons.pgadmin.image.repository
@@ -271,7 +276,6 @@
         "securityContext" (dict
           "runAsUser" 5050
           "runAsGroup" 5050
-          "fsGroup" 5050
           "runAsNonRoot" true
           "readOnlyRootFilesystem" false
         )

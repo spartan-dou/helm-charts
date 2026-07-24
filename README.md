@@ -240,7 +240,7 @@ Chaque entrée de `deployment.volumes[]` (et `cronjobs[].initContainers[]/contai
 | `hosts[].paths[].path` | `/` | |
 | `hosts[].paths[].pathType` | `Prefix` | |
 | `hosts[].paths[].name` | Service du component | Nom du Service backend ; par défaut celui généré pour le component courant. |
-| `hosts[].paths[].port` | `80` | Nom du port du Service backend. |
+| `hosts[].paths[].port` | `80` | Port du Service backend : un entier est rendu comme `port.number`, une chaîne comme `port.name` (port nommé). |
 | `tls[]` | — | Passé tel quel (`toYaml`), format standard `spec.tls` d'un Ingress. |
 
 #### `secrets`
