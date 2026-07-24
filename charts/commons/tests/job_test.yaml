@@ -17,3 +17,8 @@ tests:
       - equal:
           path: spec.template.spec.containers[0].image
           value: "nginx:latest"
+
+  - it: ne crée un Job que pour les cronjobs avec runOnStartup (pas pour toto)
+    asserts:
+      - hasDocuments:
+          count: 1

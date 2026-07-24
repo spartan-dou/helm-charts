@@ -33,3 +33,73 @@ tests:
       - equal:
           path: spec.imageName
           value: ghcr.io/cloudnative-pg/postgresql:16
+
+  - it: Gère plusieurs clusters Postgres embarqués sans collision de nom (app-a)
+    templates:
+      - templates/cnpg/cluster.yaml
+    set:
+      components:
+        - name: app-a
+          deployment:
+            containers:
+              - image:
+                  repository: nginx
+                  tag: latest
+          postgres:
+            enabled: true
+            cluster:
+              username: user-a
+              password: pass-a
+        - name: app-b
+          deployment:
+            containers:
+              - image:
+                  repository: nginx
+                  tag: latest
+          postgres:
+            enabled: true
+            cluster:
+              username: user-b
+              password: pass-b
+    documentSelector:
+      path: metadata.name
+      value: test-app-a-postgres
+    asserts:
+      - equal:
+          path: spec.bootstrap.initdb.owner
+          value: user-a
+
+  - it: Gère plusieurs clusters Postgres embarqués sans collision de nom (app-b)
+    templates:
+      - templates/cnpg/cluster.yaml
+    set:
+      components:
+        - name: app-a
+          deployment:
+            containers:
+              - image:
+                  repository: nginx
+                  tag: latest
+          postgres:
+            enabled: true
+            cluster:
+              username: user-a
+              password: pass-a
+        - name: app-b
+          deployment:
+            containers:
+              - image:
+                  repository: nginx
+                  tag: latest
+          postgres:
+            enabled: true
+            cluster:
+              username: user-b
+              password: pass-b
+    documentSelector:
+      path: metadata.name
+      value: test-app-b-postgres
+    asserts:
+      - equal:
+          path: spec.bootstrap.initdb.owner
+          value: user-b
