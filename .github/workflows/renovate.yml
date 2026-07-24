@@ -25,8 +25,12 @@ jobs:
           RENOVATE_REPOSITORIES: ${{ github.repository }}
           # Onboarding not needed for self hosted
           RENOVATE_ONBOARDING: "false"
-          # Username for GitHub authentication (should match GitHub App name + [bot])
-          RENOVATE_USERNAME: "helm-charts[bot]"
+          # Must match the real identity behind RENOVATE_TOKEN. Renovate uses this
+          # to find its own previously-created Dependency Dashboard issue; a mismatch
+          # here means it never finds it and creates a new one on every run instead
+          # of updating it. RENOVATE_TOKEN currently authenticates as spartan-dou
+          # (not a "helm-charts[bot]" App/machine account), so this must match that.
+          RENOVATE_USERNAME: "spartan-dou"
           # Use GitHub API to create commits (this allows for signed commits from GitHub App)
           RENOVATE_PLATFORM_COMMIT: "true"
           LOG_LEVEL: ${{ inputs.logLevel || 'info' }}
