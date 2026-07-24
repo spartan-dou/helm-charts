@@ -214,7 +214,7 @@
             "repository" .Values.addons.redis.image.repository
             "tag" (default "latest" .Values.addons.redis.image.tag)
         )
-        "command" (ternary (list "redis-server" "--requirepass" "$(REDIS_PASSWORD)") (list) $redisAuth)
+        "args" (ternary (list "--requirepass" "$(REDIS_PASSWORD)") (list) $redisAuth)
         "env" (ternary (list (dict "name" "REDIS_PASSWORD" "valueFrom" (dict "secretKeyRef" (dict "name" "__addons__redis__password_secret" "key" "password")))) (list) $redisAuth)
         "livenessProbe" (dict
           "tcpSocket" (dict "port" .Values.addons.redis.port)
