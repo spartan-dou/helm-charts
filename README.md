@@ -1,5 +1,7 @@
 # helm-charts
 
+🇬🇧 [English version](README.en.md)
+
 Charts Helm maison de `spartan-dou`, packagées et publiées via `chart-releaser` sur GitHub Pages.
 
 ## Sommaire
