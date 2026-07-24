@@ -74,7 +74,7 @@ spec:
       {{- end }}
       {{- with .containers }}
       containers:
-        {{- range . }}
+        {{- range $index, $_ := . }}
         - name: {{ default $component.name .name }}
           image: {{ .image.repository }}:{{ .image.tag | default "latest" }}
           {{- with .command }}
@@ -108,8 +108,9 @@ spec:
             {{- end }}
           {{- end }}
           
-          {{- if or .additionalsPorts  (and $component.service $component.service.ports) }}
+          {{- if or .additionalsPorts (and (eq $index 0) $component.service $component.service.ports) }}
           ports:
+            {{- if eq $index 0 }}
             {{- range $component.service.ports }}
             - name: {{ .name }}
               containerPort: {{ default .port .targetPort }}
@@ -117,6 +118,7 @@ spec:
               {{- with .hostPort }}
               hostPort: {{ . }}
               {{- end }}
+            {{- end }}
             {{- end }}
             {{- range .additionalsPorts }}
             - name: {{ .name }}

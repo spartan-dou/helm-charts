@@ -27,7 +27,6 @@ Charts Helm maison de `spartan-dou`, packagées et publiées via `chart-releaser
   - [Nommage des ressources](#nommage-des-ressources)
   - [Validation des values](#validation-des-values)
   - [Tests](#tests)
-  - [Points d'attention connus](#points-dattention-connus)
 
 ## Installation
 
@@ -136,7 +135,7 @@ Chaque entrée de `containers[]` :
 - `livenessProbe` / `readinessProbe` / `startupProbe` / `probe` — voir [Probes](#probes)
 - `resources`
 
-> Si `service.ports` est défini sur le component, ses ports sont automatiquement ajoutés à la section `ports` de **chaque** conteneur de la liste (en plus de `additionalsPorts`) — utile pour un conteneur unique, à garder en tête si plusieurs conteneurs cohabitent dans le même pod.
+> Si `service.ports` est défini sur le component, ses ports sont automatiquement ajoutés à la section `ports` du **premier** conteneur de la liste uniquement (en plus de ses éventuels `additionalsPorts`). Les autres conteneurs ne reçoivent que leurs propres `additionalsPorts`, s'ils en définissent.
 
 Une annotation `checksum/<nom-du-volume>` est automatiquement ajoutée au pod pour chaque volume de type `configMap` généré par la chart (pas les `useExisting`) contenant des `data`, afin de déclencher un rollout quand le contenu du ConfigMap change.
 
@@ -383,7 +382,3 @@ helm unittest charts/commons
 ```
 
 Le workflow GitHub Actions `helm-tests.yml` exécute les deux commandes ci-dessus sur chaque pull request touchant `charts/**`.
-
-### Points d'attention connus
-
-- Si `service.ports` est renseigné, ses ports sont dupliqués sur **tous** les conteneurs d'un `deployment` multi-conteneurs (pas seulement le conteneur principal).
