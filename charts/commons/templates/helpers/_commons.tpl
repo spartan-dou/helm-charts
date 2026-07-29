@@ -69,6 +69,43 @@ app: {{ .Release.Name }}
 
 
 {{/*
+  Section racine `secrets` : table d'alias vers des Secrets Kubernetes déjà
+  présents dans le namespace (SealedSecret, ExternalSecret, secret créé à la
+  main…). La chart ne transporte jamais la valeur, uniquement la référence.
+
+    secrets:
+      pg:
+        existingSecret: app-pg-credentials
+        key: password
+
+  `commons.secretRefName` renvoie le nom du Secret, `commons.secretRefKey` la
+  clé (def. `password`). Les deux échouent explicitement sur un alias inconnu.
+*/}}
+{{- define "commons.secretRef" -}}
+{{- $alias := toString (default "" .alias) }}
+{{- $secrets := .Values.secrets | default dict }}
+{{- if not (hasKey $secrets $alias) }}
+  {{- fail (printf "commons: l'alias `%s` est référencé mais absent de la section `secrets` des values" $alias) }}
+{{- end }}
+{{- $ref := index $secrets $alias }}
+{{- if not (kindIs "map" $ref) }}
+  {{- fail (printf "commons: `secrets.%s` doit être un objet `{existingSecret, key}`" $alias) }}
+{{- end }}
+{{- if not $ref.existingSecret }}
+  {{- fail (printf "commons: `secrets.%s.existingSecret` est requis" $alias) }}
+{{- end }}
+{{- toYaml (dict "name" $ref.existingSecret "key" (default "password" $ref.key)) }}
+{{- end }}
+
+{{- define "commons.secretRefName" -}}
+{{- (include "commons.secretRef" . | fromYaml).name }}
+{{- end }}
+
+{{- define "commons.secretRefKey" -}}
+{{- (include "commons.secretRef" . | fromYaml).key }}
+{{- end }}
+
+{{/*
   Fonction dinamique pour utiliser des variables dans le fichier de valueKeys
 */}}
 {{- define "commons.getValue" -}}
@@ -98,17 +135,22 @@ app: {{ .Release.Name }}
         {{- $value = $component.postgres.cluster.username }}
       {{- end }}
     {{- else if eq $field "password_secret" }}
-      {{- if eq $source "addons" }}
+      {{- $cluster := ternary .Values.addons.postgres.cluster (default dict $component.postgres).cluster (eq $source "addons") }}
+      {{- if (default dict $cluster).secretRef }}
+        {{- $value = include "commons.secretRefName" (dict "Values" $.Values "alias" $cluster.secretRef) }}
+      {{- else if eq $source "addons" }}
         {{- $value = printf "%s-postgres-secret" (include "commons.fullname" (dict "Values" $.Values "Release" $.Release "name" .name)) }}
       {{- else if eq $source "components" }}
         {{- $value = printf "%s-postgres-secret" (include "commons.fullname" (dict "Values" $.Values "Release" $.Release "name" .name "component" $component)) }}
       {{- end }}
+    {{- else if eq $field "password_secret_key" }}
+      {{- $value = "password" }}
     {{- else if eq $field "password" }}
-      {{- if eq $source "addons" }}
-        {{- $value = .Values.addons.postgres.cluster.password }}
-      {{- else if eq $source "components" }}
-        {{- $value = $component.postgres.cluster.password }}
+      {{- $cluster := ternary .Values.addons.postgres.cluster (default dict $component.postgres).cluster (eq $source "addons") }}
+      {{- if (default dict $cluster).secretRef }}
+        {{- fail (printf "commons: `__%s__postgres__password` est indisponible quand le cluster utilise `cluster.secretRef` : le mot de passe ne transite pas par les values. Utilisez `__%s__postgres__password_secret` avec un `secretKeyRef`." $source $source) }}
       {{- end }}
+      {{- $value = $cluster.password }}
     {{- else if eq $field "database" }}
       {{- if eq $source "addons" }}
         {{- $value = default "app" .Values.addons.postgres.cluster.database }}
@@ -122,9 +164,22 @@ app: {{ .Release.Name }}
     {{- else if eq $field "port" }}
       {{- $value = .Values.addons.redis.port }}
     {{- else if eq $field "password" }}
+      {{- if .Values.addons.redis.passwordSecretRef }}
+        {{- fail "commons: `__addons__redis__password` est indisponible quand `addons.redis.passwordSecretRef` est utilisé : le mot de passe ne transite pas par les values. Utilisez `__addons__redis__password_secret` avec un `secretKeyRef`." }}
+      {{- end }}
       {{- $value = .Values.addons.redis.password }}
     {{- else if eq $field "password_secret" }}
-      {{- $value = include "commons.fullname" (dict "Chart" $.Chart "Values" $.Values "Release" $.Release "name" "auth" "component" (dict "name" .Values.addons.redis.name)) }}
+      {{- if .Values.addons.redis.passwordSecretRef }}
+        {{- $value = include "commons.secretRefName" (dict "Values" $.Values "alias" .Values.addons.redis.passwordSecretRef) }}
+      {{- else }}
+        {{- $value = include "commons.fullname" (dict "Chart" $.Chart "Values" $.Values "Release" $.Release "name" "auth" "component" (dict "name" .Values.addons.redis.name)) }}
+      {{- end }}
+    {{- else if eq $field "password_secret_key" }}
+      {{- if .Values.addons.redis.passwordSecretRef }}
+        {{- $value = include "commons.secretRefKey" (dict "Values" $.Values "alias" .Values.addons.redis.passwordSecretRef) }}
+      {{- else }}
+        {{- $value = "password" }}
+      {{- end }}
     {{- end }}
   {{- else if or (eq $type "pvc") (eq $type "configmap") (eq $type "service") (eq $type "secret") }}
     {{- $c := dict }}
@@ -134,6 +189,14 @@ app: {{ .Release.Name }}
       {{- $c = deepCopy $component }}
     {{- end }}
     {{- $value = include "commons.fullname" (dict "Chart" $.Chart "Values" $.Values "Release" $.Release "name" $field "component" $c) }}
+  {{- else if eq $source "secrets" }}
+    {{- if eq $field "name" }}
+      {{- $value = include "commons.secretRefName" (dict "Values" $.Values "alias" $type) }}
+    {{- else if eq $field "key" }}
+      {{- $value = include "commons.secretRefKey" (dict "Values" $.Values "alias" $type) }}
+    {{- else }}
+      {{- fail (printf "commons: `%s` est invalide, attendu `__secrets__%s__name` ou `__secrets__%s__key`" $value $type $type) }}
+    {{- end }}
   {{- else if eq $source "global" }}
     {{- $value = (index .Values.global.var $type) }}
   {{- end }}

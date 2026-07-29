@@ -1,3 +1,12 @@
+# Table d'alias vers des Secrets Kubernetes DÉJÀ présents dans le namespace
+# (SealedSecret, ExternalSecret, secret créé à la main...). Aucune valeur
+# sensible ne transite par Helm : seule la référence est stockée.
+#   secrets:
+#     pg:
+#       existingSecret: app-pg-credentials
+#       key: password
+secrets: {}
+
 global:
   timezone: "Europe/Paris"
   pvc:
@@ -28,6 +37,7 @@ addons:
       tag: 8.8.1-alpine
     port: 6379
     password: ""
+    # `passwordSecretRef: <alias>` (section `secrets`) remplace `password`.
   pgadmin:
     enabled: false
     image:
@@ -36,6 +46,7 @@ addons:
     auth:
       email: test@test.com
       password: changeme
+      # `passwordSecretRef: <alias>` (section `secrets`) remplace `password`.
     ingress:
       enabled: false
     service:

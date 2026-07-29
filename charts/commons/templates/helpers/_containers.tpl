@@ -10,6 +10,12 @@ env:
     {{- with .value }}
     value: {{ include "commons.getValue" (dict "Values" $.Values "Chart" $.Chart "Release" $.Release "component" $component "value" .) | quote }}
     {{- end }}
+    {{- with .secretRef }}
+    valueFrom:
+      secretKeyRef:
+        name: {{ include "commons.secretRefName" (dict "Values" $.Values "alias" .) }}
+        key: {{ include "commons.secretRefKey" (dict "Values" $.Values "alias" .) }}
+    {{- end }}
     {{- with .valueFrom }}
     valueFrom:
       {{- if .secretKeyRef }}

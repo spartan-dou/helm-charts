@@ -4,14 +4,15 @@
 */}}
 {{- define "commons.waitForRedisInitContainer" -}}
 {{- $host := include "commons.getValue" (dict "Values" .Values "Chart" .Chart "Release" .Release "value" "__addons__redis__host") -}}
-{{- $redisAuth := ne (default "" .Values.addons.redis.password) "" -}}
+{{- $redisAuth := or (ne (default "" .Values.addons.redis.password) "") (ne (default "" .Values.addons.redis.passwordSecretRef) "") -}}
+{{- $redisKey := include "commons.getValue" (dict "Values" .Values "Chart" .Chart "Release" .Release "value" "__addons__redis__password_secret_key") -}}
 {{- $redisInit := dict
   "name" "wait-for-redis"
   "image" (dict
     "repository" .Values.addons.redis.image.repository
     "tag" .Values.addons.redis.image.tag
   )
-  "env" (ternary (list (dict "name" "REDIS_PASSWORD" "valueFrom" (dict "secretKeyRef" (dict "name" "__addons__redis__password_secret" "key" "password")))) (list) $redisAuth)
+  "env" (ternary (list (dict "name" "REDIS_PASSWORD" "valueFrom" (dict "secretKeyRef" (dict "name" "__addons__redis__password_secret" "key" $redisKey)))) (list) $redisAuth)
   "command" (list "sh" "-c" (printf "until redis-cli -h %s %s ping | grep PONG; do echo waiting for redis; sleep 2; done" $host (ternary "-a \"$REDIS_PASSWORD\"" "" $redisAuth)))
 -}}
 {{- toYaml $redisInit -}}
@@ -200,10 +201,12 @@
 
 {{/* === Addon Redis === */}}
 {{- if .Values.addons.redis.enabled }}
-  {{- $redisAuth := ne (default "" .Values.addons.redis.password) "" }}
+  {{- $redisAuth := or (ne (default "" .Values.addons.redis.password) "") (ne (default "" .Values.addons.redis.passwordSecretRef) "") }}
+  {{- $redisOwnSecret := and $redisAuth (not .Values.addons.redis.passwordSecretRef) }}
+  {{- $redisKey := include "commons.getValue" (dict "Values" .Values "Chart" .Chart "Release" .Release "value" "__addons__redis__password_secret_key") }}
   {{- $defaults := dict
     "name" "redis"
-    "secrets" (ternary (list (dict "name" "auth" "data" (dict "password" .Values.addons.redis.password))) (list) $redisAuth)
+    "secrets" (ternary (list (dict "name" "auth" "data" (dict "password" .Values.addons.redis.password))) (list) $redisOwnSecret)
     "deployment" (dict
       "containers" (list (dict
         "image" (dict
@@ -211,7 +214,7 @@
             "tag" (default "latest" .Values.addons.redis.image.tag)
         )
         "args" (ternary (list "--requirepass" "$(REDIS_PASSWORD)") (list) $redisAuth)
-        "env" (ternary (list (dict "name" "REDIS_PASSWORD" "valueFrom" (dict "secretKeyRef" (dict "name" "__addons__redis__password_secret" "key" "password")))) (list) $redisAuth)
+        "env" (ternary (list (dict "name" "REDIS_PASSWORD" "valueFrom" (dict "secretKeyRef" (dict "name" "__addons__redis__password_secret" "key" $redisKey)))) (list) $redisAuth)
         "livenessProbe" (dict
           "tcpSocket" (dict "port" .Values.addons.redis.port)
           "initialDelaySeconds" 5
@@ -244,7 +247,7 @@
     )
   }}
   {{- $raw := .Values.addons.redis | default dict }}
-  {{- $overrides := omit $raw "enabled" "name" "password" }}
+  {{- $overrides := omit $raw "enabled" "name" "password" "passwordSecretRef" }}
   {{- $redis := merge $defaults $overrides }}
   {{- $addons = append $addons $redis }}
 {{- end }}
@@ -257,15 +260,36 @@
       "securityContext" (dict
         "fsGroup" 5050
       )
+      "initContainers" (list (dict
+        "name" "render-pgpass"
+        "image" (dict
+          "repository" .Values.addons.pgadmin.image.repository
+          "tag" (default "latest" .Values.addons.pgadmin.image.tag)
+        )
+        "securityContext" (dict
+          "runAsUser" 5050
+          "runAsGroup" 5050
+          "runAsNonRoot" true
+        )
+        "command" (list "sh" "-c" (trim (include "pgadmin.pgpassScript" (dict "Values" $.Values "Chart" $.Chart "Release" $.Release))))
+        "env" (include "pgadmin.pgpassEnv" (dict "Values" $.Values "Chart" $.Chart "Release" $.Release) | fromYamlArray)
+        "volumeMounts" (list (dict "mountPath" "/pgpass" "name" "pgpass"))
+      ))
       "containers" (list (dict
           "image" (dict
               "repository" .Values.addons.pgadmin.image.repository
               "tag" (default "latest" .Values.addons.pgadmin.image.tag)
           )
-        "env" (list
-          (dict "name" "PGPASS_FILE" "value" "/pgadmin4/pgpass")
-          (dict "name" "PGADMIN_DEFAULT_EMAIL" "value" .Values.addons.pgadmin.auth.email)
-          (dict "name" "PGADMIN_DEFAULT_PASSWORD" "value" .Values.addons.pgadmin.auth.password)
+        "env" (concat
+          (list
+            (dict "name" "PGPASS_FILE" "value" "/pgadmin4/pgpass")
+            (dict "name" "PGADMIN_DEFAULT_EMAIL" "value" .Values.addons.pgadmin.auth.email)
+          )
+          (ternary
+            (list (dict "name" "PGADMIN_DEFAULT_PASSWORD" "secretRef" .Values.addons.pgadmin.auth.passwordSecretRef))
+            (list (dict "name" "PGADMIN_DEFAULT_PASSWORD" "value" .Values.addons.pgadmin.auth.password))
+            (ne (default "" .Values.addons.pgadmin.auth.passwordSecretRef) "")
+          )
         )
         "securityContext" (dict
           "runAsUser" 5050
@@ -285,7 +309,7 @@
         )
         "volumeMounts" (list
         (dict "mountPath" "/pgadmin4/servers.json" "subPath" "servers.json" "name" "config")
-        (dict "mountPath" "/pgadmin4/pgpass" "subPath" "pgpass" "name" "config")
+        (dict "mountPath" "/pgadmin4/pgpass" "subPath" "pgpass" "name" "pgpass")
       )
       ))
     "volumes" (list
@@ -295,9 +319,9 @@
             "name" "pg-config"
             "data" (dict
               "servers.json" (trim (include "pgadmin.servers" (dict "Values" $.Values "Chart" $.Chart "Release" $.Release)))
-              "pgpass" (trim (include "pgadmin.pgpass" (dict "Values" $.Values "Chart" $.Chart "Release" $.Release)))
             ))
         )
+        (dict "name" "pgpass" "emptyDir" (dict))
       )
     )
     "service" (dict
