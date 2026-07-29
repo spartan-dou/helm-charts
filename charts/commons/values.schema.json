@@ -4,6 +4,16 @@
   "type": "object",
   "required": ["global", "addons"],
   "properties": {
+    "secrets": {
+      "description": "Valeurs sensibles centralisées, référençables via `__secrets__<clé>`. Destinée à être isolée dans un fichier chiffré (SOPS, …).",
+      "type": "object",
+      "additionalProperties": {
+        "type": ["string", "number", "boolean"]
+      },
+      "propertyNames": {
+        "pattern": "^[^_]+(_?[^_]+)*$"
+      }
+    },
     "global": {
       "type": "object",
       "required": ["timezone", "pvc", "rbac"],

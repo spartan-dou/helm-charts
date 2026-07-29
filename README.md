@@ -9,6 +9,7 @@ Charts Helm maison de `spartan-dou`, packagées et publiées via `chart-releaser
 - [Installation](#installation)
 - [Chart `commons`](#chart-commons)
   - [Vue d'ensemble](#vue-densemble)
+  - [`secrets` (valeurs sensibles)](#secrets-valeurs-sensibles)
   - [`global`](#global)
   - [Un `component`](#un-component)
     - [`deployment`](#deployment)
@@ -79,6 +80,56 @@ components:
 ```
 
 Voir `charts/commons/tests/values/values.yaml` pour un exemple complet couvrant la quasi-totalité des fonctionnalités décrites ci-dessous (il sert aussi de fixture aux tests `helm-unittest`).
+
+### `secrets` (valeurs sensibles)
+
+Section racine optionnelle regroupant **toutes** les valeurs sensibles de la release, référençables depuis n'importe où dans les values via le placeholder `__secrets__<clé>` :
+
+```yaml
+secrets:
+  pgPassword: s3cr3t
+  redisPassword: hunter2
+
+addons:
+  postgres:
+    enabled: true
+    cluster:
+      username: app
+      password: __secrets__pgPassword
+  redis:
+    enabled: true
+    password: __secrets__redisPassword
+```
+
+Elle est prévue pour être **isolée dans un fichier chiffré** ([SOPS](https://github.com/getsops/sops), [helm-secrets](https://github.com/jkroepke/helm-secrets), …) et fusionnée au déploiement, pendant que le reste des values reste lisible et diffable en clair dans git :
+
+```bash
+helm secrets upgrade --install monapp dou-charts/commons \
+  -f values.yaml \
+  -f secrets.yaml   # ne contient que la section `secrets`, chiffrée
+```
+
+C'est une **map à la racine**, contrairement à `components` qui est une liste : Helm fusionne les maps en profondeur mais **remplace** les listes. Sans cette section, isoler le mot de passe d'un `components[].postgres.cluster` dans un fichier chiffré séparé obligerait à y redupliquer l'élément de liste entier.
+
+Où `__secrets__<clé>` est résolu :
+
+| Emplacement | Exemple |
+|---|---|
+| `env[].value` et `env[].valueFrom.secretKeyRef.name` (deployment, cronjob, job) | `value: __secrets__appApiKey` |
+| `components[].secrets[].data.<clé>` | `data: { apiKey: __secrets__appApiKey }` |
+| `components[].postgres.cluster.username` / `.password` | `password: __secrets__pgPassword` |
+| `addons.postgres.cluster.username` / `.password` | `password: __secrets__pgPassword` |
+| `addons.redis.password` | `password: __secrets__redisPassword` |
+| `addons.pgadmin.auth.password` | `password: __secrets__pgadminPassword` |
+
+La résolution est aussi **transitive** : un placeholder qui pointe vers une valeur elle-même sensible fonctionne. Par exemple `__components__postgres__password` renvoie `component.postgres.cluster.password`, et si celui-ci vaut `__secrets__pgPassword`, la clé est résolue au passage.
+
+Points à connaître :
+
+- Une clé référencée mais absente de `secrets` fait **échouer le rendu** avec un message explicite, plutôt que de produire silencieusement une valeur vide.
+- Les noms de clés ne peuvent pas contenir `__` (c'est le séparateur des placeholders) ; le schéma des values le refuse.
+- Les valeurs sont volontairement **non résolues dans les ConfigMaps** générés par `volumes[].configMap` : un ConfigMap n'est pas fait pour porter un secret. Utilisez `components[].secrets` pour ça.
+- Cette section ne remplace pas un gestionnaire de secrets côté cluster : la valeur déchiffrée transite par Helm et reste lisible via `helm get values <release>` (elle est stockée dans le Secret de release). Pour que le secret n'existe que dans le cluster, il faut un `ExternalSecret` / `SealedSecret` et référencer le Secret produit via `env[].valueFrom.secretKeyRef`.
 
 ### `global`
 
@@ -158,6 +209,7 @@ Toutes les valeurs de `env[].value` et `env[].valueFrom.secretKeyRef.name` passe
 | `__components__pvc__<nom-du-pvc>` | Idem, mais sur le component courant |
 | `__<nom>__configmap__<nom>` / `__<nom>__service__<nom>` / `__<nom>__secret__<nom>` | Même principe pour un ConfigMap, un Service ou un Secret |
 | `__global__<clé>` | `global.var.<clé>` |
+| `__secrets__<clé>` | `secrets.<clé>` — voir [`secrets`](#secrets-valeurs-sensibles). Résolu en dernier, y compris sur le résultat d'un autre placeholder. |
 
 Exemple (tiré des tests) :
 
@@ -288,7 +340,7 @@ Crée un `Cluster` CloudNativePG dédié + un Secret `kubernetes.io/basic-auth`,
 | `storage.size` / `storage.storageClassName` | repli sur `addons.postgres.storage.*` | |
 | `repository.image` / `repository.tag` | repli sur `addons.postgres.image.*` | |
 | `cluster.username` | `app` | |
-| `cluster.password` | — | |
+| `cluster.password` | — | Accepte `__secrets__<clé>` pour éviter le mot de passe en clair dans les values (voir [`secrets`](#secrets-valeurs-sensibles)). |
 | `cluster.database` | `app` | |
 | `postInitTemplateSQL[]` / `postInitSQL[]` / `postInitApplicationSQL[]` | — | Exécutés au bootstrap CloudNativePG. |
 | `backup.destinationPath`, `backup.endpointURL` | — | Sauvegarde `barmanObjectStore` (S3). Attend un Secret `<name>-backup-secret` avec les clés `ACCESS_KEY_ID` / `SECRET_ACCESS_KEY`. |
