@@ -69,6 +69,28 @@ app: {{ .Release.Name }}
 
 
 {{/*
+  Résout une valeur au format `__secrets__<clé>` depuis la section racine
+  `secrets`. Prévue pour être isolée dans un fichier chiffré (SOPS, …) et
+  fusionnée au déploiement, sans dupliquer le secret dans les values en clair.
+
+  Toute valeur qui n'est pas un placeholder `__secrets__…` est retournée telle
+  quelle, ce qui rend le helper transparent pour l'existant.
+*/}}
+{{- define "commons.secretValue" -}}
+{{- $value := toString (default "" .value) }}
+{{- $valueKeys := splitList "__" $value }}
+{{- if and (eq (len $valueKeys) 3) (eq (index $valueKeys 0) "") (eq (index $valueKeys 1) "secrets") }}
+  {{- $key := index $valueKeys 2 }}
+  {{- $secrets := .Values.secrets | default dict }}
+  {{- if not (hasKey $secrets $key) }}
+    {{- fail (printf "commons: la clé `%s` est référencée via `%s` mais absente de la section `secrets` des values" $key $value) }}
+  {{- end }}
+  {{- $value = toString (index $secrets $key) }}
+{{- end }}
+{{- $value }}
+{{- end }}
+
+{{/*
   Fonction dinamique pour utiliser des variables dans le fichier de valueKeys
 */}}
 {{- define "commons.getValue" -}}
@@ -139,7 +161,13 @@ app: {{ .Release.Name }}
   {{- end }}
 
 {{- end }}
-{{- $value }}
+{{- /*
+  Dernière passe : résout `__secrets__<clé>`, qu'il s'agisse de la valeur
+  d'origine (`value: __secrets__pgPassword`) ou du résultat d'une résolution
+  précédente (ex. `__addons__postgres__password` qui pointe lui-même sur un
+  `__secrets__…` dans les values).
+*/ -}}
+{{- include "commons.secretValue" (dict "Values" $.Values "value" $value) }}
 {{- end }}
 
 

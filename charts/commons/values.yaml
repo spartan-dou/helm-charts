@@ -1,3 +1,8 @@
+# Valeurs sensibles centralisées, référençables partout via `__secrets__<clé>`.
+# Cette section est prévue pour être isolée dans un fichier chiffré (SOPS, etc.)
+# et fusionnée au déploiement : `helm secrets -f values.yaml -f secrets.yaml`.
+secrets: {}
+
 global:
   timezone: "Europe/Paris"
   pvc:
