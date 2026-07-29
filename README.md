@@ -9,6 +9,7 @@ Charts Helm maison de `spartan-dou`, packagées et publiées via `chart-releaser
 - [Installation](#installation)
 - [Chart `commons`](#chart-commons)
   - [Vue d'ensemble](#vue-densemble)
+  - [`secrets` (références vers des Secrets existants)](#secrets-références-vers-des-secrets-existants)
   - [`global`](#global)
   - [Un `component`](#un-component)
     - [`deployment`](#deployment)
@@ -80,6 +81,76 @@ components:
 
 Voir `charts/commons/tests/values/values.yaml` pour un exemple complet couvrant la quasi-totalité des fonctionnalités décrites ci-dessous (il sert aussi de fixture aux tests `helm-unittest`).
 
+### `secrets` (références vers des Secrets existants)
+
+Section racine optionnelle : une table d'**alias** vers des Secrets Kubernetes **déjà présents dans le namespace** (SealedSecret, ExternalSecret, `kubectl create secret`, opérateur Vault…). La chart ne transporte jamais la valeur, uniquement la référence.
+
+```yaml
+secrets:
+  pg:
+    existingSecret: app-pg-credentials   # Secret de type kubernetes.io/basic-auth
+  redis:
+    existingSecret: app-redis
+    key: redis-password                  # def. `password`
+  apiKey:
+    existingSecret: app-third-party
+    key: api-token
+```
+
+Conséquence directe : **aucune donnée sensible ne transite par Helm**. `helm get values <release>`, le Secret de release et un `helm template` ne révèlent que des *noms* de Secrets. La rotation d'un mot de passe se fait dans le cluster, sans toucher aux values ni redéployer la chart.
+
+En contrepartie, les Secrets référencés doivent **exister avant l'installation** : sinon les pods restent en `CreateContainerConfigError` et le cluster CloudNativePG ne bootstrappe pas.
+
+#### Consommation
+
+| Endroit | Clé | Exemple |
+|---|---|---|
+| Variable d'environnement | `env[].secretRef` | `- name: API_KEY` / `secretRef: apiKey` |
+| Postgres (component ou addon) | `cluster.secretRef` | remplace `cluster.password` |
+| Redis | `addons.redis.passwordSecretRef` | remplace `addons.redis.password` |
+| pgAdmin | `addons.pgadmin.auth.passwordSecretRef` | remplace `addons.pgadmin.auth.password` |
+| N'importe quelle value | `__secrets__<alias>__name` / `__secrets__<alias>__key` | nom / clé du Secret référencé |
+
+Le raccourci `secretRef` sur une variable d'environnement produit un `valueFrom.secretKeyRef` complet :
+
+```yaml
+env:
+  - name: API_KEY
+    secretRef: apiKey        # -> secretKeyRef { name: app-third-party, key: api-token }
+```
+
+Il est disponible dans les `deployment`, `cronjobs` et `job`, sur les conteneurs comme sur les initContainers.
+
+#### Postgres
+
+`cluster.secretRef` remplace `cluster.password` : la chart **ne génère plus** le Secret `<release>-postgres-secret` et pointe `bootstrap.initdb.secret` sur le Secret référencé. Celui-ci doit être de type `kubernetes.io/basic-auth`, avec les clés `username` et `password` (contrainte CloudNativePG — le champ `key` de l'alias est donc ignoré ici).
+
+`cluster.username` reste requis en clair : CloudNativePG en a besoin comme `owner` du cluster, et ce n'est pas une donnée sensible.
+
+Le placeholder `__<source>__postgres__password_secret` résout automatiquement vers le Secret externe. En revanche `__<source>__postgres__password` **échoue explicitement** : le mot de passe n'existe nulle part côté Helm. Utilisez un `secretKeyRef` :
+
+```yaml
+env:
+  - name: POSTGRES_PASSWORD
+    valueFrom:
+      secretKeyRef:
+        name: __components__postgres__password_secret
+        key: password
+```
+
+#### pgAdmin
+
+Le fichier `pgpass` n'est plus rendu dans un ConfigMap. Il est reconstitué au démarrage du pod par un initContainer `render-pgpass`, qui reçoit les mots de passe par `secretKeyRef` et écrit le fichier en `0600` dans un volume `emptyDir` partagé avec pgAdmin.
+
+Ce changement s'applique **aussi au mode historique** (mot de passe en clair dans les values) : le pgpass est désormais construit à partir du Secret généré par la chart, et non plus recopié en clair dans un ConfigMap.
+
+#### Limites
+
+- Les Secrets doivent préexister — la chart ne les crée pas et ne peut pas vérifier leur contenu au rendu. Une clé absente du Secret ne se verra qu'au démarrage du pod.
+- Un alias inconnu, ou un `existingSecret` manquant, fait **échouer le rendu** avec un message explicite.
+- Les noms d'alias ne peuvent pas contenir `__` (séparateur des placeholders) ; le schéma des values le refuse.
+- `components[].secrets[]` continue de générer des Secrets à partir des values : cette section reste réservée aux données **non sensibles**. Pour du sensible, référencez un Secret externe.
+
 ### `global`
 
 | Clé | Défaut | Description |
@@ -149,15 +220,16 @@ Toutes les valeurs de `env[].value` et `env[].valueFrom.secretKeyRef.name` passe
 |---|---|
 | `__addons__postgres__host` | Host du cluster CloudNativePG **partagé** (`addons.postgres`) : `<release>-postgres-rw` |
 | `__addons__postgres__username` / `__password__` / `__database__` | `addons.postgres.cluster.username` / `.password` / `.database` (def. `app`) |
-| `__addons__postgres__password_secret` | Nom du Secret `<release>-postgres-secret` |
+| `__addons__postgres__password_secret` | Nom du Secret `<release>-postgres-secret`, ou du Secret externe si `cluster.secretRef` |
 | `__components__postgres__host` / `__username__` / `__password__` / `__database__` / `__password_secret__` | Idem mais sur le cluster CloudNativePG **embarqué dans le component courant** (`component.postgres.*`) |
 | `__addons__redis__host` / `__addons__redis__port` | Host / port du service Redis partagé (`addons.redis`) |
-| `__addons__redis__password` | `addons.redis.password` en clair |
-| `__addons__redis__password_secret` | Nom du Secret contenant le mot de passe Redis (clé `password`) |
+| `__addons__redis__password` | `addons.redis.password` en clair — **échoue** si `passwordSecretRef` est utilisé |
+| `__addons__redis__password_secret` / `__password_secret_key__` | Nom / clé du Secret contenant le mot de passe Redis (le Secret externe si `passwordSecretRef`) |
 | `__<nom-de-component>__pvc__<nom-du-pvc>` | Nom Kubernetes complet du PVC `<nom-du-pvc>` défini sur le component `<nom-de-component>` (ex : `__nginx__pvc__data-2-pvc`) |
 | `__components__pvc__<nom-du-pvc>` | Idem, mais sur le component courant |
 | `__<nom>__configmap__<nom>` / `__<nom>__service__<nom>` / `__<nom>__secret__<nom>` | Même principe pour un ConfigMap, un Service ou un Secret |
 | `__global__<clé>` | `global.var.<clé>` |
+| `__secrets__<alias>__name` / `__secrets__<alias>__key` | Nom / clé du Secret existant désigné par l'alias — voir [`secrets`](#secrets-références-vers-des-secrets-existants) |
 
 Exemple (tiré des tests) :
 

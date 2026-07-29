@@ -2,26 +2,73 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "title": "commons",
   "type": "object",
-  "required": ["global", "addons"],
+  "required": [
+    "global",
+    "addons"
+  ],
   "properties": {
+    "secrets": {
+      "description": "Alias vers des Secrets Kubernetes existants. Aucune valeur sensible n'est stockée ici, uniquement des références.",
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "required": [
+          "existingSecret"
+        ],
+        "properties": {
+          "existingSecret": {
+            "type": "string",
+            "minLength": 1
+          },
+          "key": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "additionalProperties": false
+      },
+      "propertyNames": {
+        "pattern": "^[^_]+(_?[^_]+)*$"
+      }
+    },
     "global": {
       "type": "object",
-      "required": ["timezone", "pvc", "rbac"],
+      "required": [
+        "timezone",
+        "pvc",
+        "rbac"
+      ],
       "properties": {
-        "timezone": { "type": "string", "minLength": 1 },
-        "securityContext": { "type": "object" },
+        "timezone": {
+          "type": "string",
+          "minLength": 1
+        },
+        "securityContext": {
+          "type": "object"
+        },
         "pvc": {
           "type": "object",
-          "required": ["storage"],
+          "required": [
+            "storage"
+          ],
           "properties": {
             "storage": {
               "type": "object",
               "properties": {
-                "size": { "type": "string" },
-                "storageClassName": { "type": "string" },
+                "size": {
+                  "type": "string"
+                },
+                "storageClassName": {
+                  "type": "string"
+                },
                 "accessMode": {
                   "type": "string",
-                  "enum": ["ReadWriteOnce", "ReadOnlyMany", "ReadWriteMany", "ReadWriteOncePod"]
+                  "enum": [
+                    "ReadWriteOnce",
+                    "ReadOnlyMany",
+                    "ReadWriteMany",
+                    "ReadWriteOncePod"
+                  ]
                 }
               }
             }
@@ -30,39 +77,74 @@
         "ingress": {
           "type": "object",
           "properties": {
-            "className": { "type": "string" }
+            "className": {
+              "type": "string"
+            }
           }
         },
         "rbac": {
           "type": "object",
-          "required": ["enabled"],
+          "required": [
+            "enabled"
+          ],
           "properties": {
-            "enabled": { "type": "boolean" },
-            "serviceAccountName": { "type": "string" },
-            "clusterRoleName": { "type": "string" },
-            "rules": { "type": "array", "items": { "type": "object" } }
+            "enabled": {
+              "type": "boolean"
+            },
+            "serviceAccountName": {
+              "type": "string"
+            },
+            "clusterRoleName": {
+              "type": "string"
+            },
+            "rules": {
+              "type": "array",
+              "items": {
+                "type": "object"
+              }
+            }
           },
           "if": {
-            "properties": { "enabled": { "const": true } }
+            "properties": {
+              "enabled": {
+                "const": true
+              }
+            }
           },
           "then": {
-            "required": ["serviceAccountName", "clusterRoleName"],
+            "required": [
+              "serviceAccountName",
+              "clusterRoleName"
+            ],
             "properties": {
-              "serviceAccountName": { "type": "string", "minLength": 1 },
-              "clusterRoleName": { "type": "string", "minLength": 1 }
+              "serviceAccountName": {
+                "type": "string",
+                "minLength": 1
+              },
+              "clusterRoleName": {
+                "type": "string",
+                "minLength": 1
+              }
             }
           }
         },
-        "var": { "type": "object" }
+        "var": {
+          "type": "object"
+        }
       }
     },
     "components": {
       "type": "array",
       "items": {
         "type": "object",
-        "required": ["name"],
+        "required": [
+          "name"
+        ],
         "properties": {
-          "name": { "type": "string", "minLength": 1 }
+          "name": {
+            "type": "string",
+            "minLength": 1
+          }
         }
       }
     },
@@ -71,93 +153,213 @@
       "properties": {
         "vscode": {
           "type": "object",
-          "required": ["enabled"],
+          "required": [
+            "enabled"
+          ],
           "properties": {
-            "enabled": { "type": "boolean" },
-            "image": { "$ref": "#/definitions/image" },
+            "enabled": {
+              "type": "boolean"
+            },
+            "image": {
+              "$ref": "#/definitions/image"
+            },
             "service": {
               "type": "object",
-              "properties": { "port": { "type": "integer" } }
+              "properties": {
+                "port": {
+                  "type": "integer"
+                }
+              }
             }
           }
         },
         "redis": {
           "type": "object",
-          "required": ["enabled"],
+          "required": [
+            "enabled"
+          ],
           "properties": {
-            "enabled": { "type": "boolean" },
-            "name": { "type": "string" },
-            "image": { "$ref": "#/definitions/image" },
-            "port": { "type": "integer" },
-            "password": { "type": "string" }
+            "enabled": {
+              "type": "boolean"
+            },
+            "name": {
+              "type": "string"
+            },
+            "image": {
+              "$ref": "#/definitions/image"
+            },
+            "port": {
+              "type": "integer"
+            },
+            "password": {
+              "type": "string"
+            },
+            "passwordSecretRef": {
+              "type": "string",
+              "minLength": 1
+            }
           }
         },
         "pgadmin": {
           "type": "object",
-          "required": ["enabled"],
+          "required": [
+            "enabled"
+          ],
           "properties": {
-            "enabled": { "type": "boolean" },
-            "image": { "$ref": "#/definitions/image" },
+            "enabled": {
+              "type": "boolean"
+            },
+            "image": {
+              "$ref": "#/definitions/image"
+            },
             "auth": {
               "type": "object",
               "properties": {
-                "email": { "type": "string" },
-                "password": { "type": "string" }
+                "email": {
+                  "type": "string"
+                },
+                "password": {
+                  "type": "string"
+                },
+                "passwordSecretRef": {
+                  "type": "string",
+                  "minLength": 1
+                }
               }
             }
           },
           "if": {
-            "properties": { "enabled": { "const": true } }
+            "properties": {
+              "enabled": {
+                "const": true
+              }
+            }
           },
           "then": {
-            "required": ["auth"],
+            "required": [
+              "auth"
+            ],
             "properties": {
               "auth": {
                 "type": "object",
-                "required": ["email", "password"],
+                "required": [
+                  "email"
+                ],
                 "properties": {
-                  "email": { "type": "string", "minLength": 1 },
-                  "password": { "type": "string", "minLength": 1 }
-                }
+                  "email": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "password": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "passwordSecretRef": {
+                    "type": "string",
+                    "minLength": 1
+                  }
+                },
+                "anyOf": [
+                  {
+                    "required": [
+                      "password"
+                    ]
+                  },
+                  {
+                    "required": [
+                      "passwordSecretRef"
+                    ]
+                  }
+                ]
               }
             }
           }
         },
         "postgres": {
           "type": "object",
-          "required": ["enabled"],
+          "required": [
+            "enabled"
+          ],
           "properties": {
-            "enabled": { "type": "boolean" },
-            "image": { "$ref": "#/definitions/image" },
+            "enabled": {
+              "type": "boolean"
+            },
+            "image": {
+              "$ref": "#/definitions/image"
+            },
             "storage": {
               "type": "object",
               "properties": {
-                "size": { "type": "string" },
-                "storageClassName": { "type": "string" }
+                "size": {
+                  "type": "string"
+                },
+                "storageClassName": {
+                  "type": "string"
+                }
               }
             },
             "cluster": {
               "type": "object",
               "properties": {
-                "username": { "type": "string" },
-                "password": { "type": "string" },
-                "database": { "type": "string" }
+                "username": {
+                  "type": "string"
+                },
+                "password": {
+                  "type": "string"
+                },
+                "database": {
+                  "type": "string"
+                },
+                "secretRef": {
+                  "type": "string",
+                  "minLength": 1
+                }
               }
             }
           },
           "if": {
-            "properties": { "enabled": { "const": true } }
+            "properties": {
+              "enabled": {
+                "const": true
+              }
+            }
           },
           "then": {
-            "required": ["cluster"],
+            "required": [
+              "cluster"
+            ],
             "properties": {
               "cluster": {
                 "type": "object",
-                "required": ["username", "password"],
+                "required": [
+                  "username"
+                ],
                 "properties": {
-                  "username": { "type": "string", "minLength": 1 },
-                  "password": { "type": "string", "minLength": 1 }
-                }
+                  "username": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "password": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "secretRef": {
+                    "type": "string",
+                    "minLength": 1
+                  }
+                },
+                "anyOf": [
+                  {
+                    "required": [
+                      "password"
+                    ]
+                  },
+                  {
+                    "required": [
+                      "secretRef"
+                    ]
+                  }
+                ]
               }
             }
           }
@@ -169,8 +371,16 @@
     "image": {
       "type": "object",
       "properties": {
-        "repository": { "type": "string", "minLength": 1 },
-        "tag": { "type": ["string", "number"] }
+        "repository": {
+          "type": "string",
+          "minLength": 1
+        },
+        "tag": {
+          "type": [
+            "string",
+            "number"
+          ]
+        }
       }
     }
   }

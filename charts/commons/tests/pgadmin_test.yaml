@@ -13,12 +13,10 @@ tests:
     templates:
       - templates/configmap.yaml
     asserts:
-    
-      - equal:
+      # Le pgpass contient des mots de passe : il ne doit jamais atterrir dans
+      # un ConfigMap, il est reconstitué au runtime (voir le test plus bas).
+      - notExists:
           path: data["pgpass"]
-          value: |-
-            test-nginx-postgres-rw:5432:postgres:changeme:changeme
-            test-postgres-rw:5432:postgres:changeme:changeme
       - equal:
           path: data["servers.json"]
           value: |-
@@ -58,6 +56,50 @@ tests:
       - equal:
           path: spec.template.spec.volumes[0].name
           value: config
+
+  - it: Reconstitue le pgpass au runtime depuis les Secrets Postgres
+    documentSelector:
+      path: metadata.name
+      value: test-pgadmin
+    templates:
+      - templates/deployment.yaml
+    asserts:
+      # Les mots de passe arrivent par secretKeyRef, jamais en clair
+      - contains:
+          path: spec.template.spec.initContainers[0].env
+          content:
+            name: PGPASS_PWD_0
+            valueFrom:
+              secretKeyRef:
+                name: test-nginx-postgres-secret
+                key: password
+      - contains:
+          path: spec.template.spec.initContainers[0].env
+          content:
+            name: PGPASS_PWD_1
+            valueFrom:
+              secretKeyRef:
+                name: test-postgres-secret
+                key: password
+      - equal:
+          path: spec.template.spec.initContainers[0].command[2]
+          value: |-
+            umask 077
+            : > /pgpass/pgpass
+            printf '%s:5432:postgres:%s:%s\n' 'test-nginx-postgres-rw' 'changeme' "$PGPASS_PWD_0" >> /pgpass/pgpass
+            printf '%s:5432:postgres:%s:%s\n' 'test-postgres-rw' 'changeme' "$PGPASS_PWD_1" >> /pgpass/pgpass
+      # Volume partagé en mémoire entre l'initContainer et pgAdmin
+      - contains:
+          path: spec.template.spec.volumes
+          content:
+            name: pgpass
+            emptyDir: {}
+      - contains:
+          path: spec.template.spec.containers[0].volumeMounts
+          content:
+            name: pgpass
+            mountPath: /pgadmin4/pgpass
+            subPath: pgpass
 
   - it: Vérifie le PgDeployement service
     documentSelector:

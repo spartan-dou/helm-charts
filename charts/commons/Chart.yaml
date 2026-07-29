@@ -2,7 +2,7 @@ apiVersion: v2
 name: commons
 description: Generic "à la carte" Helm chart to deploy one or several lightweight applications (Deployment/Service/Ingress/CronJob) from a single values file, with optional Redis, PostgreSQL (CloudNativePG), pgAdmin and code-server addons.
 type: application
-version: 0.7.16
+version: 0.8.0
 keywords:
   - generic
   - library
