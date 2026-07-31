@@ -184,6 +184,32 @@ entries:
     - https://github.com/spartan-dou/helm-charts/releases/download/commons-0.8.0-beta.1/commons-0.8.0-beta.1.tgz
     version: 0.8.0-beta.1
   - apiVersion: v2
+    created: "2026-07-31T06:15:13.40995703Z"
+    description: Generic "à la carte" Helm chart to deploy one or several lightweight
+      applications (Deployment/Service/Ingress/CronJob) from a single values file,
+      with optional Redis, PostgreSQL (CloudNativePG), pgAdmin and code-server addons.
+    digest: 77056896444ede053020d50f0c188f4a2ee514e06b0ade413fc66311dd8b9904
+    home: https://github.com/spartan-dou/helm-charts
+    keywords:
+    - generic
+    - library
+    - postgres
+    - cloudnative-pg
+    - redis
+    - pgadmin
+    - vscode
+    - code-server
+    maintainers:
+    - name: spartan-dou
+      url: https://github.com/spartan-dou
+    name: commons
+    sources:
+    - https://github.com/spartan-dou/helm-charts
+    type: application
+    urls:
+    - https://github.com/spartan-dou/helm-charts/releases/download/commons-0.8.0-beta.1/commons-0.8.0-beta.1.tgz
+    version: 0.8.0-beta.1
+  - apiVersion: v2
     created: "2026-04-17T10:47:15.408076071Z"
     description: Commons chart
     digest: 38ef77dae08511d13b45f089ffd8af685d187da24c4b1c73bc4f8f08f6c591e0
@@ -3940,4 +3966,4 @@ entries:
     urls:
     - https://github.com/spartan-dou/helm-charts/releases/download/vaultwarden-0.0.2/vaultwarden-0.0.2.tgz
     version: 0.0.2
-generated: "2026-07-29T21:25:55.588623704Z"
+generated: "2026-07-31T06:15:13.410612919Z"
