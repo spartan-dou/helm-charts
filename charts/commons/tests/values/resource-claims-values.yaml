@@ -1,0 +1,97 @@
+# Fixture dédiée à Dynamic Resource Allocation (DRA).
+#
+# DRA est GA depuis Kubernetes 1.34 (resource.k8s.io/v1) et remplace, pour les
+# accélérateurs, le modèle des device plugins : au lieu de compter une ressource
+# entière (`limits: {nvidia.com/gpu: 1}`), le pod référence une ResourceClaim que
+# le scheduler alloue AVANT de le placer.
+#
+# Côté chart, cela demande deux choses, à deux niveaux différents :
+#
+#   - `deployment.resourceClaims` — au niveau du pod, la déclaration de la claim
+#     et de ce qui la produit (ResourceClaimTemplate ou ResourceClaim existante) ;
+#   - `containers[].resources.claims` — au niveau du conteneur, quelles claims du
+#     pod ce conteneur consomme.
+#
+# Le second passait déjà, `resources` étant recopié tel quel. Le premier est ce
+# que cette fixture couvre.
+#
+# La forme utilisée ici est celle de Kubernetes 1.31+, où les champs
+# `resourceClaimName` et `resourceClaimTemplateName` sont remontés à la racine de
+# l'entrée ; le bloc `source` imbriqué des versions antérieures est déprécié.
+
+components:
+  # Deux conteneurs partageant une même claim produite par un template :
+  # le cas d'un serveur d'inférence et de son interface, sur le même GPU.
+  - name: inference
+    deployment:
+      resourceClaims:
+        - name: gpu
+          resourceClaimTemplateName: single-gpu
+      containers:
+        - name: server
+          image:
+            repository: ollama/ollama
+            tag: latest
+          resources:
+            requests:
+              cpu: 400m
+              memory: 4Gi
+            limits:
+              cpu: 3000m
+              memory: 32Gi
+            claims:
+              - name: gpu
+        - name: sidecar
+          image:
+            repository: nginx
+            tag: latest
+          resources:
+            requests:
+              cpu: 50m
+              memory: 64Mi
+            limits:
+              cpu: 200m
+              memory: 256Mi
+            claims:
+              - name: gpu
+
+  # Une claim déjà existante dans le namespace plutôt qu'un template, et un
+  # conteneur qui n'en consomme aucune : le pod peut déclarer une claim sans que
+  # tous ses conteneurs y touchent.
+  - name: transcode
+    deployment:
+      resourceClaims:
+        - name: igpu
+          resourceClaimName: igpu-partage
+      containers:
+        - name: jellyfin
+          image:
+            repository: jellyfin/jellyfin
+            tag: latest
+          resources:
+            requests:
+              cpu: 400m
+              memory: 2Gi
+            limits:
+              cpu: 2000m
+              memory: 16Gi
+            claims:
+              - name: igpu
+
+  # Aucun `resourceClaims` : le bloc ne doit pas apparaître du tout dans le pod
+  # spec. Un `resourceClaims: null` ou `[]` émis systématiquement ferait échouer
+  # la validation de schéma.
+  - name: sans-claim
+    deployment:
+      containers:
+        - name: app
+          image:
+            repository: nginx
+            tag: latest
+          resources:
+            requests:
+              cpu: 50m
+              memory: 64Mi
+            limits:
+              cpu: 200m
+              memory: 256Mi
