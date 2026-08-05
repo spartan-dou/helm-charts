@@ -42,6 +42,10 @@ spec:
       {{- with .hostNetwork }}
       hostNetwork: {{ . }}
       {{- end }}
+      {{- with .resourceClaims }}
+      resourceClaims:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
       {{- with .initContainers }}
       initContainers:
         {{- range . }}

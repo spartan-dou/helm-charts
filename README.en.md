@@ -191,6 +191,7 @@ Each entry in the `components` list accepts:
 | `securityContext` | — | Merged with `global.securityContext`. |
 | `nodeSelector` | — | |
 | `hostNetwork` | — | |
+| `resourceClaims[]` | — | DRA resources, at the pod level. Passed through as-is. See [DRA](#dynamic-resource-allocation-dra). |
 | `initContainers[]` | — | `name` (defaults to the component name), `image.repository`, `image.tag` (default `latest`), `securityContext`, `command`, `args`, `env[]`, `volumeMounts[]`. |
 | `containers[]` | — | See below. |
 | `volumes[]` | — | See [`volumes`](#volumes). |
@@ -206,11 +207,46 @@ Each entry in `containers[]`:
 - `volumeMounts[]` (`name`, `mountPath`, optional `subPath`)
 - `additionalsPorts[]` (`name`, `containerPort`, `protocol` default `TCP`, optional `hostPort`) — *(field name exactly as-is in the chart, with the trailing "s")*
 - `livenessProbe` / `readinessProbe` / `startupProbe` / `probe` — see [Probes](#probes)
-- `resources`
+- `resources` (passed through as-is, including `claims` — see [DRA](#dynamic-resource-allocation-dra))
 
 > If `service.ports` is set on the component, its ports are automatically added to the `ports` section of the **first** container in the list only (in addition to its own `additionalsPorts`, if any). Other containers only get their own `additionalsPorts`, if they define any.
 
 A `checksum/<volume-name>` annotation is automatically added to the pod for every chart-generated `configMap` volume (not `useExisting` ones) that has `data`, to trigger a rollout whenever the ConfigMap's content changes.
+
+#### Dynamic Resource Allocation (DRA)
+
+[DRA](https://kubernetes.io/docs/concepts/scheduling-eviction/dynamic-resource-allocation/) is GA as of Kubernetes 1.34 (`resource.k8s.io/v1`). For accelerators (GPUs, TPUs…) it replaces the device plugin model: instead of counting a whole resource (`limits: {nvidia.com/gpu: 1}`), the pod references a `ResourceClaim` that **the scheduler allocates before placing the pod**.
+
+The practical consequence: an unavailable resource leaves the pod `Pending` and retried, whereas a device plugin that has not registered yet produced a terminal `UnexpectedAdmissionError` — typically after a node reboot.
+
+Two blocks, at two levels, and both are required:
+
+```yaml
+components:
+  - name: inference
+    deployment:
+      # 1. Pod level: which claims, and what produces them.
+      resourceClaims:
+        - name: gpu
+          resourceClaimTemplateName: single-gpu   # or resourceClaimName for an existing claim
+      containers:
+        - name: server
+          image:
+            repository: ollama/ollama
+            tag: latest
+          resources:
+            requests: {cpu: 400m, memory: 4Gi}
+            limits: {cpu: 3000m, memory: 32Gi}
+            # 2. Container level: which of the pod's claims it consumes.
+            claims:
+              - name: gpu
+```
+
+Several containers in the same pod may reference the same claim: that is DRA's sharing model, where the device plugin required a whole resource per container.
+
+The chart only copies both blocks through. The `ResourceClaimTemplate` (or `ResourceClaim`) and the `DeviceClass` it targets must be created alongside, usually by the vendor's driver.
+
+> The expected shape is the Kubernetes 1.31+ one, with `resourceClaimName` / `resourceClaimTemplateName` at the root of the entry. The nested `source` block from earlier versions is deprecated.
 
 #### Environment variables and `commons.getValue`
 

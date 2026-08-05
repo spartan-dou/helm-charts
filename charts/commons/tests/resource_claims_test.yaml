@@ -1,0 +1,72 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/helm-unittest/helm-unittest/main/schema/helm-testsuite.json
+suite: Dynamic Resource Allocation (`deployment.resourceClaims`)
+values:
+  - ./values/resource-claims-values.yaml
+templates:
+  - templates/deployment.yaml
+release:
+  name: test
+tests:
+  - it: Déclare la claim au niveau du pod, produite par un ResourceClaimTemplate
+    documentSelector:
+      path: metadata.name
+      value: test-inference
+    asserts:
+      - equal:
+          path: spec.template.spec.resourceClaims[0].name
+          value: gpu
+      - equal:
+          path: spec.template.spec.resourceClaims[0].resourceClaimTemplateName
+          value: single-gpu
+      # Le bloc `source` imbriqué est déprécié depuis Kubernetes 1.31 : la
+      # fixture utilise la forme à plat, et rien ne doit la ré-imbriquer.
+      - notExists:
+          path: spec.template.spec.resourceClaims[0].source
+
+  - it: Accepte une ResourceClaim existante plutôt qu'un template
+    documentSelector:
+      path: metadata.name
+      value: test-transcode
+    asserts:
+      - equal:
+          path: spec.template.spec.resourceClaims[0].name
+          value: igpu
+      - equal:
+          path: spec.template.spec.resourceClaims[0].resourceClaimName
+          value: igpu-partage
+      - notExists:
+          path: spec.template.spec.resourceClaims[0].resourceClaimTemplateName
+
+  - it: Reporte `resources.claims` sur chaque conteneur qui consomme la claim
+    documentSelector:
+      path: metadata.name
+      value: test-inference
+    asserts:
+      # Deux conteneurs partagent la même claim déclarée une seule fois au
+      # niveau du pod : c'est le mode de partage de DRA, là où le device plugin
+      # exigeait une ressource entière par conteneur.
+      - equal:
+          path: spec.template.spec.containers[0].resources.claims[0].name
+          value: gpu
+      - equal:
+          path: spec.template.spec.containers[1].resources.claims[0].name
+          value: gpu
+      # `resources` reste par ailleurs intact.
+      - equal:
+          path: spec.template.spec.containers[0].resources.limits.memory
+          value: 32Gi
+      - equal:
+          path: spec.template.spec.containers[0].resources.requests.cpu
+          value: 400m
+
+  - it: N'émet aucun bloc resourceClaims quand le component n'en déclare pas
+    documentSelector:
+      path: metadata.name
+      value: test-sans-claim
+    asserts:
+      # Un `resourceClaims: null` ou `[]` émis systématiquement casserait la
+      # validation de schéma sur tous les déploiements existants.
+      - notExists:
+          path: spec.template.spec.resourceClaims
+      - notExists:
+          path: spec.template.spec.containers[0].resources.claims
