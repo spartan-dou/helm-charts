@@ -1,0 +1,62 @@
+{{/*
+  Une IngressRoute Traefik par hôte optant pour `authentikOutpost.enabled`,
+  routant /outpost.goauthentik.io/ vers l'outpost Authentik du cluster —
+  requis pour le mode forward auth "single application" (un provider par
+  hôte, une policy de groupe par hôte), voir la doc du projet consommateur.
+
+  Opt-in par hôte, pas par ingress : un même Ingress peut servir plusieurs
+  hôtes dont un seul (ou aucun) a besoin de cette route.
+*/}}
+{{- $components := include "commons.withAddons" . | fromYamlArray }}
+{{- $globalCfg := $.Values.global.ingress.authentikOutpost | default dict }}
+{{- $defaultServiceName := default "traefik-outpost" $globalCfg.serviceName }}
+{{- $defaultServiceNamespace := default "authentik" $globalCfg.serviceNamespace }}
+{{- $defaultServicePort := default 9000 $globalCfg.servicePort }}
+{{- $defaultPriority := default 15 $globalCfg.priority }}
+{{- $defaultEntryPoints := default (list "websecure") $globalCfg.entryPoints }}
+{{- range $components }}
+{{- $component := . }}
+{{- with $component.ingress }}
+{{- $ingress := . }}
+{{- if $ingress.enabled }}
+{{- range $ingress.hosts }}
+{{- $host := . }}
+{{- with $host.authentikOutpost }}
+{{- $outpost := . }}
+{{- if $outpost.enabled }}
+{{- $secretName := "" }}
+{{- range $ingress.tls }}
+  {{- if has $host.host (.hosts | default list) }}
+    {{- $secretName = .secretName }}
+  {{- end }}
+{{- end }}
+{{- $suffix := default (splitList "." $host.host | first) $outpost.name }}
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: {{ include "commons.fullname" (dict "Chart" $.Chart "Values" $.Values "Release" $.Release "name" (printf "%s-outpost" $suffix) "component" $component) }}
+  labels:
+    {{- include "commons.labels" (dict "Chart" $.Chart "Values" $.Values "Release" $.Release "name" $ingress.name "component" $component) | nindent 4 }}
+spec:
+  entryPoints:
+    {{- toYaml (default $defaultEntryPoints $outpost.entryPoints) | nindent 4 }}
+  routes:
+    - kind: Rule
+      match: Host(`{{ $host.host }}`) && PathPrefix(`/outpost.goauthentik.io/`)
+      priority: {{ default $defaultPriority $outpost.priority }}
+      services:
+        - kind: Service
+          name: {{ default $defaultServiceName $outpost.serviceName }}
+          namespace: {{ default $defaultServiceNamespace $outpost.serviceNamespace }}
+          port: {{ default $defaultServicePort $outpost.servicePort }}
+  {{- if $secretName }}
+  tls:
+    secretName: {{ $secretName }}
+  {{- end }}
+{{- end }}
+{{- end }}
+{{- end }}
+{{- end }}
+{{- end }}
+{{- end }}
