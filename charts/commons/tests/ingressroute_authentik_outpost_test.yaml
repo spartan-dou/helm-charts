@@ -1,0 +1,270 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/helm-unittest/helm-unittest/main/schema/helm-testsuite.json
+suite: Tests de templates/ingressroute-authentik-outpost.yaml
+templates:
+  - templates/ingressroute-authentik-outpost.yaml
+release:
+  name: test
+tests:
+  - it: ne génère rien quand aucun hôte n'active authentikOutpost
+    values:
+      - ./values/values.yaml
+    asserts:
+      - hasDocuments:
+          count: 0
+
+  - it: génère une IngressRoute pour l'hôte qui active authentikOutpost, avec les valeurs par défaut
+    set:
+      global:
+        timezone: Europe/Paris
+        pvc:
+          storage:
+            size: 1Gi
+        rbac:
+          enabled: false
+        ingress:
+          className: traefik
+      components:
+        - name: app
+          deployment:
+            containers:
+              - image:
+                  repository: nginx
+                  tag: latest
+          service:
+            ports:
+              - name: http
+                port: 80
+          ingress:
+            enabled: true
+            hosts:
+              - host: home.example.com
+                authentikOutpost:
+                  enabled: true
+                paths:
+                  - path: /
+            tls:
+              - hosts: [home.example.com]
+                secretName: home-tls
+      addons:
+        vscode:
+          enabled: false
+        redis:
+          enabled: false
+        pgadmin:
+          enabled: false
+        postgres:
+          enabled: false
+    asserts:
+      - hasDocuments:
+          count: 1
+      - equal:
+          path: metadata.name
+          value: test-app-home-outpost
+      - equal:
+          path: spec.entryPoints
+          value: [websecure]
+      - equal:
+          path: spec.routes[0].match
+          value: "Host(`home.example.com`) && PathPrefix(`/outpost.goauthentik.io/`)"
+      - equal:
+          path: spec.routes[0].priority
+          value: 15
+      - equal:
+          path: spec.routes[0].services[0].name
+          value: traefik-outpost
+      - equal:
+          path: spec.routes[0].services[0].namespace
+          value: authentik
+      - equal:
+          path: spec.routes[0].services[0].port
+          value: 9000
+      - equal:
+          path: spec.tls.secretName
+          value: home-tls
+
+  - it: n'active la route que sur l'hôte opt-in quand un ingress sert plusieurs hôtes (cas Homepage)
+    set:
+      global:
+        timezone: Europe/Paris
+        pvc:
+          storage:
+            size: 1Gi
+        rbac:
+          enabled: false
+        ingress:
+          className: traefik
+      components:
+        - name: app
+          deployment:
+            containers:
+              - image:
+                  repository: nginx
+                  tag: latest
+          service:
+            ports:
+              - name: http
+                port: 80
+          ingress:
+            enabled: true
+            hosts:
+              - host: home.example.com
+                authentikOutpost:
+                  enabled: true
+                paths:
+                  - path: /
+              - host: example.com
+                paths:
+                  - path: /
+            tls:
+              - hosts: [home.example.com]
+                secretName: home-tls
+              - hosts: [example.com]
+                secretName: root-tls
+      addons:
+        vscode:
+          enabled: false
+        redis:
+          enabled: false
+        pgadmin:
+          enabled: false
+        postgres:
+          enabled: false
+    asserts:
+      - hasDocuments:
+          count: 1
+      - equal:
+          path: spec.routes[0].match
+          value: "Host(`home.example.com`) && PathPrefix(`/outpost.goauthentik.io/`)"
+
+  - it: applique le défaut global (serviceNamespace, priority) à l'hôte qui ne le surcharge pas
+    set:
+      global:
+        timezone: Europe/Paris
+        pvc:
+          storage:
+            size: 1Gi
+        rbac:
+          enabled: false
+        ingress:
+          className: traefik
+          authentikOutpost:
+            priority: 20
+            serviceNamespace: authentik-custom
+      components:
+        - name: app
+          deployment:
+            containers:
+              - image:
+                  repository: nginx
+                  tag: latest
+          service:
+            ports:
+              - name: http
+                port: 80
+          ingress:
+            enabled: true
+            hosts:
+              - host: home.example.com
+                authentikOutpost:
+                  enabled: true
+                paths:
+                  - path: /
+              - host: example.com
+                authentikOutpost:
+                  enabled: true
+                  name: root
+                  priority: 30
+                paths:
+                  - path: /
+            tls:
+              - hosts: [home.example.com]
+                secretName: home-tls
+              - hosts: [example.com]
+                secretName: root-tls
+      addons:
+        vscode:
+          enabled: false
+        redis:
+          enabled: false
+        pgadmin:
+          enabled: false
+        postgres:
+          enabled: false
+    documentSelector:
+      path: metadata.name
+      value: test-app-home-outpost
+    asserts:
+      - equal:
+          path: spec.routes[0].priority
+          value: 20
+      - equal:
+          path: spec.routes[0].services[0].namespace
+          value: authentik-custom
+
+  - it: la surcharge par hôte (name, priority) prévaut sur le défaut global
+    set:
+      global:
+        timezone: Europe/Paris
+        pvc:
+          storage:
+            size: 1Gi
+        rbac:
+          enabled: false
+        ingress:
+          className: traefik
+          authentikOutpost:
+            priority: 20
+            serviceNamespace: authentik-custom
+      components:
+        - name: app
+          deployment:
+            containers:
+              - image:
+                  repository: nginx
+                  tag: latest
+          service:
+            ports:
+              - name: http
+                port: 80
+          ingress:
+            enabled: true
+            hosts:
+              - host: home.example.com
+                authentikOutpost:
+                  enabled: true
+                paths:
+                  - path: /
+              - host: example.com
+                authentikOutpost:
+                  enabled: true
+                  name: root
+                  priority: 30
+                paths:
+                  - path: /
+            tls:
+              - hosts: [home.example.com]
+                secretName: home-tls
+              - hosts: [example.com]
+                secretName: root-tls
+      addons:
+        vscode:
+          enabled: false
+        redis:
+          enabled: false
+        pgadmin:
+          enabled: false
+        postgres:
+          enabled: false
+    documentSelector:
+      path: metadata.name
+      value: test-app-root-outpost
+    asserts:
+      - equal:
+          path: spec.routes[0].match
+          value: "Host(`example.com`) && PathPrefix(`/outpost.goauthentik.io/`)"
+      - equal:
+          path: spec.routes[0].priority
+          value: 30
+      - equal:
+          path: spec.routes[0].services[0].namespace
+          value: authentik-custom

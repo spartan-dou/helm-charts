@@ -166,6 +166,7 @@ Ce changement s'applique **aussi au mode historique** (mot de passe en clair dan
 | `global.rbac.rules` | — | Liste de `PolicyRule` (format RBAC Kubernetes standard) pour le `ClusterRole`. |
 | `global.var` | `{}` | Espace de clé/valeur libre, accessible depuis n'importe quelle `env[].value` via `__global__<clé>` (voir [`commons.getValue`](#variables-denvironnement-et-commonsgetvalue)). |
 | `global.ingress.className` | `traefik` | `ingressClassName` par défaut pour tout `ingress` (component ou addon, y compris `addons.pgadmin.ingress`) qui ne définit pas explicitement son propre `className`. |
+| `global.ingress.authentikOutpost.*` | Voir [`authentikOutpost`](#authentikoutpost) | Valeurs par défaut (`priority`, `entryPoints`, `serviceName`, `serviceNamespace`, `servicePort`) pour tous les `hosts[].authentikOutpost` du chart, surchargeables par hôte. |
 
 ### Un `component`
 
@@ -351,7 +352,45 @@ Chaque entrée de `deployment.volumes[]` (et `cronjobs[].initContainers[]/contai
 | `hosts[].paths[].pathType` | `Prefix` | |
 | `hosts[].paths[].name` | Service du component | Nom du Service backend ; par défaut celui généré pour le component courant. |
 | `hosts[].paths[].port` | `80` | Port du Service backend : un entier est rendu comme `port.number`, une chaîne comme `port.name` (port nommé). |
+| `hosts[].authentikOutpost` | — | Voir [`authentikOutpost`](#authentikoutpost). |
 | `tls[]` | — | Passé tel quel (`toYaml`), format standard `spec.tls` d'un Ingress. |
+
+##### `authentikOutpost`
+
+Génère une `IngressRoute` Traefik (`traefik.io/v1alpha1`) dédiée, qui route
+`/outpost.goauthentik.io/` sur cet hôte vers l'outpost Authentik du cluster —
+nécessaire pour le mode forward auth **single application** (un provider
+par hôte, une policy de groupe par hôte). Opt-in par hôte, pas par ingress :
+un `ingress` qui sert plusieurs `hosts[]` peut n'activer ceci que sur
+certains.
+
+| Clé | Défaut | Description |
+|---|---|---|
+| `enabled` | `false` | |
+| `name` | Premier label DNS de `host` (ex. `app` pour `app.example.com`) | Suffixe du nom de l'objet `IngressRoute` généré ; à préciser si deux hôtes du même component partagent ce label (rare). |
+| `priority` | `global.ingress.authentikOutpost.priority` (`15`) | |
+| `entryPoints` | `global.ingress.authentikOutpost.entryPoints` (`["websecure"]`) | |
+| `serviceName` | `global.ingress.authentikOutpost.serviceName` (`traefik-outpost`) | |
+| `serviceNamespace` | `global.ingress.authentikOutpost.serviceNamespace` (`authentik`) | |
+| `servicePort` | `global.ingress.authentikOutpost.servicePort` (`9000`) | |
+
+Le `secretName` TLS de l'`IngressRoute` générée est déduit automatiquement
+du bloc `tls[]` de l'`ingress` dont fait partie l'hôte (celui dont
+`tls[].hosts` contient `host`) — rien à répéter.
+
+```yaml
+components:
+  - name: app
+    ingress:
+      enabled: true
+      hosts:
+        - host: app.example.com
+          authentikOutpost:
+            enabled: true
+      tls:
+        - hosts: [app.example.com]
+          secretName: app-tls
+```
 
 #### `secrets`
 
