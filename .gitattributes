@@ -1,0 +1,4 @@
+# Fins de ligne normalisées : LF dans le dépôt, quelle que soit la plateforme.
+# Le chart contient du YAML rendu et des scripts shell embarqués (initContainers,
+# entrypoints des images) : un CRLF qui s'y glisse casse le script à l'exécution.
+* text=auto eol=lf
