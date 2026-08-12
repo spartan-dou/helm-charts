@@ -457,7 +457,7 @@ Instance [code-server](https://github.com/coder/code-server) (VS Code dans le na
 |---|---|
 | `enabled` | `false` |
 | `image.repository` | `lscr.io/linuxserver/code-server` |
-| `image.tag` | `4.118.0` |
+| `image.tag` | `4.131.0` |
 | `service.port` | `8443` |
 | `ingress.enabled` | `false` |
 | `volumes[]` | Espaces de travail supplémentaires, chacun monté sous `/config/workspace/<name>` (PVC dédié, `useExisting: true` par défaut). |
@@ -472,7 +472,7 @@ Instance Redis (Deployment + Service + PVC `1Gi` par défaut). Quand elle est ac
 | `enabled` | `false` |
 | `name` | `redis` |
 | `image.repository` | `redis` |
-| `image.tag` | `8.8.0-alpine` |
+| `image.tag` | `8.8.1-alpine` |
 | `port` | `6379` |
 | `storage.size` / `storage.storageClassName` | repli sur `global.pvc.storage.*` |
 | `password` | `""` |

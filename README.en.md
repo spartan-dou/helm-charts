@@ -418,7 +418,7 @@ Addons are normalized into the same shape as a `component` (internal `commons.wi
 |---|---|
 | `enabled` | `false` |
 | `image.repository` | `lscr.io/linuxserver/code-server` |
-| `image.tag` | `4.118.0` |
+| `image.tag` | `4.131.0` |
 | `service.port` | `8443` |
 | `ingress.enabled` | `false` |
 | `volumes[]` | Extra workspaces, each mounted under `/config/workspace/<name>` (dedicated PVC, `useExisting: true` by default). |
@@ -433,7 +433,7 @@ Redis instance (Deployment + Service + `1Gi` PVC by default). When enabled, a `w
 | `enabled` | `false` |
 | `name` | `redis` |
 | `image.repository` | `redis` |
-| `image.tag` | `8.8.0-alpine` |
+| `image.tag` | `8.8.1-alpine` |
 | `port` | `6379` |
 | `storage.size` / `storage.storageClassName` | falls back to `global.pvc.storage.*` |
 | `password` | `""` |

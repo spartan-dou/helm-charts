@@ -30,7 +30,7 @@
     "repository" .Values.addons.postgres.image.repository
     "tag" .Values.addons.postgres.image.tag
   )
-  "command" (list "sh" "-c" (printf "until pg_isready -h %s -p %s -U %s; do echo \"Waiting for Postgres to be ready...\"; sleep 2; done" (include "postgres.host" .) "5432" (include "postgres.username" .)))
+  "command" (list "sh" "-c" (printf "until pg_isready -h %s -p %s -U %s; do echo \"Waiting for Postgres to be ready...\"; sleep 2; done" (include "commons.postgres.host" .) "5432" (include "commons.postgres.username" .)))
   "resources" (dict
     "requests" (dict "cpu" "10m" "memory" "16Mi")
     "limits"   (dict "cpu" "50m" "memory" "32Mi")
@@ -39,6 +39,23 @@
 {{- toYaml $postgresInit -}}
 {{- end -}}
 
+{{/*
+  Liste unique de "components" consommée par tous les templates de ressources.
+  Elle contient :
+
+    1. les `components` des values ayant un `deployment`, enrichis des
+       initContainers d'attente (redis, postgres partagé, postgres embarqué)
+       sur le deployment comme sur chaque cronjob ;
+    2. les addons activés (`vscode`, `redis`, `pgadmin`), normalisés au même
+       format qu'un component — d'où le fait qu'ils produisent Deployment,
+       Service, Ingress… via exactement les mêmes templates.
+
+  Pour chaque addon, les valeurs de `addons.<nom>` sont fusionnées par-dessus
+  un squelette de défauts, à l'exception des clés de pilotage (`enabled`,
+  `name`, `password`…) qui sont retirées avant fusion.
+
+  Entrée : le contexte racine ($). Sortie : YAML, à relire avec `fromYamlArray`.
+*/}}
 {{- define "commons.withAddons" }}
 {{- $rawComponents := .Values.components | default list -}}
 {{- $base := list -}}
@@ -111,7 +128,7 @@
 
 {{- $addons := list }}
 
-{{/* === Addon VSCode === */}}
+{{/* === Addon `addons.vscode` === */}}
 {{- if .Values.addons.vscode.enabled }}
 
   {{/* VolumeMounts */}}
@@ -179,18 +196,9 @@
   }}
 
   {{- if (default dict (default dict .Values.addons.vscode).ingress).enabled }}
-  {{- /* dictionnaire ingress par défaut */ -}}
-  {{- $ingressDefaults := dict
-      "enabled" true
-  }}
-
-  {{- /* valeurs utilisateur depuis values.yaml */ -}}
-  {{- $ingressOverrides := default dict .Values.addons.vscode.ingress }}
-
-  {{- /* on enlève la clé enabled pour ne pas écraser la condition */ -}}
-  {{- $ingressOverrides := omit $ingressOverrides "enabled" }}
-
-  {{- /* fusion defaults + overrides */ -}}
+    {{- $ingressDefaults := dict "enabled" true }}
+    {{- /* `enabled` est retiré des overrides pour ne pas écraser la condition */ -}}
+    {{- $ingressOverrides := omit (default dict .Values.addons.vscode.ingress) "enabled" }}
     {{- $_ := set $defaults "ingress" (merge $ingressDefaults $ingressOverrides) }}
   {{- end }}
   {{- $raw := .Values.addons.vscode | default dict }}
@@ -199,7 +207,7 @@
   {{- $addons = append $addons $vscode }}
 {{- end }}
 
-{{/* === Addon Redis === */}}
+{{/* === Addon `addons.redis` === */}}
 {{- if .Values.addons.redis.enabled }}
   {{- $redisAuth := or (ne (default "" .Values.addons.redis.password) "") (ne (default "" .Values.addons.redis.passwordSecretRef) "") }}
   {{- $redisOwnSecret := and $redisAuth (not .Values.addons.redis.passwordSecretRef) }}
@@ -233,7 +241,7 @@
     "volumes" (list (dict
       "name" "data"
       "pvc" (dict
-        "name" (printf "data")
+        "name" "data"
         "storage" (dict
           "size" (default .Values.global.pvc.storage.size (default dict .Values.addons.redis.storage).size)
           "storageClassName" (default .Values.global.pvc.storage.storageClassName (default dict .Values.addons.redis.storage).storageClassName)
@@ -252,7 +260,7 @@
   {{- $addons = append $addons $redis }}
 {{- end }}
 
-{{/* === Addon pgadmin === */}}
+{{/* === Addon `addons.pgadmin` === */}}
 {{- if .Values.addons.pgadmin.enabled }}
   {{- $defaults := dict
     "name" "pgadmin"
@@ -271,8 +279,8 @@
           "runAsGroup" 5050
           "runAsNonRoot" true
         )
-        "command" (list "sh" "-c" (trim (include "pgadmin.pgpassScript" (dict "Values" $.Values "Chart" $.Chart "Release" $.Release))))
-        "env" (include "pgadmin.pgpassEnv" (dict "Values" $.Values "Chart" $.Chart "Release" $.Release) | fromYamlArray)
+        "command" (list "sh" "-c" (trim (include "commons.pgadmin.pgpassScript" (dict "Values" $.Values "Chart" $.Chart "Release" $.Release))))
+        "env" (include "commons.pgadmin.pgpassEnv" (dict "Values" $.Values "Chart" $.Chart "Release" $.Release) | fromYamlArray)
         "volumeMounts" (list (dict "mountPath" "/pgpass" "name" "pgpass"))
       ))
       "containers" (list (dict
@@ -318,7 +326,7 @@
           "configMap" (dict
             "name" "pg-config"
             "data" (dict
-              "servers.json" (trim (include "pgadmin.servers" (dict "Values" $.Values "Chart" $.Chart "Release" $.Release)))
+              "servers.json" (trim (include "commons.pgadmin.servers" (dict "Values" $.Values "Chart" $.Chart "Release" $.Release)))
             ))
         )
         (dict "name" "pgpass" "emptyDir" (dict))
@@ -337,7 +345,7 @@
   {{- $addons = append $addons $pgadmin }}
 {{- end }}
 
-{{/* === Fusion finale === */}}
+{{/* === Components + addons === */}}
 {{- $all := concat $result $addons }}
 {{- toYaml $all }}
 {{- end }}

@@ -1,4 +1,12 @@
-{{- define "pgadmin.servers" }}
+{{/*
+  Fichier `servers.json` de pgAdmin : une entrée par cluster Postgres de la
+  release (components et addon partagé), pour que les connexions soient déjà
+  déclarées au premier démarrage. Ne contient aucun mot de passe — voir
+  `commons.pgadmin.pgpassScript`.
+
+  Entrée : dict "Values" $.Values "Chart" $.Chart "Release" $.Release
+*/}}
+{{- define "commons.pgadmin.servers" }}
 {
   "Servers": {
   {{- $workList := .Values.components | default list }}
@@ -35,10 +43,14 @@
   partir de variables d'environnement injectées depuis les Secrets Postgres
   (`secretKeyRef`), dans un volume `emptyDir` partagé.
 
-  `pgadmin.pgpassEnv` produit la liste des env (une par cluster Postgres),
-  `pgadmin.pgpassScript` le script qui reconstitue le fichier.
+  `commons.pgadmin.pgpassEnv` produit la liste des env (une par cluster
+  Postgres), `commons.pgadmin.pgpassScript` le script qui reconstitue le
+  fichier. Les deux parcourent les clusters dans le même ordre : c'est ce qui
+  fait correspondre `PGPASS_PWD_<i>` à la bonne ligne.
+
+  Entrée : dict "Values" $.Values "Chart" $.Chart "Release" $.Release
 */}}
-{{- define "pgadmin.pgpassEnv" }}
+{{- define "commons.pgadmin.pgpassEnv" }}
   {{- $workList := .Values.components | default list }}
   {{- if .Values.addons }}
     {{- $workList = append $workList .Values.addons }}
@@ -59,7 +71,7 @@
   {{- toYaml $envs }}
 {{- end }}
 
-{{- define "pgadmin.pgpassScript" }}
+{{- define "commons.pgadmin.pgpassScript" }}
   {{- $workList := .Values.components | default list }}
   {{- if .Values.addons }}
     {{- $workList = append $workList .Values.addons }}

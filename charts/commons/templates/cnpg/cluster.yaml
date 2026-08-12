@@ -1,3 +1,7 @@
+{{/*
+  Un Cluster CloudNativePG par `postgres.enabled`, qu'il soit embarqué dans un
+  component ou partagé via `addons.postgres`.
+*/}}
 {{- $components := include "commons.withAddons" . | fromYamlArray }}
 {{- $raw := .Values.addons | default dict }}
 {{- $components = append $components $raw }}

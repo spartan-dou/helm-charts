@@ -1,3 +1,7 @@
+{{/*
+  Un PersistentVolumeClaim par volume `pvc` d'un deployment, sauf
+  `useExisting: true`. Les champs non précisés retombent sur `global.pvc.storage`.
+*/}}
 {{- $components := include "commons.withAddons" . | fromYamlArray }}
 {{- range $components }}
 {{- $component := . }}

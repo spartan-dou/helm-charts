@@ -1,3 +1,6 @@
+{{/*
+  Un Service par component (ou addon) déclarant un bloc `service`.
+*/}}
 {{- $components := include "commons.withAddons" . | fromYamlArray }}
 {{- range $components }}
 {{- $component := . }}

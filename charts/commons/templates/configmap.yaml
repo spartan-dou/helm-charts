@@ -1,3 +1,7 @@
+{{/*
+  Un ConfigMap par volume `configMap` d'un deployment qui embarque ses `data`
+  (les volumes `useExisting: true` pointent sur un ConfigMap déjà présent).
+*/}}
 {{- $components := include "commons.withAddons" . | fromYamlArray }}
 {{- range $components }}
 {{- $component := . }}

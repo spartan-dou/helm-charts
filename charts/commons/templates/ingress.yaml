@@ -1,3 +1,7 @@
+{{/*
+  Un Ingress par component (ou addon) dont le bloc `ingress` est activé.
+  Le backend par défaut est le Service du component courant.
+*/}}
 {{- $components := include "commons.withAddons" . | fromYamlArray }}
 {{- range $components }}
 {{- $component := . }}

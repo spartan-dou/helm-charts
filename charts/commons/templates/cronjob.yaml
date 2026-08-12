@@ -1,3 +1,7 @@
+{{/*
+  Un CronJob par entrée `cronjobs[]` d'un component, quand `enabled: true`.
+  Voir `job.yaml` pour l'exécution immédiate au déploiement (`runOnStartup`).
+*/}}
 {{- $components := include "commons.withAddons" . | fromYamlArray }}
 {{- range $components }}
 {{- $component := . }}
@@ -18,7 +22,7 @@ spec:
   successfulJobsHistoryLimit: {{ default 5 .successfulJobsHistoryLimit }}
   failedJobsHistoryLimit: {{ default 5 .failedJobsHistoryLimit }}
   {{- with .suspend}}
-  suspend: {{ . }}   
+  suspend: {{ . }}
   {{- end }}
   jobTemplate:
     spec:
@@ -30,9 +34,9 @@ spec:
           automountServiceAccountToken: true
           {{- end }}
 
-          {{ include "pod.securityContext" (dict "global" $.Values.global "securityContext" .securityContext) | nindent 10 }}
+          {{ include "commons.pod.securityContext" (dict "global" $.Values.global "securityContext" .securityContext) | nindent 10 }}
           {{- with .nodeSelector }}
-          nodeSelector: 
+          nodeSelector:
             {{- toYaml . | nindent 12 }}
           {{- end }}
           {{- with .initContainers }}
@@ -153,7 +157,7 @@ spec:
                   {{- end }}
                 {{- end }}
               {{- end }}
-              
+
 
               {{- with .resources }}
               resources:
