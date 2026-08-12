@@ -35,7 +35,7 @@ env:
         name: {{ include "commons.getValue" (dict "Values" $.Values "Chart" $.Chart "Release" $.Release "component" $component "value" .secretKeyRef.name) }}
         key: {{ .secretKeyRef.key }}
       {{- else }}
-      {{- toYaml . | nindent 16 }}
+      {{- toYaml . | nindent 6 }}
       {{- end }}
     {{- end }}
   {{- end }}
@@ -43,75 +43,51 @@ env:
 {{- end }}
 
 {{/*
-  Sondes d'un conteneur. `probe` sert de configuration commune : elle est
-  reprise pour chaque sonde non définie individuellement. Chacune accepte
-  `tcpSocket`, `exec` ou `httpGet`, avec des défauts propres à son rôle
-  (démarrage plus permissif, readiness plus réactive).
+  Une sonde. Le handler est le premier renseigné parmi `tcpSocket`, `exec` et
+  `httpGet` ; les temporisations non précisées viennent des défauts du rôle.
+  Ne rend rien si la sonde n'est pas configurée.
+
+  Entrée : dict "name" <livenessProbe|readinessProbe|startupProbe>
+                "probe" <config|nil>
+                "defaults" (dict "initialDelaySeconds" … "periodSeconds" …
+                                 "timeoutSeconds" … "failureThreshold" …)
+*/}}
+{{- define "commons.containers.probe" -}}
+{{- $defaults := .defaults }}
+{{- with .probe }}
+{{ $.name }}:
+  {{- if .tcpSocket }}
+  tcpSocket:
+    {{- toYaml .tcpSocket | nindent 4 }}
+  {{- else if .exec }}
+  exec:
+    {{- toYaml .exec | nindent 4 }}
+  {{- else if .httpGet }}
+  httpGet:
+    path: {{ default "/" .httpGet.path }}
+    port: {{ default "http" .httpGet.port }}
+  {{- end }}
+  initialDelaySeconds: {{ default $defaults.initialDelaySeconds .initialDelaySeconds }}
+  periodSeconds: {{ default $defaults.periodSeconds .periodSeconds }}
+  timeoutSeconds: {{ default $defaults.timeoutSeconds .timeoutSeconds }}
+  failureThreshold: {{ default $defaults.failureThreshold .failureThreshold }}
+{{- end }}
+{{- end }}
+
+{{/*
+  Les trois sondes d'un conteneur. `probe` sert de configuration commune :
+  elle est reprise pour chaque sonde non définie individuellement. Les défauts
+  de temporisation diffèrent par rôle — le démarrage est le plus permissif, la
+  readiness la plus réactive.
 
   Entrée : le conteneur (`.livenessProbe`, `.readinessProbe`, `.startupProbe`,
            `.probe`).
 */}}
-{{- define "commons.containers.probes" }}
-{{- $livenessProbe := or .livenessProbe .probe }}
-{{- with $livenessProbe }}
-livenessProbe:
-  {{- if .tcpSocket }}
-  tcpSocket:
-    {{- toYaml .tcpSocket | nindent 14 }}
-  {{- else if .exec }}
-  exec:
-    {{- toYaml .exec | nindent 14 }}
-  {{- else if .httpGet }}
-  httpGet:
-    path: {{ default "/" .httpGet.path }}
-    port: {{ default "http" .httpGet.port }}
-  {{- end }}
-  initialDelaySeconds: {{ default 10 .initialDelaySeconds }}
-  periodSeconds: {{ default 10 .periodSeconds }}
-  timeoutSeconds: {{ default 2 .timeoutSeconds }}
-  failureThreshold: {{ default 3 .failureThreshold }}
-{{- end }}
-
-{{- $readinessProbe := or .readinessProbe .probe }}
-{{- with $readinessProbe }}
-readinessProbe:
-  {{- if .tcpSocket }}
-  tcpSocket:
-    {{- toYaml .tcpSocket | nindent 14 }}
-  {{- else if .exec }}
-  exec:
-    {{- toYaml .exec | nindent 14 }}
-  {{- else if .httpGet }}
-  httpGet:
-    path: {{ default "/" .httpGet.path }}
-    port: {{ default "http" .httpGet.port }}
-  {{- end }}
-  initialDelaySeconds: {{ default 5 .initialDelaySeconds }}
-  periodSeconds: {{ default 5 .periodSeconds }}
-  timeoutSeconds: {{ default 2 .timeoutSeconds }}
-  failureThreshold: {{ default 3 .failureThreshold }}
-{{- end }}
-
-{{- $startupProbe := or .startupProbe .probe }}
-{{- with $startupProbe }}
-startupProbe:
-  {{- if .tcpSocket }}
-  tcpSocket:
-    {{- toYaml .tcpSocket | nindent 14 }}
-  {{- else if .exec }}
-  exec:
-    {{- toYaml .exec | nindent 14 }}
-  {{- else if .httpGet }}
-  httpGet:
-    path: {{ default "/" .httpGet.path }}
-    port: {{ default "http" .httpGet.port }}
-  {{- end }}
-  initialDelaySeconds: {{ default 0 .initialDelaySeconds }}
-  periodSeconds: {{ default 5 .periodSeconds }}
-  timeoutSeconds: {{ default 2 .timeoutSeconds }}
-  failureThreshold: {{ default 30 .failureThreshold }}
-{{- end }}
-{{- end }}
+{{- define "commons.containers.probes" -}}
+{{- include "commons.containers.probe" (dict "name" "livenessProbe" "probe" (or .livenessProbe .probe) "defaults" (dict "initialDelaySeconds" 10 "periodSeconds" 10 "timeoutSeconds" 2 "failureThreshold" 3)) }}
+{{- include "commons.containers.probe" (dict "name" "readinessProbe" "probe" (or .readinessProbe .probe) "defaults" (dict "initialDelaySeconds" 5 "periodSeconds" 5 "timeoutSeconds" 2 "failureThreshold" 3)) }}
+{{- include "commons.containers.probe" (dict "name" "startupProbe" "probe" (or .startupProbe .probe) "defaults" (dict "initialDelaySeconds" 0 "periodSeconds" 5 "timeoutSeconds" 2 "failureThreshold" 30)) }}
+{{- end -}}
 
 {{/*
   `securityContext` de pod : `global.securityContext` fusionné (mergeOverwrite)

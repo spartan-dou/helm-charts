@@ -30,6 +30,7 @@ Personal Helm charts by `spartan-dou`, packaged and published via `chart-release
   - [Resource naming](#resource-naming)
   - [Values validation](#values-validation)
   - [Tests](#tests)
+  - [Changelog](#changelog)
 
 ## Installation
 
@@ -394,7 +395,7 @@ Creates a dedicated CloudNativePG `Cluster` + a `kubernetes.io/basic-auth` Secre
 | `instances` | `1` | |
 | `resources` | — | |
 | `storage.size` / `storage.storageClassName` | falls back to `addons.postgres.storage.*` | |
-| `repository.image` / `repository.tag` | falls back to `addons.postgres.image.*` | |
+| `image.repository` / `image.tag` | falls back to `addons.postgres.image.*` | Image of the CloudNativePG `Cluster` **and** of the `wait-for-postgres` initContainer waiting on it. The legacy `repository.image` / `repository.tag` spelling is still accepted, but `image.*` takes precedence. |
 | `cluster.username` | `app` | |
 | `cluster.password` | — | |
 | `cluster.database` | `app` | |
@@ -492,3 +493,9 @@ helm unittest charts/commons
 ```
 
 The `helm-tests.yml` GitHub Actions workflow runs these commands on every pull request touching `charts/**`. It also validates the rendered YAML (`helm template`, both with default values and with the test values) against the official Kubernetes schema via [`kubeconform`](https://github.com/yannh/kubeconform), ignoring CloudNativePG's `Cluster` resource (a CRD with no locally available schema). This catches structural errors (unknown field, invalid type) that `helm-unittest` assertions don't necessarily cover.
+
+### Changelog
+
+Changes visible from the values or from the rendered YAML are tracked in
+[`charts/commons/CHANGELOG.md`](charts/commons/CHANGELOG.md), including what to
+check before moving from one major version to the next.

@@ -30,6 +30,7 @@ Charts Helm maison de `spartan-dou`, packagées et publiées via `chart-releaser
   - [Nommage des ressources](#nommage-des-ressources)
   - [Validation des values](#validation-des-values)
   - [Tests](#tests)
+  - [Changelog](#changelog)
 
 ## Installation
 
@@ -433,7 +434,7 @@ Crée un `Cluster` CloudNativePG dédié + un Secret `kubernetes.io/basic-auth`,
 | `instances` | `1` | |
 | `resources` | — | |
 | `storage.size` / `storage.storageClassName` | repli sur `addons.postgres.storage.*` | |
-| `repository.image` / `repository.tag` | repli sur `addons.postgres.image.*` | |
+| `image.repository` / `image.tag` | repli sur `addons.postgres.image.*` | Image du `Cluster` CloudNativePG **et** de l'initContainer `wait-for-postgres` qui l'attend. L'écriture historique `repository.image` / `repository.tag` reste acceptée, mais `image.*` est prioritaire. |
 | `cluster.username` | `app` | |
 | `cluster.password` | — | |
 | `cluster.database` | `app` | |
@@ -531,3 +532,9 @@ helm unittest charts/commons
 ```
 
 Le workflow GitHub Actions `helm-tests.yml` exécute ces commandes sur chaque pull request touchant `charts/**`. Il valide aussi le YAML rendu (`helm template`, valeurs par défaut et valeurs de test) contre le schéma Kubernetes officiel via [`kubeconform`](https://github.com/yannh/kubeconform), en ignorant la ressource `Cluster` de CloudNativePG (CRD sans schéma local disponible). Cela attrape des erreurs de structure (champ inconnu, type invalide) que les assertions `helm-unittest` ne couvrent pas forcément.
+
+### Changelog
+
+Les changements visibles depuis les values ou depuis le YAML rendu sont suivis
+dans [`charts/commons/CHANGELOG.md`](charts/commons/CHANGELOG.md), avec la liste
+des points à vérifier avant de monter d'une version majeure à l'autre.

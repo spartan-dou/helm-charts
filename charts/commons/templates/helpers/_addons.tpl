@@ -26,10 +26,7 @@
 {{- define "commons.waitForSharedPostgresInitContainer" -}}
 {{- $postgresInit := dict
   "name" "wait-for-postgres"
-  "image" (dict
-    "repository" .Values.addons.postgres.image.repository
-    "tag" .Values.addons.postgres.image.tag
-  )
+  "image" (include "commons.postgres.image" (dict "Values" .Values "postgres" .Values.addons.postgres) | fromYaml)
   "command" (list "sh" "-c" (printf "until pg_isready -h %s -p %s -U %s; do echo \"Waiting for Postgres to be ready...\"; sleep 2; done" (include "commons.postgres.host" .) "5432" (include "commons.postgres.username" .)))
   "resources" (dict
     "requests" (dict "cpu" "10m" "memory" "16Mi")
@@ -82,16 +79,11 @@
   {{- end }}
 
   {{- if and $c.postgres $c.postgres.enabled }}
-    {{- $image := $c.image | default $.Values.addons.postgres.image.repository }}
-    {{- $tag := $c.tag | default $.Values.addons.postgres.image.tag }}
     {{- $host := include "commons.getValue" (dict "Values" $.Values "Chart" $.Chart "Release" $.Release "component" $c "value" "__components__postgres__host") }}
     {{- $user := include "commons.getValue" (dict "Values" $.Values "Chart" $.Chart "Release" $.Release "component" $c "value" "__components__postgres__username") }}
     {{- $postgresInit := dict
       "name" (printf "wait-for-postgres-%s" $c.name)
-      "image" (dict
-        "repository" $image
-        "tag" $tag
-      )
+      "image" (include "commons.postgres.image" (dict "Values" $.Values "postgres" $c.postgres) | fromYaml)
       "command" (list "sh" "-c" (printf "until pg_isready -h %s -p %s -U %s; do echo \"Waiting for Postgres to be ready...\"; sleep 2; done" $host "5432" $user))
       "resources" (dict
         "requests" (dict "cpu" "10m" "memory" "16Mi")
