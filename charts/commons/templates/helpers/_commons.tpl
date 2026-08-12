@@ -264,3 +264,26 @@ app: {{ .Release.Name }}
 {{- include "commons.getValue" (dict "Values" $.Values "Chart" $.Chart "Release" $.Release "component" $.Values.addons.postgres "value" "__addons__postgres__username") }}
 {{- end }}
 {{- end }}
+
+{{/*
+  Image d'un cluster CloudNativePG, rendue en `{repository, tag}`. Source unique
+  pour le `Cluster` lui-même et pour l'initContainer `wait-for-postgres` qui
+  l'attend : les deux ne peuvent donc plus diverger.
+
+  Deux écritures sont acceptées, par priorité décroissante :
+
+    postgres.image.repository / postgres.image.tag       convention de la chart
+    postgres.repository.image / postgres.repository.tag  forme historique
+    addons.postgres.image.*                              repli
+
+  Entrée : dict "Values" $.Values "postgres" <bloc postgres d'un component ou d'addons>
+*/}}
+{{- define "commons.postgres.image" -}}
+{{- $postgres := .postgres | default dict -}}
+{{- $image := $postgres.image | default dict -}}
+{{- $legacy := $postgres.repository | default dict -}}
+{{- toYaml (dict
+  "repository" (default (default .Values.addons.postgres.image.repository $legacy.image) $image.repository)
+  "tag" (default (default .Values.addons.postgres.image.tag $legacy.tag) $image.tag)
+) -}}
+{{- end }}

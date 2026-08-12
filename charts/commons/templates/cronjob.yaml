@@ -11,6 +11,8 @@ apiVersion: batch/v1
 kind: CronJob
 metadata:
   name: {{ include "commons.fullname" (dict "Chart" $.Chart "Values" $.Values "Release" $.Release "name" .name "component" $component) }}
+  labels:
+    {{- include "commons.labels" (dict "Chart" $.Chart "Values" $.Values "Release" $.Release "name" .name "component" $component) | nindent 4 }}
 spec:
   schedule: {{ .schedule | quote }}
   {{- with .concurrencyPolicy}}
@@ -62,33 +64,7 @@ spec:
               args:
                 {{ toYaml . | nindent 16 }}
               {{- end }}
-              {{- with .env }}
-              env:
-                - name: TZ
-                  value: {{ $.Values.global.timezone | quote }}
-                {{- range . }}
-                - name: {{ .name }}
-                  {{- with .value }}
-                  value: {{ include "commons.getValue" (dict "Values" $.Values "Chart" $.Chart "Release" $.Release "component" $component "value" .) | quote }}
-                  {{- end }}
-                  {{- with .secretRef }}
-                  valueFrom:
-                    secretKeyRef:
-                      name: {{ include "commons.secretRefName" (dict "Values" $.Values "alias" .) }}
-                      key: {{ include "commons.secretRefKey" (dict "Values" $.Values "alias" .) }}
-                  {{- end }}
-                  {{- with .valueFrom }}
-                  valueFrom:
-                    {{- if .secretKeyRef }}
-                    secretKeyRef:
-                      name: {{ include "commons.getValue" (dict "Values" $.Values "Chart" $.Chart "Release" $.Release "component" $component "value" .secretKeyRef.name) }}
-                      key: {{ .secretKeyRef.key }}
-                    {{- else }}
-                    {{- toYaml . | nindent 20 }}
-                    {{- end }}
-                  {{- end }}
-                {{- end }}
-              {{- end }}
+              {{- include "commons.containers.env" (dict "Values" $.Values "Chart" $.Chart "Release" $.Release "component" $component "env" .env) | nindent 14 }}
               {{- with .volumeMounts }}
               volumeMounts:
                 {{- range . }}
@@ -118,31 +94,7 @@ spec:
               securityContext:
                 {{- toYaml . | nindent 16 }}
               {{- end }}
-              env:
-                - name: TZ
-                  value: {{ $.Values.global.timezone | quote }}
-                {{- range .env }}
-                - name: {{ .name }}
-                  {{- with .value }}
-                  value: {{ include "commons.getValue" (dict "Values" $.Values "Chart" $.Chart "Release" $.Release "component" $component "value" .) | quote }}
-                  {{- end }}
-                  {{- with .secretRef }}
-                  valueFrom:
-                    secretKeyRef:
-                      name: {{ include "commons.secretRefName" (dict "Values" $.Values "alias" .) }}
-                      key: {{ include "commons.secretRefKey" (dict "Values" $.Values "alias" .) }}
-                  {{- end }}
-                  {{- with .valueFrom }}
-                  valueFrom:
-                    {{- if .secretKeyRef }}
-                    secretKeyRef:
-                      name: {{ include "commons.getValue" (dict "Values" $.Values "Chart" $.Chart "Release" $.Release "component" $component "value" .secretKeyRef.name) }}
-                      key: {{ .secretKeyRef.key }}
-                    {{- else }}
-                    {{- toYaml . | nindent 20 }}
-                    {{- end }}
-                  {{- end }}
-                {{- end }}
+              {{- include "commons.containers.env" (dict "Values" $.Values "Chart" $.Chart "Release" $.Release "component" $component "env" .env) | nindent 14 }}
               {{- with .lifecycle }}
               lifecycle:
               {{- toYaml . | nindent 16 }}

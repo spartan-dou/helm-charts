@@ -29,11 +29,8 @@ spec:
   storage:
     size: {{ default $.Values.addons.postgres.storage.size (default dict .storage).size }}
     storageClass: {{ default $.Values.addons.postgres.storage.storageClassName (default dict .storage).storageClassName }}
-  {{- if .repository}}
-  imageName: {{ .repository.image | default $.Values.addons.postgres.image.repository }}:{{ .repository.tag | default $.Values.addons.postgres.image.tag }}
-  {{- else }}
-  imageName: {{ $.Values.addons.postgres.image.repository }}:{{ $.Values.addons.postgres.image.tag }}
-  {{- end }}
+  {{- $pgImage := include "commons.postgres.image" (dict "Values" $.Values "postgres" .) | fromYaml }}
+  imageName: {{ $pgImage.repository }}:{{ $pgImage.tag }}
 
   bootstrap:
     initdb:
