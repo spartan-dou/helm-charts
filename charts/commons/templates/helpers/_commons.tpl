@@ -1,5 +1,8 @@
 {{/*
-  Récupère le nom du chart (peut être surchargé par .Values.nameOverride)
+  Nom applicatif d'un component, utilisé pour le label `app.kubernetes.io/name`.
+  Vaut le nom de la release par défaut ; `component.appNameOverride` le surcharge.
+
+  Entrée : dict "Release" $.Release "component" <component|nil>
 */}}
 {{- define "commons.name" -}}
 {{- if .component }}
@@ -9,40 +12,49 @@
 {{- end }}
 {{- end }}
 
+{{/*
+  Nom Kubernetes d'une ressource, construit à partir de trois briques dont les
+  doublons sont supprimés :
+
+    <release>                                 ressource globale (ni component ni nom)
+    <release>-<component>                     ressource propre à un component
+    <release>-<component>-<sous-ressource>    sous-ressource nommée (PVC, ConfigMap…)
+
+  Entrée : dict "Release" $.Release "component" <component|nil> "name" <string|nil>
+*/}}
 {{- define "commons.fullname" -}}
-{{- $x := $.Release.Name -}}
-{{- $x := $.Release.Name -}}
-{{- $y := $x -}}
+{{- $releaseName := $.Release.Name -}}
+{{- $componentName := $releaseName -}}
 {{- with .component }}
   {{- with .name }}
-    {{- $y = . -}}
+    {{- $componentName = . -}}
   {{- end }}
 {{- end }}
-{{- $z := default $y .name -}}
+{{- $resourceName := default $componentName .name -}}
 
-{{- if and (eq $x $y) (eq $y $z) -}}
-  {{- $x -}}
-{{- else if and (eq $x $y) (ne $z $x) -}}
-  {{- printf "%s-%s" $x $z -}}
-{{- else if and (ne $x $y) (eq $y $z) -}}
-  {{- printf "%s-%s" $x $y -}}
+{{- if and (eq $releaseName $componentName) (eq $componentName $resourceName) -}}
+  {{- $releaseName -}}
+{{- else if and (eq $releaseName $componentName) (ne $resourceName $releaseName) -}}
+  {{- printf "%s-%s" $releaseName $resourceName -}}
+{{- else if and (ne $releaseName $componentName) (eq $componentName $resourceName) -}}
+  {{- printf "%s-%s" $releaseName $componentName -}}
 {{- else -}}
-  {{- printf "%s-%s-%s" $x $y $z -}}
+  {{- printf "%s-%s-%s" $releaseName $componentName $resourceName -}}
 {{- end -}}
 {{- end -}}
-
-
-
 
 {{/*
-  Crée un identifiant chart "nom-version" pour les labels Helm
+  Valeur du label `helm.sh/chart`, sous la forme `<release>-<version>`.
+  (La convention Helm est `<nom-du-chart>-<version>` : ici c'est bien le nom de
+  la release qui est utilisé.)
 */}}
 {{- define "commons.chart" -}}
 {{- printf "%s-%s" .Release.Name .Chart.Version | replace "+" "_" | trunc 63 | trimSuffix "-" }}
 {{- end }}
 
 {{/*
-  Labels standards partagés
+  Labels standards posés sur toutes les ressources : les selectorLabels plus
+  les métadonnées de provenance (chart, version, gestionnaire).
 */}}
 {{- define "commons.labels" -}}
 helm.sh/chart: {{ include "commons.chart" . }}
@@ -52,7 +64,9 @@ app.kubernetes.io/managed-by: {{ .Release.Service }}
 {{- end }}
 
 {{/*
-  Labels utilisés pour les selectors (matchLabels)
+  Labels utilisés pour les selectors (`matchLabels`, `service.spec.selector`).
+  Seul `app` distingue les components entre eux : les deux autres labels valent
+  le nom de la release pour toute la release.
 */}}
 {{- define "commons.selectorLabels" -}}
 app.kubernetes.io/name: {{ include "commons.name" (dict "Release" $.Release "component" .component) }}
@@ -64,9 +78,7 @@ app: {{ .name }}
 {{- else }}
 app: {{ .Release.Name }}
 {{- end }}
-
 {{- end }}
-
 
 {{/*
   Section racine `secrets` : table d'alias vers des Secrets Kubernetes déjà
@@ -80,6 +92,8 @@ app: {{ .Release.Name }}
 
   `commons.secretRefName` renvoie le nom du Secret, `commons.secretRefKey` la
   clé (def. `password`). Les deux échouent explicitement sur un alias inconnu.
+
+  Entrée : dict "Values" $.Values "alias" <string>
 */}}
 {{- define "commons.secretRef" -}}
 {{- $alias := toString (default "" .alias) }}
@@ -106,7 +120,34 @@ app: {{ .Release.Name }}
 {{- end }}
 
 {{/*
-  Fonction dinamique pour utiliser des variables dans le fichier de valueKeys
+  Résolution des placeholders dynamiques utilisables dans les values (`env[].value`,
+  `env[].valueFrom.secretKeyRef.name`, noms de volumes…). Une valeur qui ne
+  commence pas par `__` est renvoyée telle quelle.
+
+  Grammaire : `__<source>__<type>__<champ>`
+
+    source = `addons`     -> ressource partagée de la section `addons`
+             `components` -> ressource du component courant
+             `secrets`    -> alias de la section racine `secrets` (le `type`
+                             porte alors le nom de l'alias)
+             `global`     -> `global.var.<type>`
+             <nom>        -> nom d'un autre component (pour pvc/configmap/service/secret)
+
+    type   = `postgres` | `redis` | `pvc` | `configmap` | `service` | `secret`
+
+    champ  = postgres : host | username | password | database |
+                        password_secret | password_secret_key
+             redis    : host | port | password | password_secret | password_secret_key
+             autres   : nom de la sous-ressource visée
+
+  Exemples : `__addons__postgres__host`, `__components__pvc__data`,
+             `__nginx__service__http`, `__secrets__pg__name`, `__global__domain`.
+
+  Les champs `password` échouent explicitement quand le mot de passe vit dans un
+  Secret externe : il n'existe alors nulle part côté Helm.
+
+  Entrée : dict "Values" $.Values "Chart" $.Chart "Release" $.Release
+                "component" <component|nil> "value" <valeur brute>
 */}}
 {{- define "commons.getValue" -}}
 {{- $component := default "" .component }}
@@ -205,39 +246,21 @@ app: {{ .Release.Name }}
 {{- $value }}
 {{- end }}
 
-
 {{/*
-  Fonction pour recuépérer le username postgres global
+  Raccourcis vers le cluster CloudNativePG partagé (`addons.postgres`), pour les
+  templates qui n'ont pas de component sous la main. Rendent une chaîne vide
+  quand l'addon est désactivé.
+
+  Entrée : le contexte racine ($).
 */}}
-{{- define "postgres.username" -}}
+{{- define "commons.postgres.host" -}}
+{{- if .Values.addons.postgres.enabled -}}
+{{- include "commons.getValue" (dict "Values" $.Values "Chart" $.Chart "Release" $.Release "component" $.Values.addons.postgres "value" "__addons__postgres__host") }}
+{{- end }}
+{{- end }}
+
+{{- define "commons.postgres.username" -}}
 {{- if .Values.addons.postgres.enabled -}}
 {{- include "commons.getValue" (dict "Values" $.Values "Chart" $.Chart "Release" $.Release "component" $.Values.addons.postgres "value" "__addons__postgres__username") }}
 {{- end }}
-{{- end }}
-
-{{/*
-  Fonction pour recuépérer le database postgres global
-*/}}
-{{- define "postgres.database" -}}
-{{- if .Values.addons.postgres.enabled -}}
-{{- include "commons.getValue" (dict "Values" $.Values "Chart" $.Chart "Release" $.Release "component" $.Values.addons.postgres "value" "__addons__postgres__database") }}
-{{- end }}
-{{- end }}
-
-{{/*
-  Fonction pour recuépérer le password postgres global
-*/}}
-{{- define "postgres.password" -}}
-{{- if .Values.addons.postgres.enabled -}}
-{{- include "commons.getValue" (dict "Values" $.Values "Chart" $.Chart "Release" $.Release "component" $.Values.addons.postgres "value" "__addons__postgres__password") }}
-{{- end -}}
-{{- end }}
-
-{{/*
-  Fonction pour recuépérer le host postgres global
-*/}}
-{{- define "postgres.host" -}}
-{{- if .Values.addons.postgres.enabled -}}
-{{- include "commons.getValue" (dict "Values" $.Values "Chart" $.Chart "Release" $.Release "component" $.Values.addons.postgres "value" "__addons__postgres__host") }}
-{{- end -}}
 {{- end }}

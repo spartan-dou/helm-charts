@@ -1,3 +1,7 @@
+{{/*
+  Job "one-shot" doublant un cronjob marqué `runOnStartup: true`, pour exécuter
+  la tâche dès le déploiement sans attendre la prochaine occurrence.
+*/}}
 {{- $components := include "commons.withAddons" . | fromYamlArray }}
 {{- range $components }}
 {{- $component := . }}
@@ -17,7 +21,7 @@ spec:
       automountServiceAccountToken: true
       {{- end }}
 
-      {{- include "pod.securityContext" (dict "global" $.Values.global "securityContext" .securityContext) | nindent 6 }}
+      {{- include "commons.pod.securityContext" (dict "global" $.Values.global "securityContext" .securityContext) | nindent 6 }}
 
       {{- with .nodeSelector }}
       nodeSelector:

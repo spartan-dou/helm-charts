@@ -1,3 +1,8 @@
+{{/*
+  Un Deployment par component (ou addon) déclarant un bloc `deployment`.
+  Les initContainers d'attente des addons y sont déjà injectés par
+  `commons.withAddons`.
+*/}}
 {{- $components := include "commons.withAddons" . | fromYamlArray }}
 {{- range $components }}
 {{- $component := . }}
@@ -34,9 +39,9 @@ spec:
       automountServiceAccountToken: true
       {{- end }}
 
-      {{ include "pod.securityContext" (dict "global" $.Values.global "securityContext" .securityContext) | nindent 6 }}
+      {{ include "commons.pod.securityContext" (dict "global" $.Values.global "securityContext" .securityContext) | nindent 6 }}
       {{- with .nodeSelector }}
-      nodeSelector: 
+      nodeSelector:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       {{- with .hostNetwork }}
@@ -63,7 +68,7 @@ spec:
           args:
             {{ toYaml . | nindent 12 }}
           {{- end }}
-          {{- include "containers.envs" (dict "Values" $.Values "Chart" $.Chart "Release" $.Release "component" $component "env" .env) | nindent 10 }}
+          {{- include "commons.containers.env" (dict "Values" $.Values "Chart" $.Chart "Release" $.Release "component" $component "env" .env) | nindent 10 }}
           {{- with .volumeMounts }}
           volumeMounts:
             {{- range . }}
@@ -93,8 +98,8 @@ spec:
           securityContext:
             {{- toYaml . | nindent 12 }}
           {{- end }}
-          
-          {{- include "containers.envs" (dict "Values" $.Values "Chart" $.Chart "Release" $.Release "component" $component "env" .env) | nindent 10 }}
+
+          {{- include "commons.containers.env" (dict "Values" $.Values "Chart" $.Chart "Release" $.Release "component" $component "env" .env) | nindent 10 }}
 
           {{- with .lifecycle }}
           lifecycle:
@@ -111,7 +116,7 @@ spec:
               {{- end }}
             {{- end }}
           {{- end }}
-          
+
           {{- if or .additionalsPorts (and (eq $index 0) $component.service $component.service.ports) }}
           ports:
             {{- if eq $index 0 }}
@@ -133,8 +138,8 @@ spec:
               {{- end }}
             {{- end }}
           {{- end }}
-          
-          {{ include "containers.probes" . | nindent 10 }}
+
+          {{ include "commons.containers.probes" . | nindent 10 }}
 
           {{- with .resources }}
           resources:

@@ -7,19 +7,49 @@
 #       key: password
 secrets: {}
 
+# Réglages partagés par toutes les ressources de la release.
 global:
+  # Injectée en `TZ` dans tous les conteneurs, et en `postgresql.parameters.timezone`
+  # sur les clusters CloudNativePG.
   timezone: "Europe/Paris"
+  # Valeurs de repli des PVC générés, quand le volume ne précise rien.
   pvc:
     storage:
       size: "1Gi"
       storageClassName: ""
-      accessMode: "ReadWriteOnce" 
+      accessMode: "ReadWriteOnce"
   ingress:
+    # `ingressClassName` par défaut de tous les ingress (components et addons).
     className: traefik
+    # Défauts des `hosts[].authentikOutpost`, surchargeables hôte par hôte :
+    #   authentikOutpost:
+    #     priority: 15
+    #     entryPoints: [websecure]
+    #     serviceName: traefik-outpost
+    #     serviceNamespace: authentik
+    #     servicePort: 9000
+  # ServiceAccount + ClusterRole montés sur tous les pods de la release.
+  # `serviceAccountName` et `clusterRoleName` deviennent requis si `enabled: true`.
   rbac:
     enabled: false
+  # Espace clé/valeur libre, lisible depuis n'importe quelle value via `__global__<clé>`.
+  #   var:
+  #     domain: example.com
 
+# Liste des applications déployées par la release. Chaque entrée produit ses
+# propres Deployment/Service/Ingress/CronJob/PVC... Voir le README.
+#   components:
+#     - name: nginx
+#       deployment:
+#         containers:
+#           - image:
+#               repository: nginx
+#               tag: "1.27"
+
+# Briques prêtes à l'emploi, normalisées en components par `commons.withAddons` :
+# elles passent donc par exactement les mêmes templates.
 addons:
+  # code-server (VS Code dans le navigateur).
   vscode:
     enabled: false
     image:
@@ -29,6 +59,8 @@ addons:
       port: 8443
     ingress:
       enabled: false
+  # Redis partagé. Une fois activé, un initContainer `wait-for-redis` est
+  # injecté dans tous les components (deployments et cronjobs).
   redis:
     enabled: false
     name: redis
@@ -36,8 +68,10 @@ addons:
       repository: redis
       tag: 8.10.0-alpine
     port: 6379
+    # Vide = pas d'authentification. Renseigné, Redis démarre avec `--requirepass`.
     password: ""
     # `passwordSecretRef: <alias>` (section `secrets`) remplace `password`.
+  # pgAdmin, pré-configuré avec tous les clusters Postgres de la release.
   pgadmin:
     enabled: false
     image:
@@ -47,10 +81,15 @@ addons:
       email: test@test.com
       password: changeme
       # `passwordSecretRef: <alias>` (section `secrets`) remplace `password`.
+    # Contrairement aux autres addons, ce bloc est utilisé tel quel : il doit
+    # contenir la structure complète d'un `ingress` pour être activé.
     ingress:
       enabled: false
     service:
       port: 80
+  # Cluster CloudNativePG partagé, consommable par tous les components via les
+  # placeholders `__addons__postgres__*`. Une fois activé, un initContainer
+  # `wait-for-postgres` est injecté dans tous les components.
   postgres:
     enabled: false
     storage:
@@ -61,4 +100,7 @@ addons:
       tag: 18
     cluster:
       username: changeme
+      # `secretRef: <alias>` (section `secrets`) remplace `password` : la chart
+      # ne génère alors aucun Secret et pointe sur celui du namespace.
       password: changeme
+      # database: app

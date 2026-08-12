@@ -1,4 +1,16 @@
-{{- define "containers.envs" }}
+{{/*
+  Bloc `env:` d'un conteneur : `TZ` (depuis `global.timezone`) suivi des
+  variables déclarées sur le conteneur. Chaque entrée accepte, au choix :
+
+    value      -> résolu par `commons.getValue` (placeholders `__…__`)
+    secretRef  -> alias de la section racine `secrets`, rendu en `secretKeyRef`
+    valueFrom  -> forme Kubernetes brute ; le `secretKeyRef.name` passe lui
+                  aussi par `commons.getValue`
+
+  Entrée : dict "Values" $.Values "Chart" $.Chart "Release" $.Release
+                "component" <component> "env" <liste des env du conteneur>
+*/}}
+{{- define "commons.containers.env" }}
 {{- $component := .component }}
 {{- $env := .env }}
 {{- with $component }}
@@ -30,7 +42,16 @@ env:
 {{- end }}
 {{- end }}
 
-{{- define "containers.probes" }}
+{{/*
+  Sondes d'un conteneur. `probe` sert de configuration commune : elle est
+  reprise pour chaque sonde non définie individuellement. Chacune accepte
+  `tcpSocket`, `exec` ou `httpGet`, avec des défauts propres à son rôle
+  (démarrage plus permissif, readiness plus réactive).
+
+  Entrée : le conteneur (`.livenessProbe`, `.readinessProbe`, `.startupProbe`,
+           `.probe`).
+*/}}
+{{- define "commons.containers.probes" }}
 {{- $livenessProbe := or .livenessProbe .probe }}
 {{- with $livenessProbe }}
 livenessProbe:
@@ -92,7 +113,14 @@ startupProbe:
 {{- end }}
 {{- end }}
 
-{{- define "pod.securityContext" -}}
+{{/*
+  `securityContext` de pod : `global.securityContext` fusionné (mergeOverwrite)
+  avec celui du deployment/cronjob, qui a le dernier mot. Ne rend rien si les
+  deux sont vides.
+
+  Entrée : dict "global" $.Values.global "securityContext" <securityContext|nil>
+*/}}
+{{- define "commons.pod.securityContext" -}}
 {{- $sc := .securityContext | default dict -}}
 {{- $gsc := dict -}}
 {{- if .global -}}

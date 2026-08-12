@@ -1,3 +1,6 @@
+{{/*
+  ClusterRole portant les `global.rbac.rules`.
+*/}}
 {{- if .Values.global.rbac.enabled }}
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
