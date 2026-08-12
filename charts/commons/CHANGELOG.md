@@ -69,7 +69,18 @@ Ces points changent un comportement existant. Le reste de la 0.8.0 est additif.
 11. **Labels standards ajoutés** sur les `CronJob`, `Job`, Secrets de component
     et Secrets CloudNativePG, qui n'en portaient aucun.
 
-12. **Helpers renommés sous le préfixe `commons.`** — sans effet sauf si une
+12. **Le label `helm.sh/chart` vaut désormais `commons-<version>`** et non plus
+    `<release>-<version>` — c'est la convention Helm, et la release est déjà
+    portée par `app.kubernetes.io/instance`. Le label change donc sur **toutes**
+    les ressources de la chart. Sans risque de recréation : il n'entre dans
+    aucun selector (`Deployment.spec.selector`, `Service.spec.selector` sont
+    rendus par `commons.selectorLabels`, qui ne le contient pas), et sur un PVC
+    c'est une métadonnée mutable, patchée en place sans toucher au volume.
+    Un effet à connaître : `helm.sh/chart` figure aussi dans les labels du pod
+    template des `Deployment`, donc le prochain `helm upgrade` génère un nouveau
+    ReplicaSet et un rolling restart des pods.
+
+13. **Helpers renommés sous le préfixe `commons.`** — sans effet sauf si une
     chart parente appelait directement `include "containers.envs"`,
     `"containers.probes"`, `"pod.securityContext"`, `"pgadmin.*"` ou
     `"postgres.*"`.

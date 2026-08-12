@@ -44,12 +44,13 @@
 {{- end -}}
 
 {{/*
-  Valeur du label `helm.sh/chart`, sous la forme `<release>-<version>`.
-  (La convention Helm est `<nom-du-chart>-<version>` : ici c'est bien le nom de
-  la release qui est utilisé.)
+  Valeur du label `helm.sh/chart` : `<nom-du-chart>-<version>`, la convention
+  Helm. C'est bien le nom du chart et pas celui de la release — la release est
+  déjà portée par `app.kubernetes.io/instance`, ce label-ci répond à « d'où
+  vient cette ressource ».
 */}}
 {{- define "commons.chart" -}}
-{{- printf "%s-%s" .Release.Name .Chart.Version | replace "+" "_" | trunc 63 | trimSuffix "-" }}
+{{- printf "%s-%s" .Chart.Name .Chart.Version | replace "+" "_" | trunc 63 | trimSuffix "-" }}
 {{- end }}
 
 {{/*
