@@ -4,6 +4,12 @@ Ce fichier ne retrace que les changements visibles depuis les values ou depuis
 le YAML rendu. Les montées de tag d'images faites par Renovate ne sont pas
 listées.
 
+Il sert aussi de corps aux releases GitHub `commons-<version>`
+(`CR_RELEASE_NOTES_FILE` dans `helm-release.yml`), et il est embarqué dans le
+paquet publié — d'où le fait qu'il ne soit pas dans `.helmignore`.
+`chart-releaser` reprend le fichier entier, pas la section de la version : une
+release rappelle donc aussi l'historique des précédentes.
+
 ## 0.8.0
 
 Première version stable depuis la **0.7.16**. Les préversions `0.8.0-beta.1` et

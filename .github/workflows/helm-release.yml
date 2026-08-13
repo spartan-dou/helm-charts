@@ -30,3 +30,7 @@ jobs:
         env:
           CR_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
           CR_SKIP_EXISTING: "true"
+          # Corps des releases GitHub. Sans ça, chart-releaser retombe sur la
+          # `description` du Chart.yaml. Le fichier est lu depuis le paquet, pas
+          # depuis le dépôt : il doit donc rester hors du .helmignore.
+          CR_RELEASE_NOTES_FILE: CHANGELOG.md
