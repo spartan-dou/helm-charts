@@ -10,6 +10,35 @@ paquet publié — d'où le fait qu'il ne soit pas dans `.helmignore`.
 `chart-releaser` reprend le fichier entier, pas la section de la version : une
 release rappelle donc aussi l'historique des précédentes.
 
+## 0.8.1
+
+Aucun changement de rendu à values identiques. La 0.8.1 rend utilisable une
+option qui existait déjà mais que rien ne permettait de trouver.
+
+### `postgres.monitoring` devient une option de premier plan
+
+`postgres.monitoring` pose `spec.monitoring.enablePodMonitor` sur le `Cluster`
+CloudNativePG, donc décide si les métriques Postgres (port 9187, servies de
+toute façon par l'instance manager) sont collectées par Prometheus.
+
+Le template la lisait depuis toujours, et le tableau `postgres` du README la
+mentionnait en trois mots. Mais elle était absente de `values.yaml`, absente de
+`values.schema.json` et couverte par aucun test : en pratique, elle ne se
+découvrait qu'en lisant `templates/cnpg/cluster.yaml`. Une base pouvait rester
+non scrapée sans que rien ne le signale, et l'option pouvait disparaître d'une
+version à l'autre sans faire échouer un seul test.
+
+- `values.yaml` : `addons.postgres.monitoring: false`, commenté.
+- `values.schema.json` : `monitoring` typé `boolean`. **Seul changement de
+  comportement** : `monitoring` écrit sous une autre forme est maintenant
+  refusé avant le rendu (`got object, want boolean`) au lieu d'être injecté
+  tel quel dans un champ booléen du CRD.
+- Tests : défaut à `false`, activation sur `addons.postgres`, activation sur un
+  `postgres` de component, et indépendance des deux (activer l'addon n'active
+  pas les components).
+- README (fr/en) : la ligne du tableau `postgres` dit ce que fait l'option, et
+  le tableau `addons.postgres` — d'où elle manquait — la liste aussi.
+
 ## 0.8.0
 
 Première version stable depuis la **0.7.16**. Les préversions `0.8.0-beta.1` et

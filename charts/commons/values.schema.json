@@ -315,6 +315,10 @@
                   "minLength": 1
                 }
               }
+            },
+            "monitoring": {
+              "description": "Crée le PodMonitor du Cluster CloudNativePG (spec.monitoring.enablePodMonitor).",
+              "type": "boolean"
             }
           },
           "if": {

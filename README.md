@@ -440,7 +440,7 @@ Crée un `Cluster` CloudNativePG dédié + un Secret `kubernetes.io/basic-auth`,
 | `cluster.database` | `app` | |
 | `postInitTemplateSQL[]` / `postInitSQL[]` / `postInitApplicationSQL[]` | — | Exécutés au bootstrap CloudNativePG. |
 | `backup.destinationPath`, `backup.endpointURL` | — | Sauvegarde `barmanObjectStore` (S3). Attend un Secret `<name>-backup-secret` avec les clés `ACCESS_KEY_ID` / `SECRET_ACCESS_KEY`. |
-| `monitoring` | `false` | `enablePodMonitor`. |
+| `monitoring` | `false` | Pose `spec.monitoring.enablePodMonitor` sur le `Cluster`. CloudNativePG crée alors le `PodMonitor` qui expose `/metrics` (port 9187) à Prometheus — l'instance manager sert ces métriques dans tous les cas, sans cette option personne ne vient les chercher. Se règle indépendamment sur chaque `postgres` : l'activer sur `addons.postgres` ne l'active pas sur les bases embarquées dans les components. |
 
 ### RBAC
 
@@ -506,6 +506,7 @@ Cluster CloudNativePG **partagé**, consommable par tous les components via `__a
 | `image.tag` | `18` |
 | `cluster.username` / `cluster.password` | `changeme` / `changeme` |
 | `cluster.database` | `app` |
+| `monitoring` | `false` — voir la ligne `monitoring` de [`postgres`](#postgres-base-embarquée-dans-un-component) |
 
 ### Nommage des ressources
 
