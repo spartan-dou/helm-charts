@@ -103,3 +103,83 @@ tests:
       - equal:
           path: spec.bootstrap.initdb.owner
           value: user-b
+
+  # --- PodMonitor (spec.monitoring.enablePodMonitor) ---
+  #
+  # `postgres.monitoring` était lu par le template mais absent de values.yaml,
+  # de values.schema.json et de ces tests : la seule façon de le découvrir
+  # était de lire cluster.yaml. Il pouvait donc disparaître sans qu'aucun test
+  # ne bronche, et une base cesse d'être scrapée sans erreur nulle part.
+  - it: Ne crée pas de PodMonitor par défaut
+    templates:
+      - templates/cnpg/cluster.yaml
+    documentSelector:
+      path: metadata.name
+      value: test-postgres
+    asserts:
+      - equal:
+          path: spec.monitoring.enablePodMonitor
+          value: false
+
+  - it: Active le PodMonitor sur l'addon postgres
+    templates:
+      - templates/cnpg/cluster.yaml
+    set:
+      addons.postgres.monitoring: true
+    documentSelector:
+      path: metadata.name
+      value: test-postgres
+    asserts:
+      - equal:
+          path: spec.monitoring.enablePodMonitor
+          value: true
+
+  - it: Active le PodMonitor sur un postgres embarqué dans un component
+    templates:
+      - templates/cnpg/cluster.yaml
+    set:
+      components:
+        - name: app-a
+          deployment:
+            containers:
+              - image:
+                  repository: nginx
+                  tag: latest
+          postgres:
+            enabled: true
+            monitoring: true
+            cluster:
+              username: user-a
+              password: pass-a
+    documentSelector:
+      path: metadata.name
+      value: test-app-a-postgres
+    asserts:
+      - equal:
+          path: spec.monitoring.enablePodMonitor
+          value: true
+
+  - it: N'active pas le PodMonitor d'un component quand seul l'addon l'active
+    templates:
+      - templates/cnpg/cluster.yaml
+    set:
+      addons.postgres.monitoring: true
+      components:
+        - name: app-a
+          deployment:
+            containers:
+              - image:
+                  repository: nginx
+                  tag: latest
+          postgres:
+            enabled: true
+            cluster:
+              username: user-a
+              password: pass-a
+    documentSelector:
+      path: metadata.name
+      value: test-app-a-postgres
+    asserts:
+      - equal:
+          path: spec.monitoring.enablePodMonitor
+          value: false

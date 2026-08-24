@@ -401,7 +401,7 @@ Creates a dedicated CloudNativePG `Cluster` + a `kubernetes.io/basic-auth` Secre
 | `cluster.database` | `app` | |
 | `postInitTemplateSQL[]` / `postInitSQL[]` / `postInitApplicationSQL[]` | — | Run at CloudNativePG bootstrap. |
 | `backup.destinationPath`, `backup.endpointURL` | — | `barmanObjectStore` backup (S3). Expects a `<name>-backup-secret` Secret with the `ACCESS_KEY_ID` / `SECRET_ACCESS_KEY` keys. |
-| `monitoring` | `false` | `enablePodMonitor`. |
+| `monitoring` | `false` | Sets `spec.monitoring.enablePodMonitor` on the `Cluster`. CloudNativePG then creates the `PodMonitor` exposing `/metrics` (port 9187) to Prometheus — the instance manager serves those metrics either way, without this option nobody comes to collect them. Set independently on each `postgres`: enabling it on `addons.postgres` does not enable it on the databases embedded in components. |
 
 ### RBAC
 
@@ -467,6 +467,7 @@ If `password` is set, a `<release>-redis-auth` Secret is generated, Redis starts
 | `image.tag` | `18` |
 | `cluster.username` / `cluster.password` | `changeme` / `changeme` |
 | `cluster.database` | `app` |
+| `monitoring` | `false` — see the `monitoring` row of [`postgres`](#postgres-embedded-database-on-a-component) |
 
 ### Resource naming
 

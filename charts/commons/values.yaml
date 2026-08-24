@@ -104,3 +104,12 @@ addons:
       # ne génère alors aucun Secret et pointe sur celui du namespace.
       password: changeme
       # database: app
+    # Pose `spec.monitoring.enablePodMonitor` sur le Cluster : CloudNativePG
+    # crée alors le PodMonitor qui expose /metrics (port 9187) à Prometheus.
+    # L'instance manager sert ces métriques dans tous les cas — sans cette
+    # option, personne ne vient les chercher.
+    #
+    # La clé était lue par templates/cnpg/cluster.yaml depuis toujours, mais
+    # elle n'apparaissait ni ici ni dans values.schema.json : elle ne se
+    # découvrait qu'en lisant le template.
+    monitoring: false
