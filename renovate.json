@@ -29,6 +29,29 @@
         "automerge": false,
         "prCreation": "immediate",
         "ignoreTests": true
+      },
+      {
+        "description": "L'image Sunshine est publiée quasi quotidiennement (CalVer) : automerge des mises à jour patch et mineures, major reste manuel",
+        "matchManagers": ["dockerfile"],
+        "matchDatasources": ["docker"],
+        "matchPackageNames": ["lizardbyte/sunshine"],
+        "enabled": true,
+        "automerge": true,
+        "automergeType": "branch",
+        "matchUpdateTypes": ["minor", "patch"],
+        "prCreation": "immediate",
+        "ignoreTests": true
+      },
+      {
+        "description": "Action Renovate elle-même : automerge des mises à jour patch et mineures, major reste manuel",
+        "matchManagers": ["github-actions"],
+        "matchPackageNames": ["renovatebot/github-action"],
+        "enabled": true,
+        "automerge": true,
+        "automergeType": "branch",
+        "matchUpdateTypes": ["minor", "patch"],
+        "prCreation": "immediate",
+        "ignoreTests": true
       }
     ]
   }
