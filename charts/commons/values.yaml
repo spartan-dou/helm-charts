@@ -76,7 +76,7 @@ addons:
     enabled: false
     image:
       repository: dpage/pgadmin4
-      tag: 9.15.0
+      tag: 9.18.0
     auth:
       email: test@test.com
       password: changeme
