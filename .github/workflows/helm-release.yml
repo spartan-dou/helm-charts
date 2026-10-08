@@ -9,7 +9,7 @@ jobs:
   release:
     permissions:
       contents: write
-    runs-on: ubuntu-latest
+    runs-on: dou-s-home-arc-helm-charts
     steps:
       - name: Checkout
         uses: actions/checkout@v7
@@ -20,6 +20,11 @@ jobs:
         run: |
           git config user.name "$GITHUB_ACTOR"
           git config user.email "$GITHUB_ACTOR@users.noreply.github.com"
+
+      - name: Set up Helm
+        uses: azure/setup-helm@v5
+        with:
+          version: v4.3.0
 
       - name: add repos
         run: |
