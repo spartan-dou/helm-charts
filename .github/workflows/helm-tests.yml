@@ -11,7 +11,7 @@ on:
 
 jobs:
   helm-tests:
-    runs-on: ubuntu-latest
+    runs-on: dou-s-home-arc-helm-charts
 
     steps:
       - name: Checkout code
@@ -33,8 +33,10 @@ jobs:
 
       - name: Install kubeconform
         run: |
+          mkdir -p "$HOME/.local/bin"
           curl -sSL https://github.com/yannh/kubeconform/releases/latest/download/kubeconform-linux-amd64.tar.gz \
-            | tar -xz -C /usr/local/bin kubeconform
+            | tar -xz -C "$HOME/.local/bin" kubeconform
+          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
 
       - name: Validate rendered manifests against the Kubernetes schema (default values)
         run: |
