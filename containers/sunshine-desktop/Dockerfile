@@ -1,4 +1,4 @@
-FROM lizardbyte/sunshine:v2026.1009.25442-ubuntu-24.04
+FROM lizardbyte/sunshine:v2026.1010.13552-ubuntu-24.04
 
 USER root
 
