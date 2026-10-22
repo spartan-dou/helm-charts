@@ -113,3 +113,7 @@ addons:
     # elle n'apparaissait ni ici ni dans values.schema.json : elle ne se
     # découvrait qu'en lisant le template.
     monitoring: false
+    # Pose `spec.priorityClassName` sur le Cluster, donc sur ses pods. La
+    # PriorityClass doit exister avant le Cluster, sinon ses pods sont refusés.
+    # Vide = priorité par défaut du cluster Kubernetes.
+    priorityClassName: ""

@@ -319,6 +319,10 @@
             "monitoring": {
               "description": "Crée le PodMonitor du Cluster CloudNativePG (spec.monitoring.enablePodMonitor).",
               "type": "boolean"
+            },
+            "priorityClassName": {
+              "description": "PriorityClass des pods du Cluster CloudNativePG (spec.priorityClassName). Vide = priorité par défaut.",
+              "type": "string"
             }
           },
           "if": {

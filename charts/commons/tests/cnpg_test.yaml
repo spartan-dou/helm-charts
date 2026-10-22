@@ -183,3 +183,69 @@ tests:
       - equal:
           path: spec.monitoring.enablePodMonitor
           value: false
+
+  # --- PriorityClass (spec.priorityClassName) ---
+  - it: Ne pose pas de priorityClassName par défaut
+    templates:
+      - templates/cnpg/cluster.yaml
+    documentSelector:
+      path: metadata.name
+      value: test-postgres
+    asserts:
+      - notExists:
+          path: spec.priorityClassName
+
+  - it: Pose la priorityClassName de l'addon postgres
+    templates:
+      - templates/cnpg/cluster.yaml
+    set:
+      addons.postgres.priorityClassName: infra-critique
+    documentSelector:
+      path: metadata.name
+      value: test-postgres
+    asserts:
+      - equal:
+          path: spec.priorityClassName
+          value: infra-critique
+
+  - it: Pose la priorityClassName d'un postgres embarqué, sans celle de l'addon
+    templates:
+      - templates/cnpg/cluster.yaml
+    set:
+      addons.postgres.priorityClassName: infra-critique
+      components:
+        - name: app-a
+          deployment:
+            containers:
+              - image:
+                  repository: nginx
+                  tag: latest
+          postgres:
+            enabled: true
+            priorityClassName: apps-importantes
+            cluster:
+              username: user-a
+              password: pass-a
+        - name: app-b
+          deployment:
+            containers:
+              - image:
+                  repository: nginx
+                  tag: latest
+          postgres:
+            enabled: true
+            cluster:
+              username: user-b
+              password: pass-b
+    asserts:
+      - equal:
+          path: spec.priorityClassName
+          value: apps-importantes
+        documentSelector:
+          path: metadata.name
+          value: test-app-a-postgres
+      - notExists:
+          path: spec.priorityClassName
+        documentSelector:
+          path: metadata.name
+          value: test-app-b-postgres
