@@ -10,6 +10,28 @@ paquet publié — d'où le fait qu'il ne soit pas dans `.helmignore`.
 `chart-releaser` reprend le fichier entier, pas la section de la version : une
 release rappelle donc aussi l'historique des précédentes.
 
+## 0.9.0
+
+Aucun changement de rendu à values identiques : la nouvelle option est vide par
+défaut et n'émet alors rien.
+
+### `postgres.priorityClassName`
+
+Pose `spec.priorityClassName` sur le `Cluster` CloudNativePG, donc sur ses
+pods. Sans elle, une base dont dépend un service critique (le SSO, par exemple)
+a la priorité par défaut, comme n'importe quelle app, quand le nœud manque de
+mémoire.
+
+- Se règle sur `addons.postgres` comme sur le `postgres` d'un component, et
+  indépendamment : l'addon ne la transmet pas aux bases embarquées.
+- La `PriorityClass` doit exister avant le `Cluster`, sinon ses pods sont
+  refusés à la création.
+- `values.yaml` : `addons.postgres.priorityClassName: ""`, commenté.
+- `values.schema.json` : `priorityClassName` typé `string`.
+- Tests : absente par défaut, posée sur l'addon, posée sur un component sans
+  hériter de celle de l'addon.
+- README (fr/en) : une ligne dans les tableaux `postgres` et `addons.postgres`.
+
 ## 0.8.1
 
 Aucun changement de rendu à values identiques. La 0.8.1 rend utilisable une

@@ -26,6 +26,9 @@ spec:
   resources:
     {{- toYaml . | nindent 4 }}
   {{- end }}
+  {{- with .priorityClassName }}
+  priorityClassName: {{ . }}
+  {{- end }}
   storage:
     size: {{ default $.Values.addons.postgres.storage.size (default dict .storage).size }}
     storageClass: {{ default $.Values.addons.postgres.storage.storageClassName (default dict .storage).storageClassName }}
