@@ -66,7 +66,7 @@ addons:
     name: redis
     image:
       repository: redis
-      tag: 8.10.2-alpine
+      tag: 8.10.3-alpine
     port: 6379
     # Vide = pas d'authentification. Renseigné, Redis démarre avec `--requirepass`.
     password: ""
