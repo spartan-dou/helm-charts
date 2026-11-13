@@ -97,6 +97,9 @@
             "clusterRoleName": {
               "type": "string"
             },
+            "createTokenSecret": {
+              "type": "boolean"
+            },
             "rules": {
               "type": "array",
               "items": {
@@ -144,6 +147,10 @@
           "name": {
             "type": "string",
             "minLength": 1
+          },
+          "rbac": {
+            "description": "`false` exclut ce component du ServiceAccount `global.rbac`.",
+            "type": "boolean"
           }
         }
       }

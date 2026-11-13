@@ -31,9 +31,8 @@ spec:
       template:
         spec:
           restartPolicy: {{ default "Never" .restartPolicy }}
-          {{- if $.Values.global.rbac.enabled }}
-          serviceAccountName: {{ $.Values.global.rbac.serviceAccountName }}
-          automountServiceAccountToken: true
+          {{- with include "commons.pod.serviceAccount" (dict "Values" $.Values "component" $component) }}
+          {{- . | nindent 10 }}
           {{- end }}
 
           {{ include "commons.pod.securityContext" (dict "global" $.Values.global "securityContext" .securityContext) | nindent 10 }}
@@ -74,6 +73,10 @@ spec:
                   subPath: {{ . }}
                   {{- end }}
                 {{- end }}
+              {{- end }}
+              {{- with .resources }}
+              resources:
+                {{- toYaml . | nindent 16 }}
               {{- end }}
             {{- end }}
           {{- end }}

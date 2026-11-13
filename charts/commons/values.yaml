@@ -30,8 +30,13 @@ global:
     #     servicePort: 9000
   # ServiceAccount + ClusterRole montés sur tous les pods de la release.
   # `serviceAccountName` et `clusterRoleName` deviennent requis si `enabled: true`.
+  # Un component ou un addon s'en exclut avec `rbac: false`.
   rbac:
     enabled: false
+    # Secret `<serviceAccountName>-secret` portant un token sans expiration.
+    # Les pods n'en ont pas besoin (ils reçoivent un token projeté) : il ne
+    # sert qu'à un outil externe au cluster. `false` pour ne pas le créer.
+    createTokenSecret: true
   # Espace clé/valeur libre, lisible depuis n'importe quelle value via `__global__<clé>`.
   #   var:
   #     domain: example.com

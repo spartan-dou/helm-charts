@@ -19,8 +19,9 @@ env:
     value: {{ $.Values.global.timezone | quote }}
   {{- range $env }}
   - name: {{ .name }}
-    {{- with .value }}
-    value: {{ include "commons.getValue" (dict "Values" $.Values "Chart" $.Chart "Release" $.Release "component" $component "value" .) | quote }}
+    {{- /* `hasKey` et non `with` : `""`, `0` et `false` sont des valeurs légitimes. */}}
+    {{- if and (hasKey . "value") (not (kindIs "invalid" .value)) }}
+    value: {{ include "commons.getValue" (dict "Values" $.Values "Chart" $.Chart "Release" $.Release "component" $component "value" .value) | quote }}
     {{- end }}
     {{- with .secretRef }}
     valueFrom:
@@ -106,5 +107,26 @@ env:
 {{- if $merged -}}
 securityContext:
   {{- toYaml $merged | nindent 2 }}
+{{- end -}}
+{{- end -}}
+
+
+{{/*
+  Champs ServiceAccount d'un pod quand `global.rbac.enabled`. Par défaut, tous
+  les pods de la release montent le ServiceAccount RBAC. Un component (ou un
+  addon) qui pose `rbac: false` s'en exclut : il ne reçoit ni le
+  ServiceAccount ni aucun token d'API. Ne rend rien si le RBAC est désactivé.
+
+  Entrée : dict "Values" $.Values "component" <component>
+*/}}
+{{- define "commons.pod.serviceAccount" -}}
+{{- if .Values.global.rbac.enabled -}}
+{{- $component := .component | default dict -}}
+{{- if and (hasKey $component "rbac") (eq (toString $component.rbac) "false") -}}
+automountServiceAccountToken: false
+{{- else -}}
+serviceAccountName: {{ .Values.global.rbac.serviceAccountName }}
+automountServiceAccountToken: true
+{{- end -}}
 {{- end -}}
 {{- end -}}

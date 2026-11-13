@@ -7,11 +7,21 @@ on:
   push:
     branches:
       - main
-      - commons-update
+      # Renovate n'automerge une branche que si ses checks sont verts : il faut
+      # donc que les tests tournent aussi sur ses branches.
+      - 'renovate/**'
+
+env:
+  # renovate: datasource=github-releases depName=yannh/kubeconform
+  KUBECONFORM_VERSION: v0.7.0
 
 jobs:
   helm-tests:
-    runs-on: dou-s-home-arc-helm-charts
+    # Runner hébergé par GitHub, pas le runner du cluster : ce workflow se
+    # déclenche sur `pull_request`, donc aussi sur le code d'un fork.
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
 
     steps:
       - name: Checkout code
@@ -34,7 +44,7 @@ jobs:
       - name: Install kubeconform
         run: |
           mkdir -p "$HOME/.local/bin"
-          curl -sSL https://github.com/yannh/kubeconform/releases/latest/download/kubeconform-linux-amd64.tar.gz \
+          curl -sSfL "https://github.com/yannh/kubeconform/releases/download/${KUBECONFORM_VERSION}/kubeconform-linux-amd64.tar.gz" \
             | tar -xz -C "$HOME/.local/bin" kubeconform
           echo "$HOME/.local/bin" >> "$GITHUB_PATH"
 

@@ -85,3 +85,98 @@ tests:
     asserts:
       - hasDocuments:
           count: 0
+  - it: "exclut du ServiceAccount un component qui pose `rbac: false`"
+    templates:
+      - templates/deployment.yaml
+    set:
+      components:
+        - name: no-rbac
+          rbac: false
+          deployment:
+            containers:
+              - image:
+                  repository: nginx
+                  tag: latest
+        - name: with-rbac
+          deployment:
+            containers:
+              - image:
+                  repository: nginx
+                  tag: latest
+    asserts:
+      - documentSelector:
+          path: metadata.name
+          value: test-no-rbac
+        notExists:
+          path: spec.template.spec.serviceAccountName
+      - documentSelector:
+          path: metadata.name
+          value: test-no-rbac
+        equal:
+          path: spec.template.spec.automountServiceAccountToken
+          value: false
+      - documentSelector:
+          path: metadata.name
+          value: test-with-rbac
+        equal:
+          path: spec.template.spec.serviceAccountName
+          value: homepage
+
+  - it: "exclut du ServiceAccount un addon qui pose `rbac: false`"
+    templates:
+      - templates/deployment.yaml
+    set:
+      addons.redis.rbac: false
+    documentSelector:
+      path: metadata.name
+      value: test-redis
+    asserts:
+      - notExists:
+          path: spec.template.spec.serviceAccountName
+      - equal:
+          path: spec.template.spec.automountServiceAccountToken
+          value: false
+
+  - it: "exclut aussi les cronjobs d'un component `rbac: false`"
+    templates:
+      - templates/cronjob.yaml
+    set:
+      components:
+        - name: no-rbac
+          rbac: false
+          deployment:
+            containers:
+              - image:
+                  repository: nginx
+                  tag: latest
+          cronjobs:
+            - name: task
+              enabled: true
+              schedule: "0 3 * * *"
+              containers:
+                - image:
+                    repository: alpine
+                    tag: latest
+    documentSelector:
+      path: metadata.name
+      value: test-no-rbac-task
+    asserts:
+      - notExists:
+          path: spec.jobTemplate.spec.template.spec.serviceAccountName
+      - equal:
+          path: spec.jobTemplate.spec.template.spec.automountServiceAccountToken
+          value: false
+
+  - it: "ne crée pas le Secret de token avec `createTokenSecret: false`"
+    templates:
+      - templates/rbac/secret.yaml
+      - templates/rbac/serviceaccount.yaml
+    set:
+      global.rbac.createTokenSecret: false
+    asserts:
+      - template: templates/rbac/secret.yaml
+        hasDocuments:
+          count: 0
+      - template: templates/rbac/serviceaccount.yaml
+        notExists:
+          path: secrets

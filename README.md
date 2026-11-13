@@ -164,6 +164,7 @@ Ce changement s'applique **aussi au mode historique** (mot de passe en clair dan
 | `global.rbac.enabled` | `false` | Voir [RBAC](#rbac). |
 | `global.rbac.serviceAccountName` | — | Requis si `rbac.enabled: true`. |
 | `global.rbac.clusterRoleName` | — | Requis si `rbac.enabled: true`. |
+| `global.rbac.createTokenSecret` | `true` | Crée le Secret de token sans expiration `<serviceAccountName>-secret`. Inutile aux pods ; `false` si aucun outil externe ne le lit. |
 | `global.rbac.rules` | — | Liste de `PolicyRule` (format RBAC Kubernetes standard) pour le `ClusterRole`. |
 | `global.var` | `{}` | Espace de clé/valeur libre, accessible depuis n'importe quelle `env[].value` via `__global__<clé>` (voir [`commons.getValue`](#variables-denvironnement-et-commonsgetvalue)). |
 | `global.ingress.className` | `traefik` | `ingressClassName` par défaut pour tout `ingress` (component ou addon, y compris `addons.pgadmin.ingress`) qui ne définit pas explicitement son propre `className`. |
@@ -189,12 +190,13 @@ Chaque entrée de `components` (liste) accepte :
 | Clé | Défaut | Description |
 |---|---|---|
 | `replicas` | `1` | |
-| `strategy.type` | `RollingUpdate` | |
+| `strategy.type` | `RollingUpdate` | Avec un PVC `ReadWriteOnce`, préférer `Recreate` : le nouveau pod ne peut pas monter le volume tant que l'ancien le tient. |
+| `strategy.rollingUpdate` | — | `maxSurge` / `maxUnavailable`, passé tel quel. |
 | `securityContext` | — | Fusionné avec `global.securityContext`. |
 | `nodeSelector` | — | |
 | `hostNetwork` | — | |
 | `resourceClaims[]` | — | Ressources DRA, au niveau du pod. Passé tel quel. Voir [DRA](#dynamic-resource-allocation-dra). |
-| `initContainers[]` | — | `name` (def. nom du component), `image.repository`, `image.tag` (def. `latest`), `securityContext`, `command`, `args`, `env[]`, `volumeMounts[]`. |
+| `initContainers[]` | — | `name` (def. nom du component), `image.repository`, `image.tag` (def. `latest`), `securityContext`, `command`, `args`, `env[]`, `volumeMounts[]`, `resources`. |
 | `containers[]` | — | Voir ci-dessous. |
 | `volumes[]` | — | Voir [`volumes`](#volumes). |
 
@@ -439,13 +441,20 @@ Crée un `Cluster` CloudNativePG dédié + un Secret `kubernetes.io/basic-auth`,
 | `cluster.password` | — | |
 | `cluster.database` | `app` | |
 | `postInitTemplateSQL[]` / `postInitSQL[]` / `postInitApplicationSQL[]` | — | Exécutés au bootstrap CloudNativePG. |
-| `backup.destinationPath`, `backup.endpointURL` | — | Sauvegarde `barmanObjectStore` (S3). Attend un Secret `<name>-backup-secret` avec les clés `ACCESS_KEY_ID` / `SECRET_ACCESS_KEY`. |
+| `backup.destinationPath`, `backup.endpointURL` | — | Sauvegarde `barmanObjectStore` (S3). Les sauvegardes vont dans `<destinationPath>/<nom-du-Cluster>`. Attend un Secret `<nom-du-Cluster>-backup-secret` (ex. `<release>-<component>-postgres-backup-secret`), non créé par la chart, avec les clés `ACCESS_KEY_ID` / `SECRET_ACCESS_KEY`. |
 | `monitoring` | `false` | Pose `spec.monitoring.enablePodMonitor` sur le `Cluster`. CloudNativePG crée alors le `PodMonitor` qui expose `/metrics` (port 9187) à Prometheus — l'instance manager sert ces métriques dans tous les cas, sans cette option personne ne vient les chercher. Se règle indépendamment sur chaque `postgres` : l'activer sur `addons.postgres` ne l'active pas sur les bases embarquées dans les components. |
 | `priorityClassName` | — | Pose `spec.priorityClassName` sur le `Cluster`, donc sur ses pods. La `PriorityClass` doit exister avant le `Cluster`, sinon ses pods sont refusés. Comme `monitoring`, se règle indépendamment sur chaque `postgres`. |
 
 ### RBAC
 
 Si `global.rbac.enabled: true`, la chart crée un `ServiceAccount`, un `Secret` de type token associé, un `ClusterRole` (`global.rbac.rules`) et un `ClusterRoleBinding`, puis monte automatiquement ce ServiceAccount (`automountServiceAccountToken: true`) sur **tous** les pods générés (deployments, cronjobs, jobs de démarrage). `global.rbac.serviceAccountName` et `global.rbac.clusterRoleName` sont alors obligatoires.
+
+Deux réglages permettent de réduire cette surface, sans rien changer par défaut :
+
+- `rbac: false` sur un component (ou un addon : `addons.redis.rbac: false`) l'exclut : ses pods, cronjobs compris, ne reçoivent ni le ServiceAccount ni aucun token d'API (`automountServiceAccountToken: false`).
+- `global.rbac.createTokenSecret: false` ne crée pas le `Secret` de token sans expiration. Les pods n'en dépendent pas : ils utilisent le token projeté par Kubernetes.
+
+Le `ClusterRole` et le `ClusterRoleBinding` portent le nom `clusterRoleName` tel quel, sans préfixe de release : deux releases doivent donc utiliser des noms différents.
 
 ### Addons
 

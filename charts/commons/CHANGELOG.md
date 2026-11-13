@@ -10,6 +10,72 @@ paquet publié — d'où le fait qu'il ne soit pas dans `.helmignore`.
 `chart-releaser` reprend le fichier entier, pas la section de la version : une
 release rappelle donc aussi l'historique des précédentes.
 
+## 0.10.0
+
+Le rendu change à values identiques sur trois points, détaillés ci-dessous :
+les `resources` des initContainers `wait-for-postgres`, les checksums de
+ConfigMap, et le bloc `backup` des clusters Postgres.
+
+### `resources` sur les initContainers
+
+Les templates `deployment`, `cronjobs` et `job` ne rendaient pas `resources`
+sur les initContainers. Deux conséquences :
+
+- les `requests`/`limits` déclarées par la chart sur `wait-for-postgres`
+  (10m/16Mi, 50m/32Mi) n'arrivaient jamais dans le YAML ; elles y sont
+  maintenant, pour le cluster partagé comme pour une base embarquée ;
+- un `initContainers[].resources` écrit dans les values était ignoré sans
+  erreur ; il est maintenant rendu tel quel.
+
+### Variables d'environnement valant `""`, `0` ou `false`
+
+`env[].value` passait par un `with`, qui saute les valeurs vides au sens de
+Helm : `value: 0` ou `value: false` produisait une variable sans valeur. Elles
+sont maintenant rendues en `"0"` et `"false"`. `value: ""` rend `value: ""`,
+ce qui équivaut pour Kubernetes à l'ancien rendu sans `value`.
+
+### `deployment.strategy.rollingUpdate`
+
+Seul `strategy.type` était rendu. `strategy.rollingUpdate` (`maxSurge`,
+`maxUnavailable`) est maintenant passé tel quel. Absent, rien n'est émis.
+
+### Checksums de ConfigMap en annotations
+
+Les `checksum/<volume>` du pod template étaient posés en labels, contrairement
+à ce qu'annonçait le README ; ils passent en annotations, avec le SHA-256
+complet. Les pods des deployments qui montent un ConfigMap généré par la chart
+redémarrent une fois à la mise à jour.
+
+### `postgres.backup` : chemin et Secret propres à chaque Cluster
+
+Le chemin de sauvegarde et le Secret d'identifiants S3 valaient `postgres` et
+`postgres-backup-secret` pour tous les clusters : deux bases d'un même bucket
+écrivaient au même endroit. Ils sont maintenant dérivés du nom du Cluster :
+`<destinationPath>/<nom-du-Cluster>` et `<nom-du-Cluster>-backup-secret`.
+
+**Rupture** pour qui utilisait déjà `backup` : renommer le Secret et déplacer
+(ou ré-amorcer) les sauvegardes existantes.
+
+### RBAC : exclusion par component et Secret de token optionnel
+
+Deux options, sans effet par défaut :
+
+- `rbac: false` sur un component ou un addon l'exclut du ServiceAccount
+  `global.rbac` : ses pods (deployment, cronjobs, jobs de démarrage) sont
+  rendus avec `automountServiceAccountToken: false`. Utile pour ne pas donner
+  les droits du `ClusterRole` à Redis ou pgAdmin.
+- `global.rbac.createTokenSecret: false` ne crée pas le Secret de token sans
+  expiration `<serviceAccountName>-secret`.
+
+- Tests : resources d'un initContainer utilisateur et de `wait-for-postgres`,
+  env `""`/`0`/`false`, `strategy.rollingUpdate`, checksum en annotation,
+  `backup` par Cluster, `rbac: false` (component et addon),
+  `createTokenSecret: false`.
+- `values.schema.json` : `components[].rbac` et
+  `global.rbac.createTokenSecret` typés `boolean`.
+- README (fr/en) : lignes `strategy.*` et `initContainers[]` du tableau
+  `deployment`.
+
 ## 0.9.0
 
 Aucun changement de rendu à values identiques : la nouvelle option est vide par

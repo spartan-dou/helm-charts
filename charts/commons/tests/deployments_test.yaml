@@ -267,3 +267,127 @@ tests:
           value:
             name: cache
             emptyDir: {}
+
+  - it: rend les resources des initContainers (wait-for-postgres et initContainer utilisateur)
+    set:
+      components:
+        - name: init-res
+          deployment:
+            initContainers:
+              - name: prepare
+                image:
+                  repository: alpine
+                resources:
+                  limits:
+                    memory: 64Mi
+            containers:
+              - image:
+                  repository: nginx
+                  tag: latest
+    documentSelector:
+      path: metadata.name
+      value: test-init-res
+    asserts:
+      - equal:
+          path: spec.template.spec.initContainers[0].resources
+          value:
+            limits:
+              memory: 64Mi
+      - equal:
+          path: spec.template.spec.initContainers[2].name
+          value: wait-for-postgres
+      - equal:
+          path: spec.template.spec.initContainers[2].resources
+          value:
+            requests:
+              cpu: 10m
+              memory: 16Mi
+            limits:
+              cpu: 50m
+              memory: 32Mi
+
+  - it: rend les variables d'env valant "", 0 ou false
+    set:
+      components:
+        - name: falsy-env
+          deployment:
+            containers:
+              - image:
+                  repository: nginx
+                  tag: latest
+                env:
+                  - name: EMPTY
+                    value: ""
+                  - name: ZERO
+                    value: 0
+                  - name: DISABLED
+                    value: false
+    documentSelector:
+      path: metadata.name
+      value: test-falsy-env
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[0].env[1]
+          value:
+            name: EMPTY
+            value: ""
+      - equal:
+          path: spec.template.spec.containers[0].env[2]
+          value:
+            name: ZERO
+            value: "0"
+      - equal:
+          path: spec.template.spec.containers[0].env[3]
+          value:
+            name: DISABLED
+            value: "false"
+
+  - it: rend strategy.rollingUpdate quand il est fourni
+    set:
+      components:
+        - name: rolling
+          deployment:
+            strategy:
+              type: RollingUpdate
+              rollingUpdate:
+                maxSurge: 0
+                maxUnavailable: 1
+            containers:
+              - image:
+                  repository: nginx
+                  tag: latest
+    documentSelector:
+      path: metadata.name
+      value: test-rolling
+    asserts:
+      - equal:
+          path: spec.strategy
+          value:
+            type: RollingUpdate
+            rollingUpdate:
+              maxSurge: 0
+              maxUnavailable: 1
+
+  - it: pose le checksum d'un ConfigMap en annotation du pod, pas en label
+    set:
+      components:
+        - name: cm-app
+          deployment:
+            containers:
+              - image:
+                  repository: nginx
+                  tag: latest
+            volumes:
+              - name: conf
+                configMap:
+                  data:
+                    app.conf: "a=1"
+    documentSelector:
+      path: metadata.name
+      value: test-cm-app
+    asserts:
+      - matchRegex:
+          path: spec.template.metadata.annotations["checksum/conf"]
+          pattern: ^[0-9a-f]{64}$
+      - notExists:
+          path: spec.template.metadata.labels["checksum/conf"]

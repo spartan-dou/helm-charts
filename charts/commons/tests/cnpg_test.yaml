@@ -249,3 +249,24 @@ tests:
         documentSelector:
           path: metadata.name
           value: test-app-b-postgres
+
+  - it: dérive le chemin et le Secret de backup du nom du Cluster
+    templates:
+      - templates/cnpg/cluster.yaml
+    set:
+      addons.postgres.backup:
+        destinationPath: s3://bucket/pg/
+        endpointURL: https://s3.example.com
+    documentSelector:
+      path: metadata.name
+      value: test-postgres
+    asserts:
+      - equal:
+          path: spec.backup.barmanObjectStore.destinationPath
+          value: s3://bucket/pg/test-postgres
+      - equal:
+          path: spec.backup.barmanObjectStore.s3Credentials.accessKeyId.name
+          value: test-postgres-backup-secret
+      - equal:
+          path: spec.backup.barmanObjectStore.s3Credentials.secretAccessKey.name
+          value: test-postgres-backup-secret
