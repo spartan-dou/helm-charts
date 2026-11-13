@@ -9,10 +9,11 @@
 {{- $component := . }}
 {{- with $component.postgres }}
 {{- if .enabled }}
+{{- $clusterName := printf "%s-postgres" (include "commons.fullname" (dict "Chart" $.Chart "Values" $.Values "Release" $.Release "name" .name "component" $component)) }}
 apiVersion: postgresql.cnpg.io/v1
 kind: Cluster
 metadata:
-  name: {{ include "commons.fullname" (dict "Chart" $.Chart "Values" $.Values "Release" $.Release "name" .name "component" $component) }}-postgres
+  name: {{ $clusterName }}
   labels:
     app.kubernetes.io/name: {{ .name | default "postgres" }}
     app.kubernetes.io/instance: {{ .name | default "postgres" }}
@@ -67,14 +68,16 @@ spec:
   {{- with .backup }}
   backup:
     barmanObjectStore:
-      destinationPath: {{ .destinationPath }}/{{ .name | default "postgres" }}
+      {{- /* Chemin et Secret dérivés du nom du Cluster : deux clusters qui
+             partagent un bucket ne s'écrasent pas. */}}
+      destinationPath: {{ .destinationPath | trimSuffix "/" }}/{{ $clusterName }}
       endpointURL: {{ .endpointURL }}
       s3Credentials:
         accessKeyId:
-          name: {{ printf "%s-backup-secret" (.name | default "postgres") }}
+          name: {{ $clusterName }}-backup-secret
           key: ACCESS_KEY_ID
         secretAccessKey:
-          name: {{ printf "%s-backup-secret" (.name | default "postgres") }}
+          name: {{ $clusterName }}-backup-secret
           key: SECRET_ACCESS_KEY
       wal:
         compression: gzip

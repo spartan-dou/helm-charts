@@ -18,25 +18,33 @@ spec:
   {{- with .strategy }}
   strategy:
     type: {{ default "RollingUpdate" .type }}
+    {{- with .rollingUpdate }}
+    rollingUpdate:
+      {{- toYaml . | nindent 6 }}
+    {{- end }}
   {{- end }}
   selector:
     matchLabels:
       {{ include "commons.selectorLabels" (dict "Chart" $.Chart "Values" $.Values "Release" $.Release "name" .name "component" $component) | nindent 6 }}
   template:
     metadata:
+      {{- /* En annotations et non en labels : un changement de ConfigMap doit
+             relancer les pods, pas modifier ce par quoi on les sélectionne. */}}
+      {{- $checksums := dict }}
+      {{- range $index, $volume := .volumes }}
+        {{- if and $volume.configMap $volume.configMap.data }}
+          {{- $_ := set $checksums (printf "checksum/%v" (default $index $volume.name)) (printf "%v" $volume.configMap.data | sha256sum) }}
+        {{- end }}
+      {{- end }}
+      {{- with $checksums }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
       labels:
         {{ include "commons.labels" (dict "Chart" $.Chart "Values" $.Values "Release" $.Release "name" .name "component" $component) | nindent 8 }}
-        {{- range $index, $volume := .volumes }}
-          {{- with $volume.configMap }}
-            {{- with $volume.configMap.data }}
-        checksum/{{ default $index $volume.name }}: {{ printf "%v" $volume.configMap.data | sha256sum | trunc 63 }}
-            {{- end }}
-          {{- end }}
-        {{- end }}
     spec:
-      {{- if $.Values.global.rbac.enabled }}
-      serviceAccountName: {{ $.Values.global.rbac.serviceAccountName }}
-      automountServiceAccountToken: true
+      {{- with include "commons.pod.serviceAccount" (dict "Values" $.Values "component" $component) }}
+      {{- . | nindent 6 }}
       {{- end }}
 
       {{ include "commons.pod.securityContext" (dict "global" $.Values.global "securityContext" .securityContext) | nindent 6 }}
@@ -78,6 +86,10 @@ spec:
               subPath: {{ . }}
               {{- end }}
             {{- end }}
+          {{- end }}
+          {{- with .resources }}
+          resources:
+            {{- toYaml . | nindent 12 }}
           {{- end }}
         {{- end }}
       {{- end }}

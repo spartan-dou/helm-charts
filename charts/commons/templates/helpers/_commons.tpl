@@ -152,7 +152,9 @@ app: {{ .Release.Name }}
 */}}
 {{- define "commons.getValue" -}}
 {{- $component := default "" .component }}
-{{- $value := toString (default "" .value) }}
+{{- /* Pas de `default ""` : il écraserait `0` et `false`, vides au sens de Sprig. */}}
+{{- $value := "" }}
+{{- if not (kindIs "invalid" .value) }}{{- $value = toString .value }}{{- end }}
 {{- $valueKeys := splitList "__" $value }}
 
 {{- if and (gt (len $valueKeys) 2) (eq (index $valueKeys 0) "") }}

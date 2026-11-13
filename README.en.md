@@ -164,6 +164,7 @@ This change also applies to the **legacy mode** (plain-text password in the valu
 | `global.rbac.enabled` | `false` | See [RBAC](#rbac). |
 | `global.rbac.serviceAccountName` | — | Required if `rbac.enabled: true`. |
 | `global.rbac.clusterRoleName` | — | Required if `rbac.enabled: true`. |
+| `global.rbac.createTokenSecret` | `true` | Creates the non-expiring token Secret `<serviceAccountName>-secret`. Pods do not need it; set to `false` if no external tool reads it. |
 | `global.rbac.rules` | — | List of `PolicyRule` (standard Kubernetes RBAC format) for the `ClusterRole`. |
 | `global.var` | `{}` | Free-form key/value store, accessible from any `env[].value` via `__global__<key>` (see [`commons.getValue`](#environment-variables-and-commonsgetvalue)). |
 | `global.ingress.className` | `traefik` | Default `ingressClassName` for any `ingress` (component or addon, including `addons.pgadmin.ingress`) that doesn't explicitly set its own `className`. |
@@ -188,12 +189,13 @@ Each entry in the `components` list accepts:
 | Key | Default | Description |
 |---|---|---|
 | `replicas` | `1` | |
-| `strategy.type` | `RollingUpdate` | |
+| `strategy.type` | `RollingUpdate` | With a `ReadWriteOnce` PVC, prefer `Recreate`: the new pod cannot mount the volume while the old one holds it. |
+| `strategy.rollingUpdate` | — | `maxSurge` / `maxUnavailable`, passed through as is. |
 | `securityContext` | — | Merged with `global.securityContext`. |
 | `nodeSelector` | — | |
 | `hostNetwork` | — | |
 | `resourceClaims[]` | — | DRA resources, at the pod level. Passed through as-is. See [DRA](#dynamic-resource-allocation-dra). |
-| `initContainers[]` | — | `name` (defaults to the component name), `image.repository`, `image.tag` (default `latest`), `securityContext`, `command`, `args`, `env[]`, `volumeMounts[]`. |
+| `initContainers[]` | — | `name` (defaults to the component name), `image.repository`, `image.tag` (default `latest`), `securityContext`, `command`, `args`, `env[]`, `volumeMounts[]`, `resources`. |
 | `containers[]` | — | See below. |
 | `volumes[]` | — | See [`volumes`](#volumes). |
 
@@ -400,13 +402,20 @@ Creates a dedicated CloudNativePG `Cluster` + a `kubernetes.io/basic-auth` Secre
 | `cluster.password` | — | |
 | `cluster.database` | `app` | |
 | `postInitTemplateSQL[]` / `postInitSQL[]` / `postInitApplicationSQL[]` | — | Run at CloudNativePG bootstrap. |
-| `backup.destinationPath`, `backup.endpointURL` | — | `barmanObjectStore` backup (S3). Expects a `<name>-backup-secret` Secret with the `ACCESS_KEY_ID` / `SECRET_ACCESS_KEY` keys. |
+| `backup.destinationPath`, `backup.endpointURL` | — | `barmanObjectStore` backup (S3). Backups go to `<destinationPath>/<Cluster-name>`. Expects a `<Cluster-name>-backup-secret` Secret (e.g. `<release>-<component>-postgres-backup-secret`), not created by the chart, with the `ACCESS_KEY_ID` / `SECRET_ACCESS_KEY` keys. |
 | `monitoring` | `false` | Sets `spec.monitoring.enablePodMonitor` on the `Cluster`. CloudNativePG then creates the `PodMonitor` exposing `/metrics` (port 9187) to Prometheus — the instance manager serves those metrics either way, without this option nobody comes to collect them. Set independently on each `postgres`: enabling it on `addons.postgres` does not enable it on the databases embedded in components. |
 | `priorityClassName` | — | Sets `spec.priorityClassName` on the `Cluster`, hence on its pods. The `PriorityClass` must exist before the `Cluster`, otherwise its pods are rejected. Like `monitoring`, set independently on each `postgres`. |
 
 ### RBAC
 
 If `global.rbac.enabled: true`, the chart creates a `ServiceAccount`, an associated token-type `Secret`, a `ClusterRole` (`global.rbac.rules`) and a `ClusterRoleBinding`, then automatically mounts that ServiceAccount (`automountServiceAccountToken: true`) on **every** generated pod (deployments, cronjobs, startup jobs). `global.rbac.serviceAccountName` and `global.rbac.clusterRoleName` are then required.
+
+Two settings narrow that surface, without changing any default:
+
+- `rbac: false` on a component (or an addon: `addons.redis.rbac: false`) opts it out: its pods, cronjobs included, get neither the ServiceAccount nor any API token (`automountServiceAccountToken: false`).
+- `global.rbac.createTokenSecret: false` skips the non-expiring token `Secret`. Pods do not depend on it: they use the token projected by Kubernetes.
+
+The `ClusterRole` and `ClusterRoleBinding` are named `clusterRoleName` as is, with no release prefix: two releases must therefore use different names.
 
 ### Addons
 
