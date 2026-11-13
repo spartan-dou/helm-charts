@@ -1,6 +1,16 @@
 {
     "$schema": "https://docs.renovatebot.com/renovate-schema.json",
     "extends": ["config:recommended"],
+    "customManagers": [
+      {
+        "customType": "regex",
+        "description": "Versions d'outils épinglées dans les workflows via un commentaire `# renovate:`",
+        "managerFilePatterns": ["/^\\.github/workflows/.+\\.ya?ml$/"],
+        "matchStrings": [
+          "# renovate: datasource=(?<datasource>\\S+) depName=(?<depName>\\S+)\\s+\\w+: (?<currentValue>\\S+)"
+        ]
+      }
+    ],
     "packageRules": [
       {
         "matchManagers": ["helm-values"],
@@ -10,8 +20,7 @@
         "automergeType": "branch",
         "matchUpdateTypes": ["patch"],
         "prCreation": "immediate",
-        "bumpVersion": "patch",
-        "ignoreTests": true
+        "bumpVersion": "patch"
       },
       {
         "matchManagers": ["helm-values"],
@@ -19,28 +28,14 @@
         "enabled": true,
         "automerge": false,
         "matchUpdateTypes": ["minor", "major"],
-        "prCreation": "immediate",
-        "ignoreTests": true
+        "prCreation": "immediate"
       },
       {
         "matchManagers": ["helmv3"],
         "matchDatasources": ["helm"],
         "enabled": true,
         "automerge": false,
-        "prCreation": "immediate",
-        "ignoreTests": true
-      },
-      {
-        "description": "L'image Sunshine est publiée quasi quotidiennement (CalVer) : automerge des mises à jour patch et mineures, major reste manuel",
-        "matchManagers": ["dockerfile"],
-        "matchDatasources": ["docker"],
-        "matchPackageNames": ["lizardbyte/sunshine"],
-        "enabled": true,
-        "automerge": true,
-        "automergeType": "branch",
-        "matchUpdateTypes": ["minor", "patch"],
-        "prCreation": "immediate",
-        "ignoreTests": true
+        "prCreation": "immediate"
       },
       {
         "description": "Action Renovate elle-même : automerge des mises à jour patch et mineures, major reste manuel",

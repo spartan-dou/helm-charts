@@ -4,6 +4,9 @@ on:
   push:
     branches:
       - main
+    paths:
+      - 'containers/**'
+      - '.github/workflows/docker-build.yml'
   workflow_dispatch:
 
 env:
@@ -65,7 +68,6 @@ jobs:
             type=ref,event=branch
             type=sha,prefix={{branch}}-
             type=raw,value=latest,enable={{is_default_branch}}
-            type=semver,pattern={{version}}
 
       - name: Build and push ${{ matrix.name }}
         uses: docker/build-push-action@v7
