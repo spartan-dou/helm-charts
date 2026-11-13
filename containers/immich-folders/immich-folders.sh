@@ -81,7 +81,7 @@ if [ -n "$USER_EMAIL" ]; then
     log_debug "Recherche de l'ID utilisateur pour : $USER_EMAIL"
     user_raw=$(curl $param_curl -X GET "$IMMICH_URL/api/users" -H "x-api-key: $IMMICH_API_KEY")
     log_debug "Réponse API User: $(echo "$user_raw" | head -c 1000)..."
-    user_id=$(echo "$user_raw" | jq -r ".[] | select(.email == \"$USER_EMAIL\") | .id")
+    user_id=$(echo "$user_raw" | jq -r --arg email "$USER_EMAIL" '.[] | select(.email == $email) | .id')
     log_debug "User ID trouvé : ${user_id:-"AUCUN"}"
 fi
 
